@@ -11,6 +11,9 @@
 
 #include "buffy.h"
 
+struct game_state game_state;
+struct vampire vampire;
+
 // Define a struct for detailed fang information
 struct fang_info
 {

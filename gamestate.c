@@ -9,6 +9,9 @@
 #include "buffy.h"
 #include "gamestate.h"
 
+extern struct game_state game_state;
+extern struct vampire vampire;
+
 struct database_info
 {
 	int gamecode;

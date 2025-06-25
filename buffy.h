@@ -10,7 +10,7 @@ struct game_state
     int dagger_effort;
     int flouride_used;
     int bflag;
-} game_state;
+};
 
 struct vampire
 {
@@ -24,7 +24,7 @@ struct vampire
         char *color;
         int health; // health of the fangs from 0 to 10
     } fangs[3];
-} vampire;
+};
 
 int save_game(char *file);
 int load_game(char *file);
