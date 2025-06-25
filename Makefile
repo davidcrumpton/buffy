@@ -1,6 +1,10 @@
 # Default to release build
 PROG=          buffy
-SRCS=          buffy.c gamestate.c
+TEST_PROG= 	buffy-unittest
+TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
+TEST_LDFLAGS=        -L/usr/local/lib -lcunit
+TEST_SRCS=	unittest/unittest.c
+SRCS=          buffy.c gamestate.c 
 MAN=           buffy.1 
 BINOWN=        root
 BINMODE=       555
@@ -14,13 +18,5 @@ buffy: ${SRCS}
 clean: 
 	rm -rf *.dSYM *.o buffy
 
-# If running unit tests, change binary name, sources, flags
-#.if defined(UNITTEST)
-#PROG=          main-unittest
-#SRCS=          main.c
-#CFLAGS+=        -g -D__UNIT_TEST__ -Wall
-#LDADD+=        -L/usr/local/lib -lcunit
-#.else
-#.endif
-
-#.include <bsd.prog.mk>
+buffy-unittest: ${TEST_PROG}
+	LDFLAGS="${TEST_LDFLAGS}" cc -g ${TEST_FLAGS} -o ${TEST_PROG} -Wall ${SRCS} ${TEST_SRCS}
