@@ -1,0 +1,14 @@
+CVS
+tags
+a.out
+[Ee]rrs
+mklog
+*.core
+y.tab.h
+*.o
+*.d
+doas
+parse.c
+*.BAK
+*.dSYM
+edoas-unittest
