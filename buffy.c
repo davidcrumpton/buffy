@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <getopt.h>
+#include <unistd.h>
 #include <err.h>
 
 #include <time.h>
@@ -72,7 +73,7 @@ randomize_fangs(struct vampire *vamp, int count)
 	}
 }
 
-static void __dead
+static void
 ask_slayer(int *dagger_dip, int *dagger_effort)
 {
 	printf("How much to dip the dagger in the fluoride? ");
@@ -183,7 +184,8 @@ print_flouride_info(void)
 
 int apply_fluoride_to_dracula(void)
 {
-	int dagger_dip, dagger_effort;
+	int dagger_dip = 0;
+ 	int dagger_effort = 0;
 
 	if (game_state.daggerset)
 		printf("Buffy will use her dagger to apply fluoride to Dracula's teeth\n");
