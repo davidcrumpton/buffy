@@ -44,7 +44,6 @@ testPASS(void)
 {
 	CU_PASS();
 }
-
 int 
 main()
 {
