@@ -11,8 +11,8 @@ CPPFLAGS+=     -I${.CURDIR} -I/usr/local/include
 buffy: ${SRCS}
 	cc -g -o ${PROG} -Wall ${SRCS}
 
-clean: buffy
-	rm -f *.o buffy
+clean: 
+	rm -rf *.dSYM *.o buffy
 
 # If running unit tests, change binary name, sources, flags
 #.if defined(UNITTEST)

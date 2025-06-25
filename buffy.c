@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <getopt.h>
+#ifdef __OpenBSD__
 #include <unistd.h>
+#include <stdlib.h>
+#endif
 #include <err.h>
 
 #include <time.h>
@@ -393,9 +396,34 @@ int main(int argc, char *argv[])
 	// if fflag is not set we don't care about any other options
 	// since options are stored in the game_state struct
 
+	if (argc != 0)
+		usage();
+
+	// Initialize game state
+	// if fflag is not set we don't care about any other options
+	// since options are stored in the game_state struct
+
 	if (!fflag)
 		init_game_state(bflag);
+#ifdef __OpenBSD__
 
+	if (pledge("stdio rpath wpath cpath", NULL) == -1)
+		err(1, "pledge");
+	    const char *home = getenv("HOME");
+    if (!home) {
+        err(1, "Unable to determine HOME directory.\n");
+        return EXIT_FAILURE;
+    }
+    if (unveil(home, "rw") == -1) {
+        err(1,"unveil");
+        return EXIT_FAILURE
+    }
+
+    if (unveil(NULL, NULL) == -1) {
+        err(1,"unveil lock");
+        return EXIT_FAILURE
+    }
+#endif
 	exit(main_program(fflag));
 }
 #else
