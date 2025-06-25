@@ -407,7 +407,7 @@ int main(int argc, char *argv[])
 		init_game_state(bflag);
 #ifdef __OpenBSD__
 
-	if (pledge("stdio rpath wpath cpath", NULL) == -1)
+	if (pledge("stdio rpath wpath cpath unveil", NULL) == -1)
 		err(1, "pledge");
 	    const char *home = getenv("HOME");
     if (!home) {
