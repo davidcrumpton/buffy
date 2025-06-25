@@ -2,7 +2,7 @@
 PROG=          buffy
 TEST_PROG= 	buffy-unittest
 TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
-TEST_LDFLAGS=      -Wl,-L/usr/local/lib,-lcunit
+TEST_LDFLAGS=      -L/usr/local/lib -lcunit
 
 SRCS=          buffy.c gamestate.c 
 MAN=           buffy.1 
@@ -19,4 +19,4 @@ clean:
 	rm -rf *.dSYM *.o buffy
 
 buffy-unittest: ${TEST_PROG}
-	LDFLAGS="${TEST_LDFLAGS}" cc -g ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS}
+	cc -g ${TEST_LDFLAGS} ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS}
