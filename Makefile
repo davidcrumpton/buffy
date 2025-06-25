@@ -2,7 +2,7 @@
 PROG=          buffy
 TEST_PROG= 	buffy-unittest
 TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
-TEST_LDFLAGS=        -L/usr/local/lib -lcunit
+TEST_LDFLAGS=      -Wl,-L/usr/local/lib,-lcunit
 TEST_SRCS=	unittest/unittest.c
 SRCS=          buffy.c gamestate.c 
 MAN=           buffy.1 
