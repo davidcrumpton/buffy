@@ -5,7 +5,7 @@ Is an get the highest score game. In it, you clean Dracula's teeth to reach the 
 # Inspiration
 
 I never use getopt_long(3), or long options, in anything I create.  I decided to give it a try and laughed when
-I noticed the Buffy the Vampire Slayer references in the getopt_long EXAMPLE section.
+I noticed the Buffy the Vampire Slayer references in the getopt_long EXAMPLE section of OpenBSD, and MacOS.
 
 ```
      /* options descriptor */
