@@ -19,4 +19,4 @@ clean:
 	rm -rf *.dSYM *.o buffy
 
 buffy-unittest: ${TEST_PROG}
-	LDFLAGS="${TEST_LDFLAGS}" cc -g ${TEST_FLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS} ${TEST_SRCS}
+	LDFLAGS="${TEST_LDFLAGS}" cc -g ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS} ${TEST_SRCS}
