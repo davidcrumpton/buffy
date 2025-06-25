@@ -1,4 +1,4 @@
-#ifdef _OpenBSD__
+#ifdef __UNIT_TEST__
 
 /*
  *  CUnit tests for edoas 
@@ -80,4 +80,4 @@ main()
 	return CU_get_error();
 }
 
-#endif // _OpenBSD__
+#endif // __UNIT_TEST__
