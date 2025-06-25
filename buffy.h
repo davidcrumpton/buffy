@@ -2,7 +2,7 @@
 #ifndef BUFFY_H
 #define BUFFY_H
 
-struct gs
+struct game_state
 {
     int daggerset;
     int flouride;
@@ -12,7 +12,7 @@ struct gs
     int bflag;
 } game_state;
 
-struct bloodsucker
+struct vampire
 {
     int age;
     char *name;
