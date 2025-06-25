@@ -416,12 +416,12 @@ int main(int argc, char *argv[])
     }
     if (unveil(home, "rw") == -1) {
         err(1,"unveil");
-        return EXIT_FAILURE
+        return EXIT_FAILURE;
     }
 
     if (unveil(NULL, NULL) == -1) {
         err(1,"unveil lock");
-        return EXIT_FAILURE
+        return EXIT_FAILURE;
     }
 #endif
 	exit(main_program(fflag));
