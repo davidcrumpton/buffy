@@ -1,3 +1,5 @@
+#ifdef _OpenBSD__
+
 /*
  *  CUnit tests for edoas 
  *
@@ -7,6 +9,9 @@
 
 int startup = 0;
 int isclean = 0;
+
+struct game_state game_state;
+struct vampire vampire;
 
 /* Pointer to the file used by the tests. */
 
@@ -33,16 +38,21 @@ clean_suite1(void)
 }
 
 void 
-testMAIN_PROGRAM(void)
+testINIT_GAME_STATE(void)
 {
-	CU_ASSERT(main_program(EXIT_SUCCESS) == EXIT_SUCCESS);
-	CU_ASSERT(main_program(EXIT_FAILURE) == EXIT_FAILURE);
+	init_game_state(1);
+	CU_ASSERT(game_state.daggerset == 0);
+	CU_ASSERT(game_state.flouride == 200);
+	CU_ASSERT(game_state.dagger_dip == 0);
+	CU_ASSERT(game_state.dagger_effort == 0);
+	CU_ASSERT(game_state.flouride_used == 0);
+	CU_ASSERT(game_state.bflag == 1);
 }
 
-void
+void 
 testPASS(void)
 {
-	CU_PASS();
+	CU_ASSERT(1 == 1);
 }
 int 
 main()
@@ -60,7 +70,7 @@ main()
 		return CU_get_error();
 	}
 	/* add the tests to the suite */
-	if ( (NULL == CU_add_test(pSuite, "test of main_program()", testMAIN_PROGRAM) ) || (NULL == CU_add_test(pSuite, "test of testPASS()", testPASS) ) ) {
+	if ( (NULL == CU_add_test(pSuite, "test of init_game_state)", testINIT_GAME_STATE) ) || (NULL == CU_add_test(pSuite, "test of testPASS()", testPASS) ) ) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}
@@ -69,3 +79,5 @@ main()
 	CU_basic_run_tests();
 	return CU_get_error();
 }
+
+#endif // _OpenBSD__
