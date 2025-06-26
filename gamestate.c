@@ -10,7 +10,7 @@
 #include "gamestate.h"
 
 extern struct game_state game_state;
-extern struct vampire vampire;
+extern struct creature creature;
 
 struct database_info
 {
@@ -36,7 +36,7 @@ int save_game(char *file)
 	   read database_info structiure
 	   validate structure looks right or err/errx if not
 	   write struct game_state
-	   write struct vampire
+	   write struct creature
 	*/
 	FILE *fp = fopen(file, "wb");
 	if (fp == NULL)
@@ -47,8 +47,8 @@ int save_game(char *file)
 		errx(1, "Failed to write database info to file %s", file);
 	if (fwrite(&game_state, sizeof(game_state), 1, fp) != 1)
 		errx(1, "Failed to write game state to file %s", file);
-	if (fwrite(&vampire, sizeof(vampire), 1, fp) != 1)
-		errx(1, "Failed to write vampire data to file %s", file);
+	if (fwrite(&creature, sizeof(creature), 1, fp) != 1)
+		errx(1, "Failed to write creature data to file %s", file);
 	fclose(fp);
 	printf("Game saved successfully to %s\n", file);
 	return 0;
@@ -61,7 +61,7 @@ int load_game(char *file)
 		read database_info structiure
 	validate structure looks right or err/errx if not
 	read struct game_state
-	read struct vampire
+	read struct creature
 	*/
 	FILE *fp = fopen(file, "rb");
 	if (fp == NULL)
@@ -75,8 +75,8 @@ int load_game(char *file)
 
 	if (fread(&game_state, sizeof(game_state), 1, fp) != 1)
 		errx(1, "Failed to read game state from file %s", file);
-	if (fread(&vampire, sizeof(vampire), 1, fp) != 1)
-		errx(1, "Failed to read vampire data from file %s", file);
+	if (fread(&creature, sizeof(creature), 1, fp) != 1)
+		errx(1, "Failed to read creature data from file %s", file);
 	fclose(fp);
 	printf("Game loaded successfully from %s\n", file);
 	return 0;

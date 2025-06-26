@@ -2,6 +2,9 @@
 #ifndef BUFFY_H
 #define BUFFY_H
 
+char character_name[256];
+char creature_name[256]; // Name of the creature, e.g., "Dracula"
+
 struct game_state
 {
     int daggerset;
@@ -12,14 +15,15 @@ struct game_state
     int bflag;
     int score;
     int turns;
+    char *character_name; // Name of the character, e.g., "Buffy"
 };
 
-struct vampire
+struct creature
 {
     int age;
     char *name;
     char *species;
-    struct vampire_fangs
+    struct creature_fangs
     {
         int length;
         int sharpness;
@@ -31,7 +35,7 @@ struct vampire
 int save_game(char *file);
 int load_game(char *file);
 
-
+#define DEFAULT_CHARACTER_NAME "Buffy"
 // Define default values as constants
 #define DEFAULT_DAGGERSET 0
 #define DEFAULT_FLOURIDE 200
@@ -44,10 +48,12 @@ int load_game(char *file);
 #define MAX_HEALTH 100
 
 #define BONUS_ALL_HEALTH 100
+#define BONUS_FANG_CLEANED 1
+#define BONUS_FANG_HEALTH 3
 
 
-#define DEFAULT_VAMPIRE_AGE 100 // Default age for the vampire
-#define DEFAULT_VAMPIRE_NAME "Dracula"
-#define DEFAULT_VAMPIRE_SPECIES "Vampire"
+#define DEFAULT_CREATURE_AGE 100 // Default age for the creature
+#define DEFAULT_CREATURE_NAME "Dracula"
+#define DEFAULT_CREATURE_SPECIES "Vampire"
 
 #endif // BUFFY_H

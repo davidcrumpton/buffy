@@ -11,7 +11,7 @@ int startup = 0;
 int isclean = 0;
 
 struct game_state game_state;
-struct vampire vampire;
+struct creature creature;
 
 /* Pointer to the file used by the tests. */
 
