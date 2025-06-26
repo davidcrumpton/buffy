@@ -393,13 +393,13 @@ main_program(int reloadflag)
 		init_game_state(game_state.bflag);
 
 	/* If daggerset is not set, we will not use the dagger */
-		if (!game_state.daggerset)
-			game_state.dagger_dip = 0;
-		else
-			game_state.dagger_dip = DEFAULT_DAGGER_DIP;
+	if (!game_state.daggerset)
+		game_state.dagger_dip = 0;
+	else
+		game_state.dagger_dip = DEFAULT_DAGGER_DIP;
 	/* Default dagger dip value */
 
-		game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
+	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
 	/* Default dagger effort value */
 
 		printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
