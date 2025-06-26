@@ -47,6 +47,8 @@ testINIT_GAME_STATE(void)
 	CU_ASSERT(game_state.dagger_effort == 0);
 	CU_ASSERT(game_state.flouride_used == 0);
 	CU_ASSERT(game_state.bflag == 1);
+	CU_ASSERT(game_state.score == 0);
+	CU_ASSERT(game_state.turns == 0);
 }
 
 void 

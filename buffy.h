@@ -10,6 +10,8 @@ struct game_state
     int dagger_effort;
     int flouride_used;
     int bflag;
+    int score;
+    int turns;
 };
 
 struct vampire
