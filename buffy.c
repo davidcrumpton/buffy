@@ -172,13 +172,13 @@ calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_ef
 
 		// Set color according to health
 		if (fang->health >= 9)
-		fang->color = "white";
+		fang->color = FANG_COLOR_HIGH;
 	/* max health */
 		else if (fang->health >= 8)
-		fang->color = "dull";
+		fang->color = FANG_COLOR_MEDIUM;
 	/* medium health */
 		else
-		fang->color = "yellow";
+		fang->color = FANG_COLOR_LOW;
 	/* low health */
 }
 
