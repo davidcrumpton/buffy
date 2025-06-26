@@ -5,6 +5,8 @@ TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
 TEST_LDFLAGS=      -L/usr/local/lib -lcunit
 
 SRCS=          buffy.c gamestate.c 
+HDRS=		  gamestate.h buffy.h
+TEST_SRCS=      unittest/buffy_unittest.c
 MAN=           buffy.1 
 BINOWN=        root
 BINMODE=       555
@@ -17,6 +19,9 @@ buffy: ${SRCS}
 
 clean: 
 	rm -rf *.dSYM *.o buffy *.BAK
+	
+.PHONY: all clean buffy unittest beautify
+all: buffy buffy-unittest
 
 buffy-unittest: ${TEST_PROG}
 	cc -g ${TEST_LDFLAGS} ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS}
