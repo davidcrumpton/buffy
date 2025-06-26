@@ -73,36 +73,36 @@ init_game_state(int bflag)
 	game_state.character_name = character_name;
 }
 static void
-randomize_fangs(struct creature *vamp, int count)
+randomize_fangs(struct creature *fanged_beast, int count)
 {
 	int		i;
 	srand((unsigned int)time(NULL));
 	for (i = 0; i < count; i++) {
-		vamp->fangs[i].length = 4 + rand() % 3;
+		fanged_beast->fangs[i].length = 4 + rand() % 3;
 		/* 4 - 6 */
-			vamp->fangs[i].sharpness = 5 + rand() % 4;
+			fanged_beast->fangs[i].sharpness = 5 + rand() % 4;
 		/* 5 - 8 */
 
 			/* Bias health toward lower values(dirty teeth) */
 			int		r = rand() % MAX_HEALTH;
 		if (r < 60)
-			vamp->fangs[i].health = 60 + rand() % 11;
+			fanged_beast->fangs[i].health = 60 + rand() % 11;
 		/* 60 - 70(60 % chance) */
 			else if (r < 90)
-			vamp->fangs[i].health = 71 + rand() % 10;
+			fanged_beast->fangs[i].health = 71 + rand() % 10;
 		/* 71 - 80(30 % chance) */
 			else
-			vamp->fangs[i].health = 90 + rand() % 11;
+			fanged_beast->fangs[i].health = 90 + rand() % 11;
 		/* 90 - 100(10 % chance) */
 
-			if (vamp->fangs[i].health >= 90)
-			vamp->fangs[i].color = "white";
+			if (fanged_beast->fangs[i].health >= 90)
+			fanged_beast->fangs[i].color = "white";
 		/* max health */
-			else if (vamp->fangs[i].health >= 80)
-			vamp->fangs[i].color = "dull";
+			else if (fanged_beast->fangs[i].health >= 80)
+			fanged_beast->fangs[i].color = "dull";
 		/* medium health */
 			else
-			vamp->fangs[i].color = "yellow";
+			fanged_beast->fangs[i].color = "yellow";
 		/* low health */
 	}
 }
@@ -215,17 +215,17 @@ print_fang_info(int index, struct creature_fangs *fang)
 	printf("  Health: %d\n", fang->health);
 }
 static void
-print_creature_info(struct creature *vamp)
+print_creature_info(struct creature *fanged_beast)
 {
-	printf("Creature Name: %s\n", vamp->name);
-	printf("Creature Age: %d\n", vamp->age);
-	printf("Creature Species: %s\n", vamp->species);
+	printf("Creature Name: %s\n", fanged_beast->name);
+	printf("Creature Age: %d\n", fanged_beast->age);
+	printf("Creature Species: %s\n", fanged_beast->species);
 	for (int i = 0; i < 4; i++) {
 		printf("Fang %s:\n", fang_idx_to_name(i));
-		printf("  Length: %d\n", vamp->fangs[i].length);
-		printf("  Sharpness: %d\n", vamp->fangs[i].sharpness);
-		printf("  Color: %s\n", vamp->fangs[i].color);
-		printf("  Health: %d\n", vamp->fangs[i].health);
+		printf("  Length: %d\n", fanged_beast->fangs[i].length);
+		printf("  Sharpness: %d\n", fanged_beast->fangs[i].sharpness);
+		printf("  Color: %s\n", fanged_beast->fangs[i].color);
+		printf("  Health: %d\n", fanged_beast->fangs[i].health);
 	}
 }
 
@@ -249,13 +249,13 @@ print_game_state(struct game_state *state)
 }
 
 static void
-creature_init(struct creature *vamp)
+creature_init(struct creature *fanged_beast)
 {
-	vamp->age = DEFAULT_CREATURE_AGE;
+	fanged_beast->age = DEFAULT_CREATURE_AGE;
 	strlcpy(creature_name, DEFAULT_CREATURE_NAME, sizeof(DEFAULT_CREATURE_NAME));
-	vamp->name = creature_name;
-	vamp->species = DEFAULT_CREATURE_SPECIES;
-	randomize_fangs(vamp, 4);
+	fanged_beast->name = creature_name;
+	fanged_beast->species = DEFAULT_CREATURE_SPECIES;
+	randomize_fangs(fanged_beast, 4);
 }
 
 
