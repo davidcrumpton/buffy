@@ -75,36 +75,28 @@ init_game_state(int bflag)
 static void
 randomize_fangs(struct creature *fanged_beast, int count)
 {
-	int		i;
-	srand((unsigned int)time(NULL));
-	for (i = 0; i < count; i++) {
-		fanged_beast->fangs[i].length = 4 + rand() % 3;
-		/* 4 - 6 */
-			fanged_beast->fangs[i].sharpness = 5 + rand() % 4;
-		/* 5 - 8 */
+    for (int i = 0; i < count; i++) {
+        // arc4random_uniform(n) returns 0 to n-1, so add offset as needed
+        fanged_beast->fangs[i].length = 4 + arc4random_uniform(3);     // 4–6
+        fanged_beast->fangs[i].sharpness = 5 + arc4random_uniform(4);  // 5–8
 
-			/* Bias health toward lower values(dirty teeth) */
-			int		r = rand() % MAX_HEALTH;
-		if (r < 60)
-			fanged_beast->fangs[i].health = 60 + rand() % 11;
-		/* 60 - 70(60 % chance) */
-			else if (r < 90)
-			fanged_beast->fangs[i].health = 71 + rand() % 10;
-		/* 71 - 80(30 % chance) */
-			else
-			fanged_beast->fangs[i].health = 90 + rand() % 11;
-		/* 90 - 100(10 % chance) */
+        // Bias health toward lower values (dirty teeth)
+        int r = arc4random_uniform(MAX_HEALTH);
+        if (r < 60)
+            fanged_beast->fangs[i].health = 60 + arc4random_uniform(11); // 60–70
+        else if (r < 90)
+            fanged_beast->fangs[i].health = 71 + arc4random_uniform(10); // 71–80
+        else
+            fanged_beast->fangs[i].health = 90 + arc4random_uniform(11); // 90–100
 
-			if (fanged_beast->fangs[i].health >= 90)
-			fanged_beast->fangs[i].color = "white";
-		/* max health */
-			else if (fanged_beast->fangs[i].health >= 80)
-			fanged_beast->fangs[i].color = "dull";
-		/* medium health */
-			else
-			fanged_beast->fangs[i].color = "yellow";
-		/* low health */
-	}
+        // Set color based on health
+        if (fanged_beast->fangs[i].health >= 90)
+            fanged_beast->fangs[i].color = "white";
+        else if (fanged_beast->fangs[i].health >= 80)
+            fanged_beast->fangs[i].color = "dull";
+        else
+            fanged_beast->fangs[i].color = "yellow";
+    }
 }
 
 
