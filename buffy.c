@@ -120,7 +120,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort)
 			while (getchar() != '\n')
 				;
 			/* clear input buffer */
-				continue;
+			continue;
 		}
 		valid = 1;
 	}
@@ -133,7 +133,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort)
 			while (getchar() != '\n')
 				;
 			/* clear input buffer */
-				continue;
+			continue;
 		}
 		valid = 1;
 	}
@@ -394,9 +394,9 @@ main_program(int reloadflag)
 
 	/* If daggerset is not set, we will not use the dagger */
 		if (!game_state.daggerset)
-		game_state.dagger_dip = 0;
-	else
-		game_state.dagger_dip = DEFAULT_DAGGER_DIP;
+			game_state.dagger_dip = 0;
+		else
+			game_state.dagger_dip = DEFAULT_DAGGER_DIP;
 	/* Default dagger dip value */
 
 		game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
@@ -439,7 +439,7 @@ main(int argc, char *argv[])
 				errx(1, "Unable to determine user name");
 
 			/* use getpwent to get the user name and store in login_name */
-				if (getlogin_r(login_name, sizeof(login_name)) != 0)
+			if (getlogin_r(login_name, sizeof(login_name)) != 0)
 				err(1, "Unable to get login name");
 
 			strlcpy(character_name, login_name, sizeof(game_state.character_name));
