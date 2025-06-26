@@ -39,7 +39,7 @@ int load_game(char *file);
 #define DEFAULT_DAGGER_DIP 10
 #define DEFAULT_DAGGER_EFFORT 5
 #define DEFAULT_FLOURIDE_USED 0
-#define DEFAULT_SCORE 0
+#define DEFAULT_SCORE 10
 #define DEFAULT_TURNS 0
 
 #define MAX_HEALTH 100
