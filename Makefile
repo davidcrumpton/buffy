@@ -16,7 +16,7 @@ buffy: ${SRCS}
 	cc -g -o ${PROG} -Wall ${SRCS}
 
 clean: 
-	rm -rf *.dSYM *.o buffy
+	rm -rf *.dSYM *.o buffy *.BAK
 
 buffy-unittest: ${TEST_PROG}
 	cc -g ${TEST_LDFLAGS} ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS}
