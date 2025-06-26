@@ -14,6 +14,13 @@
 #include "buffy.h"
 
 static int exit_game(void);
+
+
+char character_name[256];
+char creature_name[256]; 
+
+
+
 struct game_state game_state;
 struct creature creature;
 

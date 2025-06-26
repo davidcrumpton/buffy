@@ -2,9 +2,6 @@
 #ifndef BUFFY_H
 #define BUFFY_H
 
-char character_name[256];
-char creature_name[256]; // Name of the creature, e.g., "Dracula"
-
 struct game_state
 {
     int daggerset;
