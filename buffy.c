@@ -43,15 +43,14 @@ usage(void)
 static void
 init_game_state(int bflag)
 {
-	// Initialize game state variables
-	game_state.daggerset = 0;	  // Default dagger state
-	game_state.flouride = 200;	  // Default fluoride amount
-	game_state.dagger_dip = 0;	  // Default dagger dip
-	game_state.dagger_effort = 0; // Default dagger effort
-	game_state.flouride_used = 0; // Default fluoride used
-	game_state.bflag = bflag;	  // Default bflag state
-	game_state.score = 0;		  // Default score
-	game_state.turns = 0;		  // Default turns
+	game_state.daggerset = DEFAULT_DAGGERSET;
+	game_state.flouride = DEFAULT_FLOURIDE;
+	game_state.dagger_dip = DEFAULT_DAGGER_DIP;
+	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
+	game_state.flouride_used = DEFAULT_FLOURIDE_USED;
+	game_state.bflag = bflag;
+	game_state.score = DEFAULT_SCORE;
+	game_state.turns = DEFAULT_TURNS;
 }
 static void
 randomize_fangs(struct vampire *vamp, int count)
@@ -64,7 +63,7 @@ randomize_fangs(struct vampire *vamp, int count)
 		vamp->fangs[i].sharpness = 5 + rand() % 4; // 5-8
 
 		// Bias health toward lower values (dirty teeth)
-		int r = rand() % 100;
+		int r = rand() % MAX_HEALTH;
 		if (r < 60)
 			vamp->fangs[i].health = 60 + rand() % 11; // 60-70 (60% chance)
 		else if (r < 90)
@@ -129,8 +128,8 @@ void calculate_fang_health(struct vampire_fangs *fang, int dagger_dip, int dagge
 	}
 
 	fang->health += (dagger_dip / 2) + (dagger_effort / 3);
-	if (fang->health > 100)
-		fang->health = 100; // Cap health at 10
+	if (fang->health > MAX_HEALTH)
+		fang->health = MAX_HEALTH; // Cap health at 10
 	else if (fang->health < 0)
 		fang->health = 0; // Ensure health doesn't go below 0
 
@@ -205,13 +204,13 @@ print_game_state(struct game_state *state)
 
 int apply_fluoride_to_fangs(void)
 {
-	int dagger_dip = 0;
- 	int dagger_effort = 0;
+	int dagger_dip = DEFAULT_DAGGER_DIP;
+ 	int dagger_effort = DEFAULT_DAGGER_EFFORT;
 
 	if (game_state.daggerset)
-		printf("Buffy will use her dagger to apply fluoride to Dracula's teeth\n");
+		printf("Buffy will use her dagger to apply fluoride to %s's teeth\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 	else
-		printf("Buffy will not use her dagger to apply fluoride to Dracula's teeth\n");
+		printf("Buffy will not use her dagger to apply fluoride to %s's teeth\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 
 	struct vampire vampire = {
 		.age = 0,
@@ -224,9 +223,9 @@ int apply_fluoride_to_fangs(void)
 
 	randomize_fangs(&vampire, 4);
 
-	vampire.age = 200;
-	vampire.name = "Dracula";
-	vampire.species = "Vampire";
+	vampire.age = DEFAULT_VAMPIRE_AGE; // Default age for the vampire
+	vampire.name = DEFAULT_VAMPIRE_NAME;
+	vampire.species = DEFAULT_VAMPIRE_SPECIES;
 
 	/* Next we will loop through the fangs asking the user how much to dip the dagger
 	   in the flouride and how much effort to apply to the current fang */
@@ -254,7 +253,7 @@ int apply_fluoride_to_fangs(void)
 		int all_fangs_healthy = 1;
 		for (int i = 0; i < 4; i++)
 		{
-			if (vampire.fangs[i].health < 100)
+			if (vampire.fangs[i].health < MAX_HEALTH)
 			{
 				all_fangs_healthy = 0;
 				break;
@@ -262,37 +261,37 @@ int apply_fluoride_to_fangs(void)
 		}
 		if (all_fangs_healthy)
 		{
-			printf("All of Dracula's fangs are now healthy and shiny!\n");
-			printf("Buffy has successfully applied fluoride to Dracula's fangs.\n");
+			printf("All of %s's fangs are now healthy and shiny!\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
+			printf("Buffy has successfully applied fluoride to %s's fangs.\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 			printf("Buffy is ready to slay more vampires!\n");
-			game_state.score += 100; // Bonus for completing the task
+			game_state.score += BONUS_ALL_HEALTH; // Bonus for completing the task
 			goto success; // Exit the loop and finish the game
 		}
 		game_state.turns++;
 		// completing a turn adds 5 point to the score
 		game_state.score += 5;
-		printf("Apply fluoride to Dracula's fangs? (y/n/q/s): ");
+		printf("Apply fluoride to %s's fangs? (y/n/q/s): ", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 		scanf("%3s", answer);
 		if (answer[0] == 'y' || answer[0] == 'Y')
 		{
 			if (game_state.daggerset)
 			{
-				printf("Buffy applies fluoride to Dracula's fangs with her dagger.\n");
+				printf("Buffy applies fluoride to %s's fangs with her dagger.\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 				printf("Dagger dip: %d, Dagger effort: %d\n", dagger_dip, dagger_effort);
 				game_state.flouride_used += calculate_flouride_used(dagger_dip, dagger_effort);
 			}
 			else if (game_state.bflag)
 			{
-				printf("Buffy applies fluoride to Dracula's fangs with her dagger.\n");
+				printf("Buffy applies fluoride to %s's fangs with her dagger.\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 			}
 			else
 			{
-				printf("Buffy applies fluoride to Dracula's fangs without a dagger.\n");
+				printf("Buffy applies fluoride to %s's fangs without a dagger.\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 			}
 		}
 		else if (answer[0] == 'n' || answer[0] == 'N')
 		{
-			printf("Buffy decides not to apply fluoride to Dracula's fangs.\n");
+			printf("Buffy decides not to apply fluoride to %s's fangs.\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 			cleaning = 0; // Exit the loop
 		}
 		else if (answer[0] == 'q' || answer[0] == 'Q')
@@ -302,7 +301,7 @@ int apply_fluoride_to_fangs(void)
 		}
 		else if (answer[0] == 's' || answer[0] == 'S')
 		{
-			char save_file[256];
+			char save_file[FILENAME_MAX];
 			printf("Enter filename to save the game: ");
 			scanf("%255s", save_file);
 			save_game(save_file);
@@ -314,7 +313,7 @@ int apply_fluoride_to_fangs(void)
 			goto success;
 		}
 	} while (cleaning);
-	printf("Buffy has finished applying fluoride to Dracula's fangs.\n");
+	printf("Buffy has finished applying fluoride to %s's fangs.\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 
 success:
 	printf("Remaining fluoride: %d\n", game_state.flouride);
@@ -339,7 +338,7 @@ main_program(int reloadflag)
 	game_state.dagger_effort = 5; // Default dagger effort value
 
 	printf("Welcome to Buffy the Vampire Slayer: Fluoride Edition!\n");
-	printf("Buffy is ready to apply fluoride to Dracula's fangs.\n");
+	printf("Buffy is ready to apply fluoride to %s's fangs.\n", vampire.name ? vampire.name : DEFAULT_VAMPIRE_NAME);
 
 	return apply_fluoride_to_fangs();
 }
@@ -401,7 +400,7 @@ int main(int argc, char *argv[])
 		case 0:
 			if (game_state.daggerset)
 				fprintf(stderr, "Buffy will use her dagger to "
-								"apply fluoride to dracula's teeth\n");
+								"apply fluoride to %s's teeth\n", game_state.bflag ? DEFAULT_VAMPIRE_NAME : "the fanged one");
 			break;
 		default:
 			usage();
