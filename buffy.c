@@ -460,6 +460,20 @@ int main(int argc, char *argv[])
 				err(1, "unable to read bflag from %s", optarg);
 			if (read(fd, &game_state.daggerset, sizeof(game_state.daggerset)) != sizeof(game_state.daggerset))
 				err(1, "unable to read daggerset from %s", optarg);
+			if (read(fd, &game_state.score, sizeof(game_state.score)) != sizeof(game_state.score))
+				err(1, "unable to read score from %s", optarg);
+			if (read(fd, &game_state.turns, sizeof(game_state.turns)) != sizeof(game_state.turns))
+				err(1, "unable to read turns from %s", optarg);
+			if (read(fd, &game_state.character_name, sizeof(game_state.character_name)) != sizeof(game_state.character_name))
+				err(1, "unable to read character name from %s", optarg);
+			if (read(fd, &creature.name, sizeof(creature.name)) != sizeof(creature.name))
+				err(1, "unable to read creature name from %s", optarg);
+			if (read(fd, &creature.age, sizeof(creature.age)) != sizeof(creature.age))
+				err(1, "unable to read creature age from %s", optarg);
+			if (read(fd, &creature.species, sizeof(creature.species)) != sizeof(creature.species))
+				err(1, "unable to read creature species from %s", optarg);
+			if (read(fd, &creature.fangs, sizeof(creature.fangs)) != sizeof(creature.fangs))
+				err(1, "unable to read creature fangs from %s", optarg);	
 			close(fd);
 			if (game_state.flouride < 0 || game_state.dagger_dip < 0 || game_state.dagger_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
 				errx(1, "Invalid game state in %s", optarg);
