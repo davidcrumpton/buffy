@@ -217,9 +217,9 @@ print_fang_info(int index, struct creature_fangs *fang)
 static void
 print_creature_info(struct creature *vamp)
 {
-	printf("creature Name: %s\n", vamp->name);
-	printf("creature Age: %d\n", vamp->age);
-	printf("creature Species: %s\n", vamp->species);
+	printf("Creature Name: %s\n", vamp->name);
+	printf("Creature Age: %d\n", vamp->age);
+	printf("Creature Species: %s\n", vamp->species);
 	for (int i = 0; i < 4; i++) {
 		printf("Fang %s:\n", fang_idx_to_name(i));
 		printf("  Length: %d\n", vamp->fangs[i].length);
