@@ -1,8 +1,8 @@
 
 /*
-  Saves the game structures to file specified by filename
-
-*/
+ * Saves the game structures to file specified by filename
+ *
+ */
 
 #include <stdio.h>
 #include <err.h>
@@ -12,13 +12,12 @@
 extern struct game_state game_state;
 extern struct creature creature;
 
-struct database_info
-{
-	int gamecode;
+struct database_info {
+	int		gamecode;
 
-	char major;
-	char minor;
-	char patch;
+	char		major;
+	char		minor;
+	char		patch;
 };
 
 static void
@@ -30,15 +29,15 @@ init_db_info(struct database_info *db_info)
 	db_info->gamecode = GAMECODE;
 }
 
-int save_game(char *file)
+int
+save_game(char *file)
 {
-	/* open file for writing, use err/errx if failed
-	   read database_info structiure
-	   validate structure looks right or err/errx if not
-	   write struct game_state
-	   write struct creature
-	*/
-	FILE *fp = fopen(file, "wb");
+	/*
+	 * open file for writing, use err/errx if failed read database_info
+	 * structiure validate structure looks right or err/errx if not write
+	 * struct game_state write struct creature
+	 */
+	FILE	       *fp = fopen(file, "wb");
 	if (fp == NULL)
 		errx(1, "Unable to open file %s for writing", file);
 	struct database_info db_info;
@@ -54,16 +53,15 @@ int save_game(char *file)
 	return 0;
 }
 
-int load_game(char *file)
+int
+load_game(char *file)
 {
 	/*
-	open file for reading using err/errx if failed
-		read database_info structiure
-	validate structure looks right or err/errx if not
-	read struct game_state
-	read struct creature
-	*/
-	FILE *fp = fopen(file, "rb");
+	 * open file for reading using err/errx if failed read database_info
+	 * structiure validate structure looks right or err/errx if not read
+	 * struct game_state read struct creature
+	 */
+	FILE	       *fp = fopen(file, "rb");
 	if (fp == NULL)
 		errx(1, "Unable to open file %s for reading", file);
 	struct database_info db_info;
