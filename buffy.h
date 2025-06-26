@@ -1,4 +1,4 @@
-// Compiler: This project is compiled with clang version 17.0.0.
+/* Compiler: This project is compiled with clang version 17.0.0. */
 #ifndef BUFFY_H
 #define BUFFY_H
 
@@ -12,7 +12,7 @@ struct game_state
     int bflag;
     int score;
     int turns;
-    char *character_name; // Name of the character, e.g., "Buffy"
+    char *character_name; /* Name of the character, e.g., "Buffy" */
 };
 
 struct creature
@@ -25,7 +25,7 @@ struct creature
         int length;
         int sharpness;
         char *color;
-        int health; // health of the fangs from 0 to 10
+        int health; /* health of the fangs from 0 to 10 */
     } fangs[3];
 };
 
@@ -33,7 +33,7 @@ int save_game(char *file);
 int load_game(char *file);
 
 #define DEFAULT_CHARACTER_NAME "Buffy"
-// Define default values as constants
+/* Define default values as constants */
 #define DEFAULT_DAGGERSET 0
 #define DEFAULT_FLOURIDE 200
 #define DEFAULT_DAGGER_DIP 10
@@ -49,8 +49,8 @@ int load_game(char *file);
 #define BONUS_FANG_HEALTH 3
 
 
-#define DEFAULT_CREATURE_AGE 100 // Default age for the creature
+#define DEFAULT_CREATURE_AGE 100 /* Default age for the creature */
 #define DEFAULT_CREATURE_NAME "Dracula"
 #define DEFAULT_CREATURE_SPECIES "Vampire"
 
-#endif // BUFFY_H
+#endif /* BUFFY_H */

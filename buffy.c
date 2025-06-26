@@ -25,14 +25,14 @@ char		creature_name[256];
 struct game_state game_state;
 struct creature	creature;
 
-//Define a struct for detailed fang information
+/* Define a struct for detailed fang information */
 struct fang_info {
 	const char     *name;
 	int		tooth_number;
-		      //Universal tooth numbering system
+		      /* Universal tooth numbering system */
 };
 
-//Array of fangs with proper dental names and numbers
+/* Array of fangs with proper dental names and numbers */
 struct fang_info fang_names[] = {
 	{"Maxillary Right Canine", 6},
 	{"Maxillary Left Canine", 11},
@@ -51,7 +51,7 @@ usage(void)
 static void
 init_game_state(int bflag)
 {
-	//Initialize game state with default values
+	/* Initialize game state with default values */
 		game_state.daggerset = DEFAULT_DAGGERSET;
 	game_state.flouride = DEFAULT_FLOURIDE;
 	game_state.dagger_dip = DEFAULT_DAGGER_DIP;
@@ -61,7 +61,7 @@ init_game_state(int bflag)
 	game_state.score = DEFAULT_SCORE;
 	game_state.turns = DEFAULT_TURNS;
 
-	//If bflag is set, we will use the user login name
+	/* If bflag is set, we will use the user login name */
 		if (bflag) {
 		char		login_name[256];
 		if (getlogin_r(login_name, sizeof(login_name)) != 0)
@@ -79,31 +79,31 @@ randomize_fangs(struct creature *vamp, int count)
 	srand((unsigned int)time(NULL));
 	for (i = 0; i < count; i++) {
 		vamp->fangs[i].length = 4 + rand() % 3;
-		//4 - 6
+		/* 4 - 6 */
 			vamp->fangs[i].sharpness = 5 + rand() % 4;
-		//5 - 8
+		/* 5 - 8 */
 
-			// Bias health toward lower values(dirty teeth)
+			/* Bias health toward lower values(dirty teeth) */
 			int		r = rand() % MAX_HEALTH;
 		if (r < 60)
 			vamp->fangs[i].health = 60 + rand() % 11;
-		//60 - 70(60 % chance)
+		/* 60 - 70(60 % chance) */
 			else if (r < 90)
 			vamp->fangs[i].health = 71 + rand() % 10;
-		//71 - 80(30 % chance)
+		/* 71 - 80(30 % chance) */
 			else
 			vamp->fangs[i].health = 90 + rand() % 11;
-		//90 - 100(10 % chance)
+		/* 90 - 100(10 % chance) */
 
 			if (vamp->fangs[i].health >= 90)
 			vamp->fangs[i].color = "white";
-		//max health
+		/* max health */
 			else if (vamp->fangs[i].health >= 80)
 			vamp->fangs[i].color = "dull";
-		//medium health
+		/* medium health */
 			else
 			vamp->fangs[i].color = "yellow";
-		//low health
+		/* low health */
 	}
 }
 
@@ -119,7 +119,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort)
 			fprintf(stderr, "Invalid input for dagger dip. Please enter a non-negative integer.\n");
 			while (getchar() != '\n')
 				;
-			//clear input buffer
+			/* clear input buffer */
 				continue;
 		}
 		valid = 1;
@@ -132,7 +132,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort)
 			fprintf(stderr, "Invalid input for dagger effort. Please enter a non-negative integer.\n");
 			while (getchar() != '\n')
 				;
-			//clear input buffer
+			/* clear input buffer */
 				continue;
 		}
 		valid = 1;
@@ -143,7 +143,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort)
 int
 calculate_flouride_used(int dagger_dip, int dagger_effort)
 {
-	//Calculate the amount of fluoride used based on dagger dip and effort
+	/* Calculate the amount of fluoride used based on dagger dip and effort */
 		if (dagger_dip < 0 || dagger_effort < 0) {
 		fprintf(stderr, "Negative value for dagger dip or effort detected. Using default values instead.\n");
 		dagger_dip = DEFAULT_DAGGER_DIP;
@@ -163,7 +163,7 @@ calculate_flouride_used(int dagger_dip, int dagger_effort)
 void
 calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_effort)
 {
-	//Calculate health based on dagger dip and effort
+	/* Calculate health based on dagger dip and effort */
 		if (dagger_dip < 0 || dagger_effort < 0) {
 		fprintf(stderr, "Dagger dip and effort must be non-negative. Using default values instead.\n");
 		dagger_dip = DEFAULT_DAGGER_DIP;
@@ -173,21 +173,21 @@ calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_ef
 	fang->health += (dagger_dip / 2) + (dagger_effort / 3);
 	if (fang->health > MAX_HEALTH)
 		fang->health = MAX_HEALTH;
-	//Cap health at 10
+	/* Cap health at 10 */
 		else if (fang->health < 0)
 		fang->health = 0;
-	//Ensure health does not go below 0
+	/* Ensure health does not go below 0 */
 
 		// Set color according to health
 		if (fang->health >= 9)
 		fang->color = "white";
-	//max health
+	/* max health */
 		else if (fang->health >= 8)
 		fang->color = "dull";
-	//medium health
+	/* medium health */
 		else
 		fang->color = "yellow";
-	//low health
+	/* low health */
 }
 
 char	       *
@@ -285,7 +285,7 @@ apply_fluoride_to_fangs(void)
 		char		answer[4];
 		print_flouride_info();
 		for (int i = 0; i < 4; i++) {
-			//skip fangs that are already healthy
+			/* skip fangs that are already healthy */
 				if (creature.fangs[i].health >= MAX_HEALTH) {
 				printf("Fang %s is already healthy and shiny!\n", fang_idx_to_name(i));
 				continue;
@@ -341,7 +341,7 @@ apply_fluoride_to_fangs(void)
 		} else if (answer[0] == 'n' || answer[0] == 'N') {
 			printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
 			cleaning = 0;
-			//Exit the loop
+			/* Exit the loop */
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
 			printf("%s quits the game.\n", game_state.character_name);
 			goto success;
@@ -351,7 +351,7 @@ apply_fluoride_to_fangs(void)
 			scanf("%1024s", save_file);
 			save_game(save_file);
 			cleaning = 0;
-			//Exit the loop after saving
+			/* Exit the loop after saving */
 		} else {
 			fprintf(stderr, "Thanks for playing.\n");
 			goto success;
@@ -392,15 +392,15 @@ main_program(int reloadflag)
 	if (!reloadflag)
 		init_game_state(game_state.bflag);
 
-	//If daggerset is not set, we will not use the dagger
+	/* If daggerset is not set, we will not use the dagger */
 		if (!game_state.daggerset)
 		game_state.dagger_dip = 0;
 	else
-		game_state.dagger_dip = 10;
-	//Default dagger dip value
+		game_state.dagger_dip = DEFAULT_DAGGER_DIP;
+	/* Default dagger dip value */
 
-		game_state.dagger_effort = 5;
-	//Default dagger effort value
+		game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
+	/* Default dagger effort value */
 
 		printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
 	printf("%s is ready to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
@@ -438,7 +438,7 @@ main(int argc, char *argv[])
 			if (getlogin() == NULL)
 				errx(1, "Unable to determine user name");
 
-			//use getpwent to get the user name and store in login_name
+			/* use getpwent to get the user name and store in login_name */
 				if (getlogin_r(login_name, sizeof(login_name)) != 0)
 				err(1, "Unable to get login name");
 
