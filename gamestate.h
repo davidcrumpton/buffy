@@ -5,6 +5,6 @@
 #define MINOR 0
 #define PATCH 0
 
-#define GAMECODE 0x62746664 /* buffy the flouride dispenser */
+#define GAMECODE 0x62746664	/* buffy the flouride dispenser */
 
-#endif // GAMESTATE_H
+#endif	/* GAMESTATE_H */
