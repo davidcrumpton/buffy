@@ -3,9 +3,15 @@
  * Saves the game structures to file specified by filename
  *
  */
+#include <sys/stat.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <err.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
 #include "buffy.h"
 #include "gamestate.h"
 
@@ -78,4 +84,46 @@ load_game(char *file)
 	fclose(fp);
 	printf("Game loaded successfully from %s\n", file);
 	return 0;
+}
+
+
+void
+validate_game_file(char *optarg)
+{
+	struct stat	st;
+	int		fd;
+
+	if ((fd = stat(optarg, &st)) == -1)
+		err(1, "unable to stat %s", optarg);
+	if (!S_ISREG(st.st_mode))
+		errx(1, "%s is not a regular file", optarg);
+	if ((fd = open(optarg, O_RDONLY)) == -1)
+		err(1, "unable to open %s", optarg);
+	if (read(fd, &game_state.flouride, sizeof(game_state.flouride)) != sizeof(game_state.flouride))
+		err(1, "unable to read fluoride from %s", optarg);
+	if (read(fd, &game_state.dagger_dip, sizeof(game_state.dagger_dip)) != sizeof(game_state.dagger_dip))
+		err(1, "unable to read dagger dip from %s", optarg);
+	if (read(fd, &game_state.dagger_effort, sizeof(game_state.dagger_effort)) != sizeof(game_state.dagger_effort))
+		err(1, "unable to read dagger effort from %s", optarg);
+	if (read(fd, &game_state.flouride_used, sizeof(game_state.flouride_used)) != sizeof(game_state.flouride_used))
+		err(1, "unable to read fluoride used from %s", optarg);
+	if (read(fd, &game_state.bflag, sizeof(game_state.bflag)) != sizeof(game_state.bflag))
+		err(1, "unable to read bflag from %s", optarg);
+	if (read(fd, &game_state.daggerset, sizeof(game_state.daggerset)) != sizeof(game_state.daggerset))
+		err(1, "unable to read daggerset from %s", optarg);
+	if (read(fd, &game_state.score, sizeof(game_state.score)) != sizeof(game_state.score))
+		err(1, "unable to read score from %s", optarg);
+	if (read(fd, &game_state.turns, sizeof(game_state.turns)) != sizeof(game_state.turns))
+		err(1, "unable to read turns from %s", optarg);
+	if (read(fd, &game_state.character_name, sizeof(game_state.character_name)) != sizeof(game_state.character_name))
+		err(1, "unable to read character name from %s", optarg);
+	if (read(fd, &creature.name, sizeof(creature.name)) != sizeof(creature.name))
+		err(1, "unable to read creature name from %s", optarg);
+	if (read(fd, &creature.age, sizeof(creature.age)) != sizeof(creature.age))
+		err(1, "unable to read creature age from %s", optarg);
+	if (read(fd, &creature.species, sizeof(creature.species)) != sizeof(creature.species))
+		err(1, "unable to read creature species from %s", optarg);
+	if (read(fd, &creature.fangs, sizeof(creature.fangs)) != sizeof(creature.fangs))
+		err(1, "unable to read creature fangs from %s", optarg);
+	close(fd);
 }
