@@ -50,6 +50,8 @@ init_game_state(int bflag)
 	game_state.dagger_effort = 0; // Default dagger effort
 	game_state.flouride_used = 0; // Default fluoride used
 	game_state.bflag = bflag;	  // Default bflag state
+	game_state.score = 0;		  // Default score
+	game_state.turns = 0;		  // Default turns
 }
 static void
 randomize_fangs(struct vampire *vamp, int count)
@@ -188,7 +190,20 @@ print_flouride_info(void)
 	printf("Remaining fluoride: %d\n", game_state.flouride);
 }
 
-int apply_fluoride_to_dracula(void)
+static void
+print_game_state(struct game_state *state)
+{
+	printf("Game State:\n");
+	printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
+	printf("  Fluoride remaining: %d\n", state->flouride);
+	printf("  Final Dagger Dip: %d\n", state->dagger_dip);
+	printf("  Final Dagger Effort: %d\n", state->dagger_effort);
+	printf("  Fluoride Used: %d\n", state->flouride_used);		
+	printf("  Score: %d\n", state->score);
+	printf("  Turns: %d\n", state->turns);
+}
+
+int apply_fluoride_to_fangs(void)
 {
 	int dagger_dip = 0;
  	int dagger_effort = 0;
@@ -250,8 +265,12 @@ int apply_fluoride_to_dracula(void)
 			printf("All of Dracula's fangs are now healthy and shiny!\n");
 			printf("Buffy has successfully applied fluoride to Dracula's fangs.\n");
 			printf("Buffy is ready to slay more vampires!\n");
+			game_state.score += 100; // Bonus for completing the task
 			goto success; // Exit the loop and finish the game
 		}
+		game_state.turns++;
+		// completing a turn adds 5 point to the score
+		game_state.score += 5;
 		printf("Apply fluoride to Dracula's fangs? (y/n/q/s): ");
 		scanf("%3s", answer);
 		if (answer[0] == 'y' || answer[0] == 'Y')
@@ -279,7 +298,7 @@ int apply_fluoride_to_dracula(void)
 		else if (answer[0] == 'q' || answer[0] == 'Q')
 		{
 			printf("Buffy quits the game.\n");
-			exit(EXIT_SUCCESS);
+			goto success;
 		}
 		else if (answer[0] == 's' || answer[0] == 'S')
 		{
@@ -300,6 +319,7 @@ int apply_fluoride_to_dracula(void)
 success:
 	printf("Remaining fluoride: %d\n", game_state.flouride);
 	print_vampire_info(&vampire);
+	print_game_state(&game_state);
 	return EXIT_SUCCESS;
 }
 
@@ -321,7 +341,7 @@ main_program(int reloadflag)
 	printf("Welcome to Buffy the Vampire Slayer: Fluoride Edition!\n");
 	printf("Buffy is ready to apply fluoride to Dracula's fangs.\n");
 
-	return apply_fluoride_to_dracula();
+	return apply_fluoride_to_fangs();
 }
 
 #ifndef __UNIT_TEST__
