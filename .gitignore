@@ -1,3 +1,4 @@
+*.swp
 ./buffy
 ./buffy-unittest
 CVS
