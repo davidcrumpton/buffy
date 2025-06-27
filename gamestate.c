@@ -109,31 +109,18 @@ validate_game_file(char *optarg)
 		errx(1, "%s is not a regular file", optarg);
 	if ((fd = open(optarg, O_RDONLY)) == -1)
 		err(1, "unable to open %s", optarg);
-	if (read(fd, game_state->flouride, sizeof(game_state->flouride)) != sizeof(game_state->flouride))
-		err(1, "unable to read fluoride from %s", optarg);
-	if (read(fd, game_state->dagger_dip, sizeof(game_state->dagger_dip)) != sizeof(game_state->dagger_dip))
-		err(1, "unable to read dagger dip from %s", optarg);
-	if (read(fd, game_state->dagger_effort, sizeof(game_state->dagger_effort)) != sizeof(game_state->dagger_effort))
-		err(1, "unable to read dagger effort from %s", optarg);
-	if (read(fd, game_state->flouride_used, sizeof(game_state->flouride_used)) != sizeof(game_state->flouride_used))
-		err(1, "unable to read fluoride used from %s", optarg);
-	if (read(fd, game_state->bflag, sizeof(game_state->bflag)) != sizeof(game_state->bflag))
-		err(1, "unable to read bflag from %s", optarg);
-	if (read(fd, game_state->daggerset, sizeof(game_state->daggerset)) != sizeof(game_state->daggerset))
-		err(1, "unable to read daggerset from %s", optarg);
-	if (read(fd, game_state->score, sizeof(game_state->score)) != sizeof(game_state->score))
-		err(1, "unable to read score from %s", optarg);
-	if (read(fd, game_state->turns, sizeof(game_state->turns)) != sizeof(game_state->turns))
-		err(1, "unable to read turns from %s", optarg);
-	if (read(fd, game_state->character_name, sizeof(game_state->character_name)) != sizeof(game_state->character_name))
-		err(1, "unable to read character name from %s", optarg);
-	if (read(fd, &creature->name, sizeof(creature->name)) != sizeof(creature->name))
-		err(1, "unable to read creature name from %s", optarg);
-	if (read(fd, &creature->age, sizeof(creature->age)) != sizeof(creature->age))
-		err(1, "unable to read creature age from %s", optarg);
-	if (read(fd, &creature->species, sizeof(creature->species)) != sizeof(creature->species))
-		err(1, "unable to read creature species from %s", optarg);
-	if (read(fd, &creature->fangs, sizeof(creature->fangs)) != sizeof(creature->fangs))
-		err(1, "unable to read creature fangs from %s", optarg);
+	if (st.st_size < sizeof(struct database_info) + sizeof(game_state_type) + sizeof(creature_type))
+		errx(1, "%s is too small to be a valid game file", optarg);
+	struct database_info db_info;
+	if (read(fd, &db_info, sizeof(db_info)) != sizeof(db_info))
+		errx(1, "Failed to read database info from file %s", optarg);
+	if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE)
+		errx(1, "Incompatible game file version in %s", optarg);
+	if (lseek(fd, sizeof(db_info), SEEK_SET) == -1)
+		err(1, "Failed to seek in file %s", optarg);
+	if (read(fd, game_state, sizeof(*game_state)) != sizeof(*game_state))
+		errx(1, "Failed to read game state from file %s", optarg);
+	if (read(fd, creature, sizeof(*creature)) != sizeof(*creature))
+		errx(1, "Failed to read creature data from file %s", optarg);
 	close(fd);
 }
