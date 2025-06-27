@@ -420,6 +420,19 @@ apply_fluoride_to_fangs(void)
 			printf("%s quits the game.\n", game_state.character_name);
 			goto success;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
+			// fetch user's home directory and append the default save file name
+			const char *home = getenv("HOME");
+			if (!home) {
+				fprintf(stderr, "Unable to determine HOME directory.\n");
+				exit_game();
+			}	
+			snprintf(save_path, sizeof(save_path), "%s/%s", home, DEFAULT_SAVE_FILE);
+			printf("Saving game to %s...\n", save_path);
+			/* Save the game state to the specified file */
+			if (save_game(save_path) == -1) {
+				fprintf(stderr, "Error saving game to %s\n", save_path);
+				exit_game();
+			}
 			save_game(save_path);
 			printf("Game saved to %s\n", save_path);
 			cleaning = 0;
