@@ -17,7 +17,6 @@ PERFORMANCE OF THIS SOFTWARE.
 
 /*
  * buffy.c: contains the main game loop and initialization code for the Buffy game.
- *
  */
 #include <sys/stat.h>
 #include <sys/param.h>
@@ -108,22 +107,6 @@ char * return_concat_path(const char *append_str)
 	return home_dir;
 }
 
-/* The game when running only saves the game in the default path
-	so we will need a default_game_save wrapper to set the path 
-	returns 0 on success and -1 on failure 
-	calls return_concat_path to build out path*/
-int default_game_save(void)
-{
-	char *saved_pathname = return_concat_path(DEFAULT_SAVE_FILE);
-	if (saved_pathname == NULL) {
-		fprintf(stderr, "Unable to determine save path.\n");
-		return -1;
-	}
-	strlcpy(save_path, saved_pathname, sizeof(save_path));
-	printf("Saving game to: %s\n", save_path);
-	save_game(save_path);
-	return 0;
-}
 /* choose random tool returns one of the array index from 0 -5 */
 int choose_random_tool(int isdaggerset)
 {
