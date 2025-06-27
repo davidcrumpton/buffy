@@ -143,7 +143,38 @@ void testFANG_IDX_TO_NAME(void)
 	CU_ASSERT(strcmp(fang_idx_to_name(4), "Unknown Fang") == 0); // Invalid index
 }
 
+void testSAVEGAME(void)
+{
+	char *filename = "test_save_game.btfd";
+	int result = save_game(filename);
+	CU_ASSERT(result == 0); // Assuming save_game returns 0 on success
 
+	// Now load the game to verify
+	result = load_game(filename);
+	CU_ASSERT(result == 0); // Assuming load_game returns 0 on success
+
+	// Clean up
+	remove(filename);
+}
+void testLOADGAME(void)
+{
+	char *filename = "test_load_game.btfd";
+	int result = load_game(filename);
+	CU_ASSERT(result == 0); // Assuming load_game returns 0 on success
+
+	// Check if the game state is loaded correctly
+	CU_ASSERT(game_state.daggerset == 0);
+	CU_ASSERT(game_state.flouride == 200);
+	CU_ASSERT(game_state.dagger_dip == 10);
+	CU_ASSERT(game_state.dagger_effort == 5);
+	CU_ASSERT(game_state.flouride_used == 0);
+	CU_ASSERT(game_state.bflag == 1);
+	CU_ASSERT(game_state.score == 10);
+	CU_ASSERT(game_state.turns == 0);
+
+	// Clean up
+	remove(filename);
+}
 int 
 main()
 {
@@ -168,7 +199,9 @@ main()
 	     (NULL == CU_add_test(pSuite, "test of print_creature_info()", testPRINT_CREATURE_INFO) ) ||
 	     (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO) ) ||
 	     (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO) ) ||
-	     (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)  ) ) {
+	     (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)  ) || 
+		 (NULL == CU_add_test(pSuite, "test of save_game()", testSAVEGAME))  ||
+	     (NULL == CU_add_test(pSuite, "test of load_game()", testLOADGAME))) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}
