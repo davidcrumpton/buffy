@@ -2,6 +2,10 @@
 
 Is a game where you try to reach the highest score possible before running out of flouride.
 
+## License
+
+See the [LICENSE](LICENSE) file in this repository for details.
+
 ## Inspiration
 
 I never use getopt_long(3), or long options, in anything I create.  I decided to give it a try and laughed when
