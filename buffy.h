@@ -43,6 +43,14 @@ typedef struct tool
     int used;           /* Amount of fluoride used with the tool */
 } tool;
 
+/* Define a struct for detailed fang information */
+typedef struct fang_info {
+	const char     *name;
+	int		tooth_number;
+		      /* Universal tooth numbering system */
+} fang_info_type;
+
+
 int save_game(char *file);
 int load_game(char *file);
 

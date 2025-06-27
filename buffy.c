@@ -24,15 +24,10 @@ char		creature_name[256];
 game_state_type game_state;
 creature_type	creature;
 
-/* Define a struct for detailed fang information */
-struct fang_info {
-	const char     *name;
-	int		tooth_number;
-		      /* Universal tooth numbering system */
-};
+
 
 /* Array of fangs with proper dental names and numbers */
-struct fang_info fang_names[] = {
+fang_info_type  fang_names[] = {
 	{"Maxillary Right Canine", 6},
 	{"Maxillary Left Canine", 11},
 	{"Mandibular Left Canine", 22},
