@@ -13,13 +13,12 @@
 
 #include "buffy.h"
 
-extern void validate_game_file(char *optarg);
+extern int  validate_game_file(char *optarg);
 static int	exit_game(void);
 
 
 char		character_name[256];
 char		creature_name[256];
-
 
 
 struct game_state game_state;
@@ -39,6 +38,26 @@ struct fang_info fang_names[] = {
 	{"Mandibular Left Canine", 22},
 {"Mandibular Right Canine", 27}};
 
+/* a structure to use for the selected tool */
+
+tool tools[] = {
+	{"Buffy's Fingernail", "A sharp fingernail for cleaning teeth", 5, 0, 10, 1, 50, 0},
+	{"Rock", "A rough rock for scraping teeth", 8, 0, 15, 2, 30, 0},
+	{"Shark Tooth", "A sharp shark tooth for cleaning teeth", 6, 0, 20, 3, 40, 0},
+	{"Wooden Dagger", "A wooden dagger for applying fluoride", 10, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 5, 100, 0},
+	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 7, 150, 0},
+	{"Steel Dagger", "A steel dagger for applying fluoride", 14, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 10, 200, 0}
+};
+
+/* we will have vampire, orc, werewolf, serpent, dragon */
+struct creature creatures[] = {
+	{DEFAULT_CREATURE_AGE, "Dracula",  "Vampire", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{DEFAULT_CREATURE_AGE, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{DEFAULT_CREATURE_AGE, "Fenrir",  "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{DEFAULT_CREATURE_AGE + 50 /* Serpents are older */, "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{DEFAULT_CREATURE_AGE + 100 /* Dragons are ancient */, "Smaug",  "Dragon", {{0, 0, NULL , 100}}} /* Dragon has max health fangs */
+};
+
 extern char    *__progname;
 
 static int	__dead
@@ -48,11 +67,23 @@ usage(void)
 	exit(EXIT_FAILURE);
 }
 
+/* choose random tool returns one of the array index from 0 -5 */
+int choose_random_tool(int isdaggerset)
+{
+	/* Generate a random number between 0 and 5 */
+	if (isdaggerset) {
+		return arc4random_uniform(3) + 3; /* Return index 3, 4, or 5 for daggers */
+	} else {
+		return arc4random_uniform(3); /* Return index 0, 1, or 2 for non-daggers */
+	}
+}
+
+/* Initialize the game state with default values */
 static void
 init_game_state(int bflag)
 {
 	/* Initialize game state with default values */
-		game_state.daggerset = DEFAULT_DAGGERSET;
+	game_state.daggerset = DEFAULT_DAGGERSET;
 	game_state.flouride = DEFAULT_FLOURIDE;
 	game_state.dagger_dip = DEFAULT_DAGGER_DIP;
 	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
@@ -62,15 +93,16 @@ init_game_state(int bflag)
 	game_state.turns = DEFAULT_TURNS;
 
 	/* If bflag is set, we will use the user login name */
-		if (bflag) {
+	if (bflag) {
 		char		login_name[256];
-		if (getlogin_r(login_name, sizeof(login_name)) != 0)
-			err(1, "Unable to get login name");
-		strlcpy(character_name, login_name, sizeof(game_state.character_name));
+	if (getlogin_r(login_name, sizeof(login_name)) != 0)
+		err(1, "Unable to get login name");
+	strlcpy(character_name, login_name, sizeof(game_state.character_name));
 	} else
-		strlcpy(character_name, DEFAULT_CHARACTER_NAME, sizeof(DEFAULT_CHARACTER_NAME));
+	strlcpy(character_name, DEFAULT_CHARACTER_NAME, sizeof(DEFAULT_CHARACTER_NAME));
 
 	game_state.character_name = character_name;
+	game_state.tool_in_use = choose_random_tool(game_state.daggerset);
 }
 static void
 randomize_fangs(struct creature *fanged_beast, int count)
@@ -105,11 +137,13 @@ static void
 ask_slayer(int *dagger_dip, int *dagger_effort)
 {
 	int		valid = 0;
+	char 	ch = 0;
+
 	while (!valid) {
-		printf("How much to dip the dagger in the fluoride? ");
+		printf("How much to dip the %s in the fluoride? ", tools[game_state.tool_in_use].name);
 		if (scanf("%d", dagger_dip) != 1 || *dagger_dip < 0) {
-			fprintf(stderr, "Invalid input for dagger dip. Please enter a non-negative integer.\n");
-			while (getchar() != '\n')
+			fprintf(stderr, "Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			while ( (ch=getchar()) != '\n' && ch != EOF)
 				;
 			/* clear input buffer */
 			continue;
@@ -121,8 +155,8 @@ ask_slayer(int *dagger_dip, int *dagger_effort)
 	while (!valid) {
 		printf("How much effort to apply to the fang? ");
 		if (scanf("%d", dagger_effort) != 1 || *dagger_effort < 0) {
-			fprintf(stderr, "Invalid input for dagger effort. Please enter a non-negative integer.\n");
-			while (getchar() != '\n')
+			fprintf(stderr, "Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			while ( (ch=getchar()) != '\n' && ch != EOF)
 				;
 			/* clear input buffer */
 			continue;
@@ -135,51 +169,84 @@ ask_slayer(int *dagger_dip, int *dagger_effort)
 int
 calculate_flouride_used(int dagger_dip, int dagger_effort)
 {
-	/* Calculate the amount of fluoride used based on dagger dip and effort */
-		if (dagger_dip < 0 || dagger_effort < 0) {
+	/* Calculate the amount of fluoride used based on the selected tool, dip, effort, and creature species */
+	if (dagger_dip < 0 || dagger_effort < 0) {
 		fprintf(stderr, "Negative value for dagger dip or effort detected. Using default values instead.\n");
-		dagger_dip = DEFAULT_DAGGER_DIP;
-		dagger_effort = DEFAULT_DAGGER_EFFORT;
+		dagger_dip = tools[game_state.tool_in_use].dip_amount;
+		dagger_effort = tools[game_state.tool_in_use].effort;
 	}
 
-	game_state.flouride_used = (dagger_dip * 2) + (dagger_effort * 3);
+	int dip = (tools[game_state.tool_in_use].dip_amount > 0) ? dagger_dip : 0;
+	int effort = (tools[game_state.tool_in_use].effort > 0) ? dagger_effort : 0;
+
+	int used = (dip * 2) + (effort * 3);
+
+	/* Adjust fluoride usage based on creature species */
+	if (strcmp(creature.species, "Vampire") == 0) {
+		used = (int)(used * 0.8); // Vampires need less fluoride
+	} else if (strcmp(creature.species, "Orc") == 0) {
+		used = (int)(used * 1.2); // Orcs need more fluoride
+	} else if (strcmp(creature.species, "Werewolf") == 0) {
+		used = (int)(used * 1.1); // Werewolves need a bit more
+	} else if (strcmp(creature.species, "Serpent") == 0) {
+		used = (int)(used * 0.9); // Serpents need slightly less
+	} else if (strcmp(creature.species, "Dragon") == 0) {
+		used = (int)(used * 1.5); // Dragons need much more
+	}
+
+	/* Some tools may not use fluoride at all */
+	if (tools[game_state.tool_in_use].dip_amount == 0)
+		used = 0;
+
+	game_state.flouride_used = used;
 	if (game_state.flouride_used > game_state.flouride) {
 		printf("Fluoride used (%d) exceeds available fluoride (%d).\n",
-		       game_state.flouride_used, game_state.flouride);
+			   game_state.flouride_used, game_state.flouride);
 		fprintf(stderr, "Not enough fluoride available.\n");
 		exit_game();
 	}
 	game_state.flouride -= game_state.flouride_used;
 	return game_state.flouride_used;
 }
+
 void
 calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_effort)
 {
-	/* Calculate health based on dagger dip and effort */
-		if (dagger_dip < 0 || dagger_effort < 0) {
-		fprintf(stderr, "Dagger dip and effort must be non-negative. Using default values instead.\n");
+	/* Calculate health based on dagger dip and effort, with creature species adjustment */
+	if (dagger_dip < 0 || dagger_effort < 0) {
+		fprintf(stderr, "%s dip and effort must be non-negative. Using default values instead.\n", tools[game_state.tool_in_use].name);
 		dagger_dip = DEFAULT_DAGGER_DIP;
 		dagger_effort = DEFAULT_DAGGER_EFFORT;
 	}
 
-	fang->health += (dagger_dip / 2) + (dagger_effort / 3);
+	int health_gain = (dagger_dip / 2) + (dagger_effort / 3);
+
+	/* Adjust health gain based on creature species */
+	if (strcmp(creature.species, "Vampire") == 0) {
+		health_gain += 2; // Vampires respond better to fluoride
+	} else if (strcmp(creature.species, "Orc") == 0) {
+		health_gain -= 1; // Orcs have tougher fangs
+	} else if (strcmp(creature.species, "Werewolf") == 0) {
+		health_gain += 1; // Werewolves heal a bit faster
+	} else if (strcmp(creature.species, "Serpent") == 0) {
+		health_gain = (int)(health_gain * 0.8); // Serpents are less affected
+	} else if (strcmp(creature.species, "Dragon") == 0) {
+		health_gain = (int)(health_gain * 0.5); // Dragons are very resistant
+	}
+
+	fang->health += health_gain;
 	if (fang->health > MAX_HEALTH)
 		fang->health = MAX_HEALTH;
-	/* Cap health at 10 */
-		else if (fang->health < 0)
+	else if (fang->health < 0)
 		fang->health = 0;
-	/* Ensure health does not go below 0 */
 
-		// Set color according to health
-		if (fang->health >= 9)
+	// Set color according to health
+	if (fang->health >= 9)
 		fang->color = FANG_COLOR_HIGH;
-	/* max health */
-		else if (fang->health >= 8)
+	else if (fang->health >= 8)
 		fang->color = FANG_COLOR_MEDIUM;
-	/* medium health */
-		else
+	else
 		fang->color = FANG_COLOR_LOW;
-	/* low health */
 }
 
 char	       *
@@ -233,8 +300,8 @@ print_game_state(struct game_state *state)
 	printf("Game State:\n");
 	printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
 	printf("  Fluoride remaining: %d\n", state->flouride);
-	printf("  Final Dagger Dip: %d\n", state->dagger_dip);
-	printf("  Final Dagger Effort: %d\n", state->dagger_effort);
+	printf("  Final %s Dip: %d\n", tools[game_state.tool_in_use].name, state->dagger_dip);
+	printf("  Final %s Effort: %d\n", tools[game_state.tool_in_use].name, state->dagger_effort);
 	printf("  Fluoride Used: %d\n", state->flouride_used);
 	printf("  Score: %d\n", state->score);
 	printf("  Turns: %d\n", state->turns);
@@ -243,10 +310,17 @@ print_game_state(struct game_state *state)
 static void
 creature_init(struct creature *fanged_beast)
 {
-	fanged_beast->age = DEFAULT_CREATURE_AGE;
-	strlcpy(creature_name, DEFAULT_CREATURE_NAME, sizeof(DEFAULT_CREATURE_NAME));
+	// Choose a random creature from the creatures array
+	int idx = arc4random_uniform(sizeof(creatures) / sizeof(creatures[0]));
+	struct creature *chosen = &creatures[idx];
+
+	// Copy chosen creature's data
+	fanged_beast->age = chosen->age;
+	strlcpy(creature_name, chosen->name, sizeof(creature_name));
 	fanged_beast->name = creature_name;
-	fanged_beast->species = DEFAULT_CREATURE_SPECIES;
+	fanged_beast->species = chosen->species;
+
+	// Randomize fangs for this creature
 	randomize_fangs(fanged_beast, 4);
 }
 
@@ -257,11 +331,6 @@ apply_fluoride_to_fangs(void)
 	int		dagger_dip = DEFAULT_DAGGER_DIP;
 	int		dagger_effort = DEFAULT_DAGGER_EFFORT;
 
-	if (game_state.daggerset)
-		printf("%s will use her dagger to apply fluoride to %s's teeth\n", game_state.character_name, creature.name);
-	else
-		printf("%s will not use her dagger to apply fluoride to %s's teeth\n", game_state.character_name, creature.name);
-
 	creature_init(&creature);
 	/*
 	 * Next we will loop through the fangs asking the user how much to
@@ -269,6 +338,8 @@ apply_fluoride_to_fangs(void)
 	 * current fang
 	 */
 
+
+	printf("Creature Information:\n");
 	printf("Creature Name: %s\n", creature.name);
 	printf("Creature Age: %d\n", creature.age);
 	printf("Creature Species: %s\n", creature.species);
@@ -326,8 +397,8 @@ apply_fluoride_to_fangs(void)
 		scanf("%3s", answer);
 		if (answer[0] == 'y' || answer[0] == 'Y') {
 			if (game_state.daggerset) {
-				printf("%s applies fluoride to %s's fangs with her dagger.\n", game_state.character_name, creature.name);
-				printf("Dagger dip: %d, Dagger effort: %d\n", dagger_dip, dagger_effort);
+				printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
+				printf("Dagger dip: %d, %s effort: %d\n", dagger_dip, tools[game_state.tool_in_use].name, dagger_effort);
 				game_state.flouride_used += calculate_flouride_used(dagger_dip, dagger_effort);
 			}
 		} else if (answer[0] == 'n' || answer[0] == 'N') {
@@ -394,8 +465,8 @@ main_program(int reloadflag)
 	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
 	/* Default dagger effort value */
 
-		printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
-	printf("%s is ready to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
+	printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
+	printf("%s is ready to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name ? creature.name : "the patient");
 
 	return apply_fluoride_to_fangs();
 }
@@ -448,7 +519,7 @@ main(int argc, char *argv[])
 
 			if (game_state.flouride < 0 || game_state.dagger_dip < 0 || game_state.dagger_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
 				errx(1, "Invalid game state in %s", optarg);
-			fprintf(stderr, "Fluoride: %d, Dagger Dip: %d, Dagger Effort: %d, Fluoride Used: %d, Bflag: %d, Daggerset: %d\n",
+			fprintf(stderr, "Fluoride: %d, Tool Dip: %d, Tool Effort: %d, Fluoride Used: %d, Bflag: %d, Daggerset: %d\n",
 				game_state.flouride, game_state.dagger_dip, game_state.dagger_effort,
 				game_state.flouride_used, game_state.bflag, game_state.daggerset);
 
@@ -457,22 +528,14 @@ main(int argc, char *argv[])
 			break;
 		case 0:
 			if (game_state.daggerset)
-				fprintf(stderr, "%s will use the dagger to "
-					"apply fluoride to %s's teeth\n", game_state.character_name, creature.name);
+				fprintf(stderr, "%s will use the %s to "
+					"apply fluoride to %s's teeth\n", game_state.character_name, tools[game_state.tool_in_use].name, creature.name);
 			break;
 		default:
 			usage();
 		}
 	argc -= optind;
 	argv += optind;
-
-	if (argc != 0)
-		usage();
-
-	/*
-	 * Initialize game state if fflag is not set we do not care about any
-	 * other options since options are stored in the game_state struct
-	 */
 
 	if (argc != 0)
 		usage();
