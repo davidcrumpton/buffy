@@ -8,8 +8,7 @@ See the [LICENSE](LICENSE) file in this repository for details.
 
 ## Inspiration
 
-I never use getopt_long(3), or long options, in anything I create.  I decided to give it a try and laughed when
-I noticed the Buffy the Vampire Slayer references in the getopt_long EXAMPLE section of OpenBSD, and MacOS.
+I never use `getopt_long(3)`, or long options, in anything I create. I decided to give it a try and laughed when I noticed the Buffy the Vampire Slayer references in the [`getopt_long` EXAMPLES section](https://man.openbsd.org/getopt_long#EXAMPLES) of OpenBSD and macOS.
 The game will always have at a minimum the options specified in the description below.
 
 ```c
