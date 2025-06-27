@@ -540,6 +540,7 @@ main(int argc, char *argv[])
 
 			if (game_state.flouride < 0 || game_state.dagger_dip < 0 || game_state.dagger_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
 				errx(1, "Invalid game state in %s", optarg);
+			load_game(optarg);
 			break;
 		case 0:
 			if (game_state.daggerset)
