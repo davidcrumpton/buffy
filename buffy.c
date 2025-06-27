@@ -21,8 +21,8 @@ char		character_name[256];
 char		creature_name[256];
 
 
-struct game_state game_state;
-struct creature	creature;
+game_state_type game_state;
+creature_type	creature;
 
 /* Define a struct for detailed fang information */
 struct fang_info {

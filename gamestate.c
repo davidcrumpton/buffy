@@ -15,8 +15,8 @@
 #include "buffy.h"
 #include "gamestate.h"
 
-extern struct game_state game_state;
-extern struct creature creature;
+extern game_state_type game_state;
+extern creature_type  creature;
 
 struct database_info {
 	int		gamecode;
