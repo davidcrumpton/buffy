@@ -149,15 +149,12 @@ void testSAVEGAME(void)
 	CU_ASSERT(result == 0); // Assuming save_game returns 0 on success
 
 	// Now load the game to verify
-	result = load_game(filename);
+	result = load_game(save_path);
 	CU_ASSERT(result == 0); // Assuming load_game returns 0 on success
 
-	// Clean up
-	remove(filename);
 }
 void testLOADGAME(void)
 {
-	char *filename = "test_load_game.btfd";
 	int result = load_game(save_path);
 	CU_ASSERT(result == 0); // Assuming load_game returns 0 on success
 
@@ -170,9 +167,6 @@ void testLOADGAME(void)
 	CU_ASSERT(game_state.bflag == 1);
 	CU_ASSERT(game_state.score == 10);
 	CU_ASSERT(game_state.turns == 0);
-
-	// Clean up
-	remove(filename);
 }
 int 
 main()
