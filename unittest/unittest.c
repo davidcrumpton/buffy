@@ -181,7 +181,6 @@ testCONCAT_PATH(void)
 	char *path = return_concat_path(DEFAULT_SAVE_FILE);
 	CU_ASSERT(path != NULL);
 	CU_ASSERT(strlen(path) > 0);
-	free(path); /* Free the allocated memory */
 }
 int 
 main()
