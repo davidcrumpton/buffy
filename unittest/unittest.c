@@ -158,8 +158,7 @@ main()
 	     (NULL == CU_add_test(pSuite, "test of print_creature_info()", testPRINT_CREATURE_INFO) ) ||
 	     (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO) ) ||
 	     (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO) ) ||
-	     (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME) ) || 
-		 (NULL == CU_add_test(pSuite, "test of testPASS()", testPASS) ) ) {
+	     (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)  ) ) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}
