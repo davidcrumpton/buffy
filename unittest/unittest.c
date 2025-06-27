@@ -43,11 +43,11 @@ testINIT_GAME_STATE(void)
 	init_game_state(1);
 	CU_ASSERT(game_state.daggerset == 0);
 	CU_ASSERT(game_state.flouride == 200);
-	CU_ASSERT(game_state.dagger_dip == 0);
-	CU_ASSERT(game_state.dagger_effort == 0);
+	CU_ASSERT(game_state.dagger_dip == 10);
+	CU_ASSERT(game_state.dagger_effort == 5);
 	CU_ASSERT(game_state.flouride_used == 0);
 	CU_ASSERT(game_state.bflag == 1);
-	CU_ASSERT(game_state.score == 0);
+	CU_ASSERT(game_state.score == 10);
 	CU_ASSERT(game_state.turns == 0);
 }
 
