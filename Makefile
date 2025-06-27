@@ -18,7 +18,7 @@ buffy: ${SRCS}
 	cc -g -o ${PROG} -Wall ${SRCS}
 
 clean: 
-	rm -rf *.dSYM *.o buffy *.BAK
+	rm -rf *.dSYM *.o buffy buffy-unittest *.BAK
 	
 .PHONY: all clean buffy unittest beautify
 all: buffy buffy-unittest
