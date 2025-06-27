@@ -52,6 +52,84 @@ testINIT_GAME_STATE(void)
 }
 
 void 
+testCHOOSE_RANDOM_TOOL(void)
+{
+	int tool_index = choose_random_tool(1);
+	CU_ASSERT(tool_index >= 0 && tool_index < 6); // Assuming there are 6 tools
+}
+
+void testCHOOSE_RANDOM_TOOL_NON_DAGGER(void)
+{
+	int tool_index = choose_random_tool(0);
+	CU_ASSERT(tool_index >= 0 && tool_index < 3); // Assuming there are 3 non-dagger tools
+}
+
+void testRANDOMIZE_FANGS(void)
+{
+	creature_init(&creature);
+	randomize_fangs(&creature, 4);
+	for (int i = 0; i < 4; i++) {
+		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
+		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
+		CU_ASSERT(creature.fangs[i].health >= 60 && creature.fangs[i].health <= 100);
+		CU_ASSERT(creature.fangs[i].color != NULL);
+	}
+}
+
+void testPRINT_FANG_INFO(void)
+{
+	creature_init(&creature);
+	randomize_fangs(&creature, 4);
+	for (int i = 0; i < 4; i++) {
+		print_fang_info(i, &creature.fangs[i]);
+		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
+		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
+		CU_ASSERT(creature.fangs[i].health >= 60 && creature.fangs[i].health <= 100);
+	}
+}
+
+void testPRINT_CREATURE_INFO(void)
+{
+	creature_init(&creature);
+	randomize_fangs(&creature, 4);
+	print_creature_info(&creature);
+	CU_ASSERT(creature.age == DEFAULT_CREATURE_AGE);
+	CU_ASSERT(strcmp(creature.name, DEFAULT_CREATURE_NAME) == 0);
+	CU_ASSERT(strcmp(creature.species, DEFAULT_CREATURE_SPECIES) == 0);
+	for (int i = 0; i < 4; i++) {
+		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
+		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
+		CU_ASSERT(creature.fangs[i].health >= 60 && creature.fangs[i].health <= 100);
+	}
+}
+
+void testPRINT_TOOL_INFO(void)
+{
+	game_state.tool_in_use = 0; // Assuming tool index 0 is valid
+	print_tool_info();
+	CU_ASSERT(strcmp(tools[game_state.tool_in_use].name, "Dagger") == 0);
+	CU_ASSERT(tools[game_state.tool_in_use].dip_amount > 0);
+	CU_ASSERT(tools[game_state.tool_in_use].effort > 0);
+	CU_ASSERT(tools[game_state.tool_in_use].durability > 0);
+}
+
+void testPRINT_FLOURIDE_INFO(void)
+{
+	game_state.flouride = 100; // Set a test value
+	print_flouride_info();
+	CU_ASSERT(game_state.flouride == 100);
+}
+
+void testFANG_IDX_TO_NAME(void)
+{
+	CU_ASSERT(strcmp(fang_idx_to_name(0), "Maxillary Right Canine") == 0);
+	CU_ASSERT(strcmp(fang_idx_to_name(1), "Maxillary Left Canine") == 0);
+	CU_ASSERT(strcmp(fang_idx_to_name(2), "Mandibular Left Canine") == 0);
+	CU_ASSERT(strcmp(fang_idx_to_name(3), "Mandibular Right Canine") == 0);
+	CU_ASSERT(strcmp(fang_idx_to_name(4), "Unknown Fang") == 0); // Invalid index
+}
+
+void 
 testPASS(void)
 {
 	CU_ASSERT(1 == 1);
@@ -72,7 +150,16 @@ main()
 		return CU_get_error();
 	}
 	/* add the tests to the suite */
-	if ( (NULL == CU_add_test(pSuite, "test of init_game_state)", testINIT_GAME_STATE) ) || (NULL == CU_add_test(pSuite, "test of testPASS()", testPASS) ) ) {
+	if ( (NULL == CU_add_test(pSuite, "test of init_game_state)", testINIT_GAME_STATE) ) ||
+	     (NULL == CU_add_test(pSuite, "test of choose_random_tool)", testCHOOSE_RANDOM_TOOL) ) ||
+	     (NULL == CU_add_test(pSuite, "test of choose_random_tool_non_dagger)", testCHOOSE_RANDOM_TOOL_NON_DAGGER) ) ||
+	     (NULL == CU_add_test(pSuite, "test of randomize_fangs()", testRANDOMIZE_FANGS) ) ||
+	     (NULL == CU_add_test(pSuite, "test of print_fang_info()", testPRINT_FANG_INFO) ) ||
+	     (NULL == CU_add_test(pSuite, "test of print_creature_info()", testPRINT_CREATURE_INFO) ) ||
+	     (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO) ) ||
+	     (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO) ) ||
+	     (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME) ) || 
+		 (NULL == CU_add_test(pSuite, "test of testPASS()", testPASS) ) ) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}
