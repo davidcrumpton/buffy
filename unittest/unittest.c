@@ -167,7 +167,7 @@ void testLOADGAME(void)
 	CU_ASSERT(creature.species != NULL);
 	CU_ASSERT(strlen(creature.species) > 0);
 	CU_ASSERT(game_state.daggerset == 0);
-	CU_ASSERT(game_state.flouride == 200);
+	CU_ASSERT(game_state.flouride == 100);
 	CU_ASSERT(game_state.dagger_dip == 10);
 	CU_ASSERT(game_state.dagger_effort == 5);
 	CU_ASSERT(game_state.flouride_used == 0);
