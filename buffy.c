@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <sys/param.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +18,8 @@ extern int  validate_game_file(char *optarg);
 static int	exit_game(void);
 
 
-char		character_name[256];
-char		creature_name[256];
+char		character_name[LOGIN_NAME_MAX + 1];
+char		creature_name[CREATURE_NAME_MAX_LENGTH + 1];
 char 		save_path[FILENAME_MAX + 1];
 
 game_state_type game_state;
@@ -31,7 +32,7 @@ fang_info_type  fang_names[] = {
 	{"Maxillary Right Canine", 6},
 	{"Maxillary Left Canine", 11},
 	{"Mandibular Left Canine", 22},
-{"Mandibular Right Canine", 27}};
+	{"Mandibular Right Canine", 27}};
 
 /* a structure to use for the selected tool */
 
@@ -61,7 +62,47 @@ usage(void)
 	fprintf(stderr, "%s: [ -b | --not-named-buffy ] [ -f | --fluoride-file <file> ] [ --daggerset ]\n", __progname);
 	exit(EXIT_FAILURE);
 }
+/* return_home_dir(append_str) 
+   * returns pointer to string containing home directory appended 
+   * with append_str if not NULL
+   * Returns NULL pointer if unable to determine home directory
+   * or other error occurs.
+   * 
+*/
 
+char * return_concat_path(const char *append_str)
+{
+	const char *home = getenv("HOME");
+	if (!home) {
+		fprintf(stderr, "Unable to determine HOME directory.\n");
+		return NULL;
+	}
+
+	static char home_dir[FILENAME_MAX];
+	if (append_str) {
+		snprintf(home_dir, sizeof(home_dir), "%s/%s", home, append_str);
+	} else {
+		strlcpy(home_dir, home, sizeof(home_dir));
+	}
+	return home_dir;
+}
+
+/* The game when running only saves the game in the default path
+	so we will need a default_game_save wrapper to set the path 
+	returns 0 on success and -1 on failure 
+	calls return_concat_path to build out path*/
+int default_game_save(void)
+{
+	char *saved_pathname = return_concat_path(DEFAULT_SAVE_FILE);
+	if (saved_pathname == NULL) {
+		fprintf(stderr, "Unable to determine save path.\n");
+		return -1;
+	}
+	strlcpy(save_path, saved_pathname, sizeof(save_path));
+	printf("Saving game to: %s\n", save_path);
+	save_game(save_path);
+	return 0;
+}
 /* choose random tool returns one of the array index from 0 -5 */
 int choose_random_tool(int isdaggerset)
 {
@@ -90,22 +131,23 @@ init_game_state(int bflag)
 	/* If bflag is set, we will use the user login name */
 	if (bflag) {
 		char		login_name[256];
-	if (getlogin_r(login_name, sizeof(login_name)) != 0)
-		err(1, "Unable to get login name");
-	strlcpy(character_name, login_name, sizeof(game_state.character_name));
+		if (getlogin_r(login_name, sizeof(login_name)) != 0)
+			err(1, "Unable to get login name");
+		strlcpy(character_name, login_name, sizeof(game_state.character_name));
 	} else
-	strlcpy(character_name, DEFAULT_CHARACTER_NAME, sizeof(DEFAULT_CHARACTER_NAME));
+		strlcpy(character_name, DEFAULT_CHARACTER_NAME, sizeof(DEFAULT_CHARACTER_NAME));
 
 	game_state.character_name = character_name;
 	game_state.tool_in_use = choose_random_tool(game_state.daggerset);
-	/* Initialize save path */
-	const char *home = getenv("HOME");
-	if (!home) {
-		fprintf(stderr, "Unable to determine HOME directory.\n");
-		exit_game();
+	/* Initialize save path with return_concat_path with default save game path 
+		and store it in save_path
+	*/
+	char *saved_pathname = return_concat_path(DEFAULT_SAVE_FILE);
+	if (saved_pathname == NULL) {
+		fprintf(stderr, "Unable to determine save path.\n");
+		exit(EXIT_FAILURE);
 	}
-	
-	snprintf(save_path, sizeof(save_path), "%s/%s", home, DEFAULT_SAVE_FILE);
+	strlcpy(save_path, saved_pathname, sizeof(save_path));
 }
 static void
 randomize_fangs(struct creature *fanged_beast, int count)
@@ -420,21 +462,16 @@ apply_fluoride_to_fangs(void)
 			printf("%s quits the game.\n", game_state.character_name);
 			goto success;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
-			// fetch user's home directory and append the default save file name
-			const char *home = getenv("HOME");
-			if (!home) {
-				fprintf(stderr, "Unable to determine HOME directory.\n");
-				exit_game();
-			}	
-			snprintf(save_path, sizeof(save_path), "%s/%s", home, DEFAULT_SAVE_FILE);
+			/* fetch user's home directory is done in init and placed in save_path */
+			/* so printing the save path */
 			printf("Saving game to %s...\n", save_path);
 			/* Save the game state to the specified file */
-			if (save_game(save_path) == -1) {
-				fprintf(stderr, "Error saving game to %s\n", save_path);
-				exit_game();
+			if(default_game_save() == -1) {
+				fprintf(stderr, "Failed to save game state.\n");
+				exit(EXIT_FAILURE);
 			}
-			save_game(save_path);
-			printf("Game saved to %s\n", save_path);
+			/* Print success message */
+			printf("Game saved successfully to %s\n", save_path);
 			cleaning = 0;
 			/* Exit the loop after saving */
 		} else {
@@ -544,15 +581,7 @@ main(int argc, char *argv[])
 		case 'f':
 			fflag = 1;
 			validate_game_file(optarg);
-
-			if (game_state.flouride < 0 || game_state.dagger_dip < 0 || game_state.dagger_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
-				errx(1, "Invalid game state in %s", optarg);
-			fprintf(stderr, "Fluoride: %d, Tool Dip: %d, Tool Effort: %d, Fluoride Used: %d, Bflag: %d, Daggerset: %d\n",
-				game_state.flouride, game_state.dagger_dip, game_state.dagger_effort,
-				game_state.flouride_used, game_state.bflag, game_state.daggerset);
-
-			if (game_state.flouride < 0 || game_state.dagger_dip < 0 || game_state.dagger_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
-				errx(1, "Invalid game state in %s", optarg);
+			/* If the file is valid, we will load all game data from it */
 			load_game(optarg);
 			break;
 		case 0:

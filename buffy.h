@@ -76,7 +76,11 @@ int load_game(char *file);
 
 #define DEFAULT_CREATURE_AGE         100 /* Default age for the creature */
 #define DEFAULT_CREATURE_NAME       "Dracula"
-#define DEFAULT_CREATURE_SPECIES        "Vampire"
+#define DEFAULT_CREATURE_SPECIES    "Vampire"
+#define CREATURE_NAME_MAX_LENGTH    25
 
+#ifndef LOGIN_NAME_MAX
+#define LOGIN_NAME_MAX              64
+#endif /* LOGIN_NAME_MAX */
 #define DEFAULT_SAVE_FILE ".buffy_save.btfd"
 #endif /* BUFFY_H */
