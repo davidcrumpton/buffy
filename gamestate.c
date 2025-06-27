@@ -15,8 +15,8 @@
 #include "buffy.h"
 #include "gamestate.h"
 
-extern game_state_type game_state;
-extern creature_type  creature;
+extern game_state_type *game_state;
+extern creature_type  *creature;
 
 struct database_info {
 	int		gamecode;
@@ -77,9 +77,19 @@ load_game(char *file)
 	if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE)
 		errx(1, "Incompatible game file version in %s", file);
 
-	if (fread(&game_state, sizeof(game_state), 1, fp) != 1)
+	if (game_state == NULL)
+		game_state = malloc(sizeof(*game_state));
+	if (game_state == NULL)
+		errx(1, "Failed to allocate memory for game_state");
+
+	if (creature == NULL)
+		creature = malloc(sizeof(*creature));
+	if (creature == NULL)
+		errx(1, "Failed to allocate memory for creature");
+
+	if (fread(game_state, sizeof(*game_state), 1, fp) != 1)
 		errx(1, "Failed to read game state from file %s", file);
-	if (fread(&creature, sizeof(creature), 1, fp) != 1)
+	if (fread(creature, sizeof(*creature), 1, fp) != 1)
 		errx(1, "Failed to read creature data from file %s", file);
 	fclose(fp);
 	printf("Game loaded successfully from %s\n", file);
