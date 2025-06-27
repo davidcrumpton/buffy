@@ -567,7 +567,7 @@ main(int argc, char *argv[])
 	if (pledge("stdio rpath wpath cpath unveil", NULL) == -1)
 		err(1, "pledge");
 	
-	if (unveil(save_path, "rw") == -1) {
+	if (unveil(save_path, "rwc") == -1) {
 		err(1, "unveil");
 		return EXIT_FAILURE;
 	}
