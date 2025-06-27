@@ -15,8 +15,8 @@
 #include "buffy.h"
 #include "gamestate.h"
 
-extern game_state_type *game_state;
-extern creature_type  *creature;
+extern game_state_type game_state;
+extern creature_type  creature;
 
 struct database_info {
 	int		gamecode;
@@ -55,21 +55,21 @@ save_game(char *file)
 	if (fwrite(&creature, sizeof(creature), 1, fp) != 1)
 		errx(1, "Failed to write creature data to file %s", file);
 	/* write all string pointers from structures */
-	if (game_state->character_name != NULL) {
-		if (fwrite(game_state->character_name, strlen(game_state->character_name) + 1, 1, fp) != 1)
+	if (game_state.character_name != NULL) {
+		if (fwrite(game_state.character_name, strlen(game_state.character_name) + 1, 1, fp) != 1)
 			errx(1, "Failed to write character name to file %s", file);
 	}
-	if (creature->name != NULL) {
-		if (fwrite(creature->name, strlen(creature->name) + 1, 1, fp) != 1)
+	if (creature.name != NULL) {
+		if (fwrite(creature.name, strlen(creature.name) + 1, 1, fp) != 1)
 			errx(1, "Failed to write creature name to file %s", file);
 	}
-	if (creature->species != NULL) {
-		if (fwrite(creature->species, strlen(creature->species) + 1, 1, fp) != 1)
+	if (creature.species != NULL) {
+		if (fwrite(creature.species, strlen(creature.species) + 1, 1, fp) != 1)
 			errx(1, "Failed to write creature species to file %s", file);
 	}
 	for (int i = 0; i < 4; i++) {
-		if (creature->fangs[i].color != NULL) {
-			if (fwrite(creature->fangs[i].color, strlen(creature->fangs[i].color) + 1, 1, fp) != 1)
+		if (creature.fangs[i].color != NULL) {
+			if (fwrite(creature.fangs[i].color, strlen(creature.fangs[i].color) + 1, 1, fp) != 1)
 				errx(1, "Failed to write fang color to file %s", file);
 		}
 	}
@@ -98,24 +98,15 @@ load_game(char *file)
 	if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE)
 		errx(1, "Incompatible game file version in %s", file);
 
-	if (game_state == NULL)
-		game_state = malloc(sizeof(*game_state));
-	if (game_state == NULL)
-		errx(1, "Failed to allocate memory for game_state");
 
-	if (creature == NULL)
-		creature = malloc(sizeof(*creature));
-	if (creature == NULL)
-		errx(1, "Failed to allocate memory for creature");
-
-	if (fread(game_state, sizeof(*game_state), 1, fp) != 1)
+	if (fread(&game_state, sizeof(game_state), 1, fp) != 1)
 		errx(1, "Failed to read game state from file %s", file);
-	if (fread(creature, sizeof(*creature), 1, fp) != 1)
+	if (fread(&creature, sizeof(creature), 1, fp) != 1)
 		errx(1, "Failed to read creature data from file %s", file);
 
 	// Read all string pointers from structures
 	// character_name
-	if (game_state->character_name != NULL) {
+	if (game_state.character_name != NULL) {
 		size_t len = 0;
 		int c;
 		long pos = ftell(fp);
@@ -125,15 +116,15 @@ load_game(char *file)
 			errx(1, "Unexpected EOF while reading character name from %s", file);
 		len++; // for null terminator
 		fseek(fp, pos, SEEK_SET);
-		game_state->character_name = malloc(len);
-		if (game_state->character_name == NULL)
+		game_state.character_name = malloc(len);
+		if (game_state.character_name == NULL)
 			errx(1, "Failed to allocate memory for character name");
-		if (fread(game_state->character_name, len, 1, fp) != 1)
+		if (fread(game_state.character_name, len, 1, fp) != 1)
 			errx(1, "Failed to read character name from file %s", file);
 	}
 
-	// creature->name
-	if (creature->name != NULL) {
+	// creature.name
+	if (creature.name != NULL) {
 		size_t len = 0;
 		int c;
 		long pos = ftell(fp);
@@ -142,15 +133,15 @@ load_game(char *file)
 			errx(1, "Unexpected EOF while reading creature name from %s", file);
 		len++;
 		fseek(fp, pos, SEEK_SET);
-		creature->name = malloc(len);
-		if (creature->name == NULL)
+		creature.name = malloc(len);
+		if (creature.name == NULL)
 			errx(1, "Failed to allocate memory for creature name");
-		if (fread(creature->name, len, 1, fp) != 1)
+		if (fread(creature.name, len, 1, fp) != 1)
 			errx(1, "Failed to read creature name from file %s", file);
 	}
 
-	// creature->species
-	if (creature->species != NULL) {
+	// creature.species
+	if (creature.species != NULL) {
 		size_t len = 0;
 		int c;
 		long pos = ftell(fp);
@@ -159,16 +150,16 @@ load_game(char *file)
 			errx(1, "Unexpected EOF while reading creature species from %s", file);
 		len++;
 		fseek(fp, pos, SEEK_SET);
-		creature->species = malloc(len);
-		if (creature->species == NULL)
+		creature.species = malloc(len);
+		if (creature.species == NULL)
 			errx(1, "Failed to allocate memory for creature species");
-		if (fread(creature->species, len, 1, fp) != 1)
+		if (fread(creature.species, len, 1, fp) != 1)
 			errx(1, "Failed to read creature species from file %s", file);
 	}
 
-	// creature->fangs[i].color
+	// creature.fangs[i].color
 	for (int i = 0; i < 4; i++) {
-		if (creature->fangs[i].color != NULL) {
+		if (creature.fangs[i].color != NULL) {
 			size_t len = 0;
 			int c;
 			long pos = ftell(fp);
@@ -177,10 +168,10 @@ load_game(char *file)
 				errx(1, "Unexpected EOF while reading fang color from %s", file);
 			len++;
 			fseek(fp, pos, SEEK_SET);
-			creature->fangs[i].color = malloc(len);
-			if (creature->fangs[i].color == NULL)
+			creature.fangs[i].color = malloc(len);
+			if (creature.fangs[i].color == NULL)
 				errx(1, "Failed to allocate memory for fang color");
-			if (fread(creature->fangs[i].color, len, 1, fp) != 1)
+			if (fread(creature.fangs[i].color, len, 1, fp) != 1)
 				errx(1, "Failed to read fang color from file %s", file);
 		}
 	}
@@ -212,9 +203,9 @@ validate_game_file(char *optarg)
 		errx(1, "Incompatible game file version in %s", optarg);
 	if (lseek(fd, sizeof(db_info), SEEK_SET) == -1)
 		err(1, "Failed to seek in file %s", optarg);
-	if (read(fd, game_state, sizeof(*game_state)) != sizeof(*game_state))
+	if (read(fd, &game_state, sizeof(game_state)) != sizeof(game_state))
 		errx(1, "Failed to read game state from file %s", optarg);
-	if (read(fd, creature, sizeof(*creature)) != sizeof(*creature))
+	if (read(fd, &creature, sizeof(creature)) != sizeof(creature))
 		errx(1, "Failed to read creature data from file %s", optarg);
 	close(fd);
 }
