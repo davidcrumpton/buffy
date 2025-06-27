@@ -78,4 +78,5 @@ int load_game(char *file);
 #define DEFAULT_CREATURE_NAME       "Dracula"
 #define DEFAULT_CREATURE_SPECIES        "Vampire"
 
+#define DEFAULT_SAVE_FILE ".buffy_save.btfd"
 #endif /* BUFFY_H */

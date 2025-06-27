@@ -19,7 +19,7 @@ static int	exit_game(void);
 
 char		character_name[256];
 char		creature_name[256];
-
+char 		save_path[FILENAME_MAX + 1];
 
 game_state_type game_state;
 creature_type	creature;
@@ -98,6 +98,14 @@ init_game_state(int bflag)
 
 	game_state.character_name = character_name;
 	game_state.tool_in_use = choose_random_tool(game_state.daggerset);
+	/* Initialize save path */
+	const char *home = getenv("HOME");
+	if (!home) {
+		fprintf(stderr, "Unable to determine HOME directory.\n");
+		exit_game();
+	}
+	
+	snprintf(save_path, sizeof(save_path), "%s/%s", home, DEFAULT_SAVE_FILE);
 }
 static void
 randomize_fangs(struct creature *fanged_beast, int count)
@@ -412,10 +420,8 @@ apply_fluoride_to_fangs(void)
 			printf("%s quits the game.\n", game_state.character_name);
 			goto success;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
-			char		save_file[FILENAME_MAX + 1];
-			printf("Enter filename to save the game: ");
-			scanf("%1024s", save_file);
-			save_game(save_file);
+			save_game(save_path);
+			printf("Game saved to %s\n", save_path);
 			cleaning = 0;
 			/* Exit the loop after saving */
 		} else {
@@ -560,12 +566,8 @@ main(int argc, char *argv[])
 
 	if (pledge("stdio rpath wpath cpath unveil", NULL) == -1)
 		err(1, "pledge");
-	const char     *home = getenv("HOME");
-	if (!home) {
-		err(1, "Unable to determine HOME directory.\n");
-		return EXIT_FAILURE;
-	}
-	if (unveil(home, "rw") == -1) {
+	
+	if (unveil(save_path, "rw") == -1) {
 		err(1, "unveil");
 		return EXIT_FAILURE;
 	}

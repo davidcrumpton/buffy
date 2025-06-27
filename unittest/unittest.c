@@ -145,8 +145,7 @@ void testFANG_IDX_TO_NAME(void)
 
 void testSAVEGAME(void)
 {
-	char *filename = "test_save_game.btfd";
-	int result = save_game(filename);
+	int result = save_game(save_path);
 	CU_ASSERT(result == 0); // Assuming save_game returns 0 on success
 
 	// Now load the game to verify
@@ -159,7 +158,7 @@ void testSAVEGAME(void)
 void testLOADGAME(void)
 {
 	char *filename = "test_load_game.btfd";
-	int result = load_game(filename);
+	int result = load_game(save_path);
 	CU_ASSERT(result == 0); // Assuming load_game returns 0 on success
 
 	// Check if the game state is loaded correctly
