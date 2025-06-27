@@ -104,17 +104,18 @@ load_game(char *file)
 	if (fread(&creature, sizeof(creature), 1, fp) != 1)
 		errx(1, "Failed to read creature data from file %s", file);
 
-	// Read all string pointers from structures
-	// character_name
+	/*  Read all string pointers from structures
+	 *	character_name
+	 */
 	if (game_state.character_name != NULL) {
 		size_t len = 0;
 		int c;
 		long pos = ftell(fp);
-		// Find length of string (including null terminator)
+		/* Find length of string (including null terminator) */
 		while ((c = fgetc(fp)) != EOF && c != '\0') len++;
 		if (c == EOF)
 			errx(1, "Unexpected EOF while reading character name from %s", file);
-		len++; // for null terminator
+		len++; /* Include null terminator */
 		fseek(fp, pos, SEEK_SET);
 		game_state.character_name = malloc(len);
 		if (game_state.character_name == NULL)
@@ -123,7 +124,7 @@ load_game(char *file)
 			errx(1, "Failed to read character name from file %s", file);
 	}
 
-	// creature.name
+	/* creature name */
 	if (creature.name != NULL) {
 		size_t len = 0;
 		int c;
@@ -140,7 +141,7 @@ load_game(char *file)
 			errx(1, "Failed to read creature name from file %s", file);
 	}
 
-	// creature.species
+	/* creature.species */
 	if (creature.species != NULL) {
 		size_t len = 0;
 		int c;
@@ -157,7 +158,7 @@ load_game(char *file)
 			errx(1, "Failed to read creature species from file %s", file);
 	}
 
-	// creature.fangs[i].color
+	/* Read fang colors */
 	for (int i = 0; i < 4; i++) {
 		if (creature.fangs[i].color != NULL) {
 			size_t len = 0;

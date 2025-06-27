@@ -55,13 +55,13 @@ void
 testCHOOSE_RANDOM_TOOL(void)
 {
 	int tool_index = choose_random_tool(1);
-	CU_ASSERT(tool_index >= 0 && tool_index < 6); // Assuming there are 6 tools
+	CU_ASSERT(tool_index >= 0 && tool_index < 6); /* Assuming there are 6 tools */
 }
 
 void testCHOOSE_RANDOM_TOOL_NON_DAGGER(void)
 {
 	int tool_index = choose_random_tool(0);
-	CU_ASSERT(tool_index >= 0 && tool_index < 3); // Assuming there are 3 non-dagger tools
+	CU_ASSERT(tool_index >= 0 && tool_index < 3); /* Assuming there are 3 non-dagger tools */
 }
 
 void testRANDOMIZE_FANGS(void)
@@ -129,7 +129,8 @@ void testPRINT_TOOL_INFO(void)
 
 void testPRINT_FLOURIDE_INFO(void)
 {
-	game_state.flouride = 100; // Set a test value
+	game_state.flouride = 100; /* Set a test value */
+	game_state.flouride_used = 0; /* Reset used flouride for testing */
 	print_flouride_info();
 	CU_ASSERT(game_state.flouride == 100);
 }
@@ -140,25 +141,31 @@ void testFANG_IDX_TO_NAME(void)
 	CU_ASSERT(strcmp(fang_idx_to_name(1), "Maxillary Left Canine") == 0);
 	CU_ASSERT(strcmp(fang_idx_to_name(2), "Mandibular Left Canine") == 0);
 	CU_ASSERT(strcmp(fang_idx_to_name(3), "Mandibular Right Canine") == 0);
-	CU_ASSERT(strcmp(fang_idx_to_name(4), "Unknown Fang") == 0); // Invalid index
+	CU_ASSERT(strcmp(fang_idx_to_name(4), "Unknown Fang") == 0); /* unkown fang index */
 }
 
 void testSAVEGAME(void)
 {
 	int result = save_game(save_path);
-	CU_ASSERT(result == 0); // Assuming save_game returns 0 on success
+	CU_ASSERT(result == 0); /* Assuming save_game returns 0 on success */
 
-	// Now load the game to verify
+	/* Now load the game to verify
 	result = load_game(save_path);
-	CU_ASSERT(result == 0); // Assuming load_game returns 0 on success
+	CU_ASSERT(result == 0); /* Assuming load_game returns 0 on success */
 
 }
 void testLOADGAME(void)
 {
 	int result = load_game(save_path);
-	CU_ASSERT(result == 0); // Assuming load_game returns 0 on success
+	CU_ASSERT(result == 0); /* Assuming load_game returns 0 on success */
 
-	// Check if the game state is loaded correctly
+	/* Check if the game state is loaded correctly */
+	CU_ASSERT(game_state.character_name != NULL);
+	CU_ASSERT(strlen(game_state.character_name) > 0);
+	CU_ASSERT(creature.name != NULL);
+	CU_ASSERT(strlen(creature.name) > 0);
+	CU_ASSERT(creature.species != NULL);
+	CU_ASSERT(strlen(creature.species) > 0);
 	CU_ASSERT(game_state.daggerset == 0);
 	CU_ASSERT(game_state.flouride == 200);
 	CU_ASSERT(game_state.dagger_dip == 10);
@@ -204,4 +211,4 @@ main()
 	return CU_get_error();
 }
 
-#endif // __UNIT_TEST__
+#endif /*__UNIT_TEST__ */

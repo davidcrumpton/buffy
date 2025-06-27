@@ -111,20 +111,20 @@ static void
 randomize_fangs(struct creature *fanged_beast, int count)
 {
     for (int i = 0; i < count; i++) {
-        // arc4random_uniform(n) returns 0 to n-1, so add offset as needed
-        fanged_beast->fangs[i].length = 4 + arc4random_uniform(3);     // 4–6
-        fanged_beast->fangs[i].sharpness = 5 + arc4random_uniform(4);  // 5–8
+        /* arc4random_uniform(n) returns 0 to n-1, so add offset as needed */
+        fanged_beast->fangs[i].length = 4 + arc4random_uniform(3);     /* 4–6 */
+        fanged_beast->fangs[i].sharpness = 5 + arc4random_uniform(4);  /* 5–8 */
 
-        // Bias health toward lower values (dirty teeth)
+        /* Bias health toward lower values (dirty teeth) */
         int r = arc4random_uniform(MAX_HEALTH);
         if (r < 60)
-            fanged_beast->fangs[i].health = 60 + arc4random_uniform(11); // 60–70
+            fanged_beast->fangs[i].health = 60 + arc4random_uniform(11); /* 60–70 */
         else if (r < 90)
-            fanged_beast->fangs[i].health = 71 + arc4random_uniform(10); // 71–80
+            fanged_beast->fangs[i].health = 71 + arc4random_uniform(10); /* 71–80 */
         else
-            fanged_beast->fangs[i].health = 90 + arc4random_uniform(11); // 90–100
+            fanged_beast->fangs[i].health = 90 + arc4random_uniform(11); /* 90–100 */
 
-        // Set color based on health
+        /* Set color based on health */
         if (fanged_beast->fangs[i].health >= 90)
             fanged_beast->fangs[i].color = "white";
         else if (fanged_beast->fangs[i].health >= 80)
@@ -186,15 +186,15 @@ calculate_flouride_used(int dagger_dip, int dagger_effort)
 
 	/* Adjust fluoride usage based on creature species */
 	if (strcmp(creature.species, "Vampire") == 0) {
-		used = (int)(used * 0.8); // Vampires need less fluoride
+		used = (int)(used * 0.8); /* Vampires need less fluoride */
 	} else if (strcmp(creature.species, "Orc") == 0) {
-		used = (int)(used * 1.2); // Orcs need more fluoride
+		used = (int)(used * 1.2); /* Orcs need more fluoride */
 	} else if (strcmp(creature.species, "Werewolf") == 0) {
-		used = (int)(used * 1.1); // Werewolves need a bit more
+		used = (int)(used * 1.1); /* Werewolves need a bit more */
 	} else if (strcmp(creature.species, "Serpent") == 0) {
-		used = (int)(used * 0.9); // Serpents need slightly less
+		used = (int)(used * 0.9); /* Serpents need slightly less */
 	} else if (strcmp(creature.species, "Dragon") == 0) {
-		used = (int)(used * 1.5); // Dragons need much more
+		used = (int)(used * 1.5); /* Dragons need much more */
 	}
 
 	/* Some tools may not use fluoride at all */
@@ -226,15 +226,15 @@ calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_ef
 
 	/* Adjust health gain based on creature species */
 	if (strcmp(creature.species, "Vampire") == 0) {
-		health_gain += 2; // Vampires respond better to fluoride
+		health_gain += 2; /* Vampires respond better to fluoride */
 	} else if (strcmp(creature.species, "Orc") == 0) {
-		health_gain -= 1; // Orcs have tougher fangs
+		health_gain -= 1; /* Orcs have tougher fangs */
 	} else if (strcmp(creature.species, "Werewolf") == 0) {
-		health_gain += 1; // Werewolves heal a bit faster
+		health_gain += 1; /* Werewolves heal a bit faster */
 	} else if (strcmp(creature.species, "Serpent") == 0) {
-		health_gain = (int)(health_gain * 0.8); // Serpents are less affected
+		health_gain = (int)(health_gain * 0.8); /* Serpents are less affected */
 	} else if (strcmp(creature.species, "Dragon") == 0) {
-		health_gain = (int)(health_gain * 0.5); // Dragons are very resistant
+		health_gain = (int)(health_gain * 0.5); /* Dragons are very resistant */
 	}
 
 	fang->health += health_gain;
@@ -243,7 +243,7 @@ calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_ef
 	else if (fang->health < 0)
 		fang->health = 0;
 
-	// Set color according to health
+	/* Set color according to health */
 	if (fang->health >= 9)
 		fang->color = FANG_COLOR_HIGH;
 	else if (fang->health >= 8)
@@ -321,17 +321,17 @@ print_game_state(struct game_state *state)
 static void
 creature_init(struct creature *fanged_beast)
 {
-	// Choose a random creature from the creatures array
+	/* Choose a random creature from the creatures array */
 	int idx = arc4random_uniform(sizeof(creatures) / sizeof(creatures[0]));
 	struct creature *chosen = &creatures[idx];
 
-	// Copy chosen creature's data
+	/* Copy chosen creature's data */
 	fanged_beast->age = chosen->age;
 	strlcpy(creature_name, chosen->name, sizeof(creature_name));
 	fanged_beast->name = creature_name;
 	fanged_beast->species = chosen->species;
 
-	// Randomize fangs for this creature
+	/* Randomize fangs for this creature */
 	randomize_fangs(fanged_beast, 4);
 }
 
