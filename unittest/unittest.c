@@ -96,7 +96,7 @@ void testPRINT_CREATURE_INFO(void)
 	/* The creature is randomly chosen so DEFAULTs can not be tested with 
 	   assertions here.
 	*/
-	CU_ASSERT(creature.age >= 100); // Assuming age is set to 100 or more
+	CU_ASSERT(creature.age >= 100); /* Assuming age is set to 100 or more */
 	CU_ASSERT(creature.name != NULL);
 	CU_ASSERT(strlen(creature.name) > 0);
 	CU_ASSERT(creature.species != NULL);
@@ -111,13 +111,13 @@ void testPRINT_CREATURE_INFO(void)
 
 void testPRINT_TOOL_INFO(void)
 {
-	game_state.tool_in_use = 0; // Assuming tool index 0 is valid
+	game_state.tool_in_use = 0; /*  Assuming tool index 0 is valid */
 	print_tool_info();
 	/* 
 	* The dagger is randomly chosen in the latest version of the code
 	* so we will just check if the tool in use is a dagger and has valid properties
 	*/
-	CU_ASSERT(game_state.tool_in_use >= 0 && game_state.tool_in_use < 6); // Assuming there are 6 tools
+	CU_ASSERT(game_state.tool_in_use >= 0 && game_state.tool_in_use < 6); /* Assuming 6 tools */
 	CU_ASSERT(tools[game_state.tool_in_use].dip_amount >= 0);
 	CU_ASSERT(tools[game_state.tool_in_use].effort >= 0);
 	CU_ASSERT(tools[game_state.tool_in_use].durability >= 0);
@@ -143,11 +143,7 @@ void testFANG_IDX_TO_NAME(void)
 	CU_ASSERT(strcmp(fang_idx_to_name(4), "Unknown Fang") == 0); // Invalid index
 }
 
-void 
-testPASS(void)
-{
-	CU_ASSERT(1 == 1);
-}
+
 int 
 main()
 {
