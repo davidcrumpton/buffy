@@ -15,7 +15,10 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 */
 
-/* Compiler: This project is compiled with clang version 17.0.0. */
+/* Compiler: This project is compiled with clang version 17.0.0 on macOS 
+ * and 16.0.6 on OpenBSD 7.7
+ */
+
 #ifndef BUFFY_H
 #define BUFFY_H
 

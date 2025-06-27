@@ -16,7 +16,7 @@ PERFORMANCE OF THIS SOFTWARE.
 */
 
 /*
- * Saves the game structures to file specified by filename
+ * gamestate.c: saves the game structures to file specified by filename
  *
  */
 #include <sys/stat.h>
