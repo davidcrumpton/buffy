@@ -43,8 +43,8 @@ unit-test-job:   # This job runs in the test stage.
     - ./buffy-unittest | tee buffy-unittest.txt
   artifacts:
       paths:
-        - "*.txt"
-        - "buffy=unittest"
+        - "buffy-unittest.txt"
+        - "buffy-unittest"
 
 lint-test-job:   # This job also runs in the test stage.
   stage: test    # It can run at the same time as unit-test-job (in parallel).
