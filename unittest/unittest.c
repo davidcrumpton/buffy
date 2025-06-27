@@ -149,7 +149,7 @@ void testSAVEGAME(void)
 	int result = save_game(save_path);
 	CU_ASSERT(result == 0); /* Assuming save_game returns 0 on success */
 
-	/* Now load the game to verify
+	/* Now load the game to verify */
 	result = load_game(save_path);
 	CU_ASSERT(result == 0); /* Assuming load_game returns 0 on success */
 
