@@ -568,15 +568,18 @@ main(int argc, char *argv[])
 	if (pledge("stdio rpath wpath cpath unveil", NULL) == -1)
 		err(1, "pledge");
 	
-	if (unveil(save_path, "rwc") == -1) {
-		err(1, "unveil");
+	
+	if(!fflag)
+		if (unveil(save_path, "rwc") == -1) {
+			err(1, "unveil");
+			return EXIT_FAILURE;
+		}
+	/* If we are not using the fluoride file, we will unveil the lock */
+	if (fflag && unveil(NULL, NULL) == -1) {
+		err(1, "unveil fluoride file");
 		return EXIT_FAILURE;
 	}
 
-	if (unveil(NULL, NULL) == -1) {
-		err(1, "unveil lock");
-		return EXIT_FAILURE;
-	}
 #endif
 	exit(main_program(fflag));
 }
