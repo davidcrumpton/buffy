@@ -287,7 +287,15 @@ print_creature_info(struct creature *fanged_beast)
 		printf("  Health: %d\n", fanged_beast->fangs[i].health);
 	}
 }
-
+static void
+print_tool_info(void)
+{
+	printf("Using tool: %s\n", tools[game_state.tool_in_use].name);
+	printf("Tool Description: %s\n", tools[game_state.tool_in_use].description);
+	printf("Tool Dip Amount: %d\n", tools[game_state.tool_in_use].dip_amount);
+	printf("Tool Effort: %d\n", tools[game_state.tool_in_use].effort);
+	printf("Tool Durability: %d\n", tools[game_state.tool_in_use].durability);
+}
 static void
 print_flouride_info(void)
 {
@@ -425,6 +433,7 @@ apply_fluoride_to_fangs(void)
 success:
 	printf("Remaining fluoride: %d\n", game_state.flouride);
 	print_creature_info(&creature);
+	print_tool_info();
 	print_game_state(&game_state);
 	return EXIT_SUCCESS;
 }
@@ -440,6 +449,11 @@ exit_game(void)
 	printf("Exiting the game...\n");
 	print_game_state(&game_state);
 	print_creature_info(&creature);
+	print_tool_info();
+	printf("Thank you for playing Buffy the Fang Slayer: Fluoride Edition!\n");
+	printf("Final Score: %d\n", game_state.score);
+	printf("Turns taken: %d\n", game_state.turns);
+	printf("Creature Age: %d\n", creature.age);
 	print_flouride_info();
 	exit(EXIT_SUCCESS);
 }
