@@ -546,8 +546,11 @@ apply_fluoride_to_fangs(void)
 			}
 			/* determine if upper or lower fang and call print_fang_art()
 			 * passing in values for left and right fang */
-			print_fang_art(upper_fangs, FANG_ROWS_UPPER, creature.fangs[UPPER_FANG_LEFT].health, creature.fangs[UPPER_FANG_RIGHT].health);
-			print_fang_art(lower_fangs, FANG_ROWS_LOWER, creature.fangs[LOWER_FANG_LEFT].health, creature.fangs[LOWER_FANG_RIGHT].health);
+			if(i < 2) {
+				print_fang_art(upper_fangs, FANG_ROWS_UPPER, creature.fangs[UPPER_FANG_LEFT].health, creature.fangs[UPPER_FANG_RIGHT].health);
+			} else {
+				print_fang_art(lower_fangs, FANG_ROWS_LOWER, creature.fangs[LOWER_FANG_LEFT].health, creature.fangs[LOWER_FANG_RIGHT].health);
+			}
 			printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
 			printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			       fang_idx_to_name(i), creature.fangs[i].length,

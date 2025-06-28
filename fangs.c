@@ -6,7 +6,7 @@
 void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right);
 
 /* Dirtiest to cleanest: '*', '#', '=', '+', '-', ':', '.' */
-const char health_markers[] = {'*', '#', '=', '+', '-', ':', '.'};
+const char health_markers[] = {'#', '*', '=', '+', '-', ':', '.'};
 /* ASCII art for upper and lower fangs (R/L for upper, r/l for lower) */
 const char *upper_fangs[FANG_ROWS_UPPER] = {    
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
