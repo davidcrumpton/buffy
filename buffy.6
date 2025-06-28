@@ -17,34 +17,46 @@
 .Nd Buffy the flouride dispenser game
 .Sh SYNOPSIS
 .Nm
-.Op Fl bf
---daggerset
+.Op Fl bf Ar file
+.Op Fl -daggerset
 .Sh DESCRIPTION
-For creature lovers, 
+For creature lovers,
 .Nm
-is a game of dental hygenic fun.  Use your randomly selected tool
+is a game of dental hygenic fun.
+Use your randomly selected tool
 on whatever creature happens your way to clean the fangs before
 the flouride runs out.
 .Pp
-The game will choose a creature at random and a tool to clean the teeth.  The player
+The game will choose a creature at random and a tool to clean the teeth.
+The player
 can choose simple tools or select from daggers for more powerful cleaning.
 .Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl b
+specifies use login name for character name.
+.It Fl f Ar file
+specifies the name of the game save file to load.
+.It Fl -daggerset
+specifies to use a dagger for cleaning fangs
+.El
 .Sh GAMEPLAY
-.Pp
-You will clean the fangs one at time rotating through all four.  After completing cleaning
-of four fangs, you may continue cleaning, skip a fang, quit, or save and quit.  You must
-enter integer values for applying flouride.  
+You will clean the fangs one at time rotating through all four.
+After completing cleaning of four fangs, you may continue cleaning,
+skip a fang, quit, or save and quit.
+You must enter integer values for applying flouride.
 .Pp
 Your score is printed out at the end.
-.Sh BUGS
-The game only saves in your home directory when asked to save, but can only load the game
-with option 
-.Fl f
-and its option argument is a loadable file.
 .Sh HISTORY
-The 
+The
 .Nm
 game appeared on GitHub in July 2025.
-.Sh AUTHOR
+.Sh AUTHORS
 .An -nosplit
 .An David M. Crumpton
+.Sh BUGS
+The game only saves in your home directory when asked to save, but can only
+load the game
+with option
+.Fl f
+and its option argument is a loadable file.

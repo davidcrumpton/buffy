@@ -69,8 +69,14 @@ lint-test-job:   # This job also runs in the test stage.
   script:
     - echo "Linting code w/cppcheck..."
     - make clean
-    - cppcheck .
+    - cppcheck . | tee cppcheck.txt
     - echo "No lint issues found."
+    - echo validating man page...
+    - mandoc -Tlint -Werror -Wall -Wstyle buffy.6 | tee manodc_lint.txt
+  artifacts:
+      paths:
+        - "cppcheck.txt"
+        - "manodc_lint.txt"
 
 
 deploy-job:      # This job runs in the deploy stage.
