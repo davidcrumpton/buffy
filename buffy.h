@@ -95,8 +95,6 @@ int load_game(char *file);
 #define FANG_COLOR_LOW           "yellow"
 
 #define DEFAULT_CREATURE_AGE         100 /* Default age for the creature */
-#define DEFAULT_CREATURE_NAME       "Dracula"
-#define DEFAULT_CREATURE_SPECIES    "Vampire"
 #define CREATURE_NAME_MAX_LENGTH    25
 
 #ifndef LOGIN_NAME_MAX
