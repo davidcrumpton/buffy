@@ -405,6 +405,38 @@ print_game_state(struct game_state *state)
 	printf("  Turns: %d\n", state->turns);
 }
 
+static void 
+print_tool_in_use(void)
+{
+	if (game_state.tool_in_use < 0 || game_state.tool_in_use >= sizeof(tools) / sizeof(tools[0])) {
+		fprintf(stderr, "Invalid tool index: %d\n", game_state.tool_in_use);
+		return;
+	}
+	printf("Current tool in use: %s\n", tools[game_state.tool_in_use].name);
+	printf("Tool description: %s\n", tools[game_state.tool_in_use].description);
+	printf("Tool dip amount: %d\n", tools[game_state.tool_in_use].dip_amount);
+	printf("Tool effort: %d\n", tools[game_state.tool_in_use].effort);
+}
+static void print_creature(struct creature *fanged_beast)
+{
+	if (fanged_beast == NULL) {
+		fprintf(stderr, "Creature is NULL.\n");
+		return;
+	}
+	printf("Creature Name: %s\n", fanged_beast->name);
+	printf("Creature Age: %d\n", fanged_beast->age);
+	printf("Creature Species: %s\n", fanged_beast->species);
+}
+static void print_creature_fangs(struct creature *fanged_beast)
+{
+	for (int i = 0; i < 4; i++) {
+		printf("Fang %s:\n", fang_idx_to_name(i));
+		printf("  Length: %d\n", fanged_beast->fangs[i].length);
+		printf("  Sharpness: %d\n", fanged_beast->fangs[i].sharpness);
+		printf("  Color: %s\n", fanged_beast->fangs[i].color);
+		printf("  Health: %d\n", fanged_beast->fangs[i].health);
+	}
+}
 static void
 creature_init(struct creature *fanged_beast)
 {
@@ -551,7 +583,14 @@ exit_game(void)
 	printf("Thank you for playing Buffy the Fang Slayer: Fluoride Edition!\n");
 	printf("Final Score: %d\n", game_state.score);
 	printf("Turns taken: %d\n", game_state.turns);
-	printf("Creature Age: %d\n", creature.age);
+	print_creature(&creature);
+	print_creature_fangs(&creature);
+	print_tool_in_use();
+	printf("Game saved to: %s\n", save_path);
+	if (default_game_save() == -1) {
+		fprintf(stderr, "Failed to save game state.\n");
+		exit(EXIT_FAILURE);
+	}
 	print_flouride_info();
 	exit(EXIT_SUCCESS);
 }
