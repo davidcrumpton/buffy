@@ -684,7 +684,13 @@ main(int argc, char *argv[])
 	if (argc != 0)
 		usage();
 
+	/*
+	 * Initialize game state if fflag is not set we do not care about any
+	 * other options since options are stored in the game_state struct
+	 */
 
+	if (!fflag)
+		init_game_state(bflag);
 #ifdef __OpenBSD__
 
 	if (pledge("stdio rpath wpath cpath unveil", NULL) == -1)
@@ -703,14 +709,7 @@ main(int argc, char *argv[])
 	}
 
 #endif
-	/*
-	 * Initialize game state if fflag is not set we do not care about any
-	 * other options since options are stored in the game_state struct
-	 */
 
-	if (!fflag)
-		init_game_state(bflag);
-		
 	exit(main_program(fflag));
 }
 #else
