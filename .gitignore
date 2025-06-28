@@ -1,6 +1,6 @@
 *.swp
-./buffy
-./buffy-unittest
+buffy
+buffy-unittest
 CVS
 tags
 a.out
