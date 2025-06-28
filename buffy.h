@@ -32,6 +32,8 @@ typedef struct game_state
     int bflag;
     int score;
     int turns;
+    int last_dagger_dip; /* Last dip amount used */
+    int last_dagger_effort; /* Last effort used */
     int tool_in_use; /* Index of the tool currently in use */
     char *character_name; /* Name of the character, e.g., "Buffy" */
 } game_state_type;

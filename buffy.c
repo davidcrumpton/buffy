@@ -169,6 +169,8 @@ init_game_state(int bflag)
 		exit(EXIT_FAILURE);
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
+	game_state.last_dagger_dip = DEFAULT_DAGGER_DIP;
+	game_state.last_dagger_effort = DEFAULT_DAGGER_EFFORT;
 }
 static void
 randomize_fangs(struct creature *fanged_beast, int count)
@@ -200,31 +202,49 @@ randomize_fangs(struct creature *fanged_beast, int count)
 
 
 static void
-ask_slayer(int *dagger_dip, int *dagger_effort)
+ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_dagger_effort)
 {
-	int		valid = 0;
-	char 	ch = 0;
+	int valid = 0;
+	char input[32];
+	char *endptr;
 
+	/* Prompt for dagger dip */
 	while (!valid) {
-		printf("How much to dip the %s in the fluoride? ", tools[game_state.tool_in_use].name);
-		if (scanf("%d", dagger_dip) != 1 || *dagger_dip < 0) {
+		printf("How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_dagger_dip);
+		if (fgets(input, sizeof(input), stdin) == NULL) {
+			fprintf(stderr, "Input error. Please try again.\n");
+			continue;
+		}
+		/* If user just presses enter, use last value */
+		if (input[0] == '\n') {
+			*dagger_dip = last_dagger_dip;
+			valid = 1;
+			continue;
+		}
+		*dagger_dip = (int)strtol(input, &endptr, 10);
+		if (endptr == input || *dagger_dip < 0) {
 			fprintf(stderr, "Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
-			while ( (ch=getchar()) != '\n' && ch != EOF)
-				;
-			/* clear input buffer */
 			continue;
 		}
 		valid = 1;
 	}
 
 	valid = 0;
+	/* Prompt for dagger effort */
 	while (!valid) {
-		printf("How much effort to apply to the fang? ");
-		if (scanf("%d", dagger_effort) != 1 || *dagger_effort < 0) {
+		printf("How much effort to apply to the fang [%d]? ", last_dagger_effort);
+		if (fgets(input, sizeof(input), stdin) == NULL) {
+			fprintf(stderr, "Input error. Please try again.\n");
+			continue;
+		}
+		if (input[0] == '\n') {
+			*dagger_effort = last_dagger_effort;
+			valid = 1;
+			continue;
+		}
+		*dagger_effort = (int)strtol(input, &endptr, 10);
+		if (endptr == input || *dagger_effort < 0) {
 			fprintf(stderr, "Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
-			while ( (ch=getchar()) != '\n' && ch != EOF)
-				;
-			/* clear input buffer */
 			continue;
 		}
 		valid = 1;
@@ -412,7 +432,6 @@ apply_fluoride_to_fangs(void)
 	 * current fang
 	 */
 
-
 	printf("Creature Information:\n");
 	printf("Creature Name: %s\n", creature.name);
 	printf("Creature Age: %d\n", creature.age);
@@ -420,6 +439,7 @@ apply_fluoride_to_fangs(void)
 	int		cleaning = 1;
 	do {
 		char		answer[4];
+
 		print_flouride_info();
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
@@ -433,7 +453,9 @@ apply_fluoride_to_fangs(void)
 			printf("  Sharpness: %d\n", creature.fangs[i].sharpness);
 			printf("  Color: %s\n", creature.fangs[i].color);
 			printf("  Health: %d\n", creature.fangs[i].health);
-			ask_slayer(&dagger_dip, &dagger_effort);
+			ask_slayer(&dagger_dip, &dagger_effort, game_state.last_dagger_dip, game_state.last_dagger_effort);
+			game_state.last_dagger_dip = dagger_dip;
+			game_state.last_dagger_effort = dagger_effort;
 			calculate_fang_health(&creature.fangs[i], dagger_dip, dagger_effort);
 
 			game_state.score += BONUS_FANG_CLEANED;
