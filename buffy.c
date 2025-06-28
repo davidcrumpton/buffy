@@ -642,6 +642,8 @@ static int	__dead
 exit_game(void)
 {
 	printf("Exiting the game...\n");
+	print_fang_art(upper_fangs, FANG_ROWS_UPPER, creature.fangs[UPPER_FANG_LEFT].health, creature.fangs[UPPER_FANG_RIGHT].health);
+	print_fang_art(lower_fangs, FANG_ROWS_LOWER, creature.fangs[LOWER_FANG_LEFT].health, creature.fangs[LOWER_FANG_RIGHT].health);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
 	print_tool_info();
