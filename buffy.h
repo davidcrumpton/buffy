@@ -19,6 +19,7 @@ PERFORMANCE OF THIS SOFTWARE.
  * and 16.0.6 on OpenBSD 7.7
  */
 
+ 
 #ifndef BUFFY_H
 #define BUFFY_H
 

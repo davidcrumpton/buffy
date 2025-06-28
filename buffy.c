@@ -33,12 +33,17 @@ PERFORMANCE OF THIS SOFTWARE.
 #include <time.h>
 
 #include "buffy.h"
+#include "fangs.h"
 
 #ifdef __FreeBSD__
 #define __dead
 #endif
 
 extern int  validate_game_file(char *optarg);
+extern const char *upper_fangs[];
+extern const char *lower_fangs[];
+
+extern void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right);
 static int	exit_game(void);
 
 
@@ -339,6 +344,17 @@ calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_ef
 		fang->color = FANG_COLOR_LOW;
 }
 
+char *fang_health_to_color(int health)
+{
+	/* Convert fang health to color string */
+	if (health >= 9)
+		return FANG_COLOR_HIGH; /* White */
+	else if (health >= 8)
+		return FANG_COLOR_MEDIUM; /* Dull */
+	else
+		return FANG_COLOR_LOW; /* Yellow */
+}
+
 char	       *
 fang_idx_to_name(int fang_index)
 {
@@ -528,6 +544,10 @@ apply_fluoride_to_fangs(void)
 				printf("Fang %s is already healthy and shiny!\n", fang_idx_to_name(i));
 				continue;
 			}
+			/* determine if upper or lower fang and call print_fang_art()
+			 * passing in values for left and right fang */
+			print_fang_art(upper_fangs, FANG_ROWS_UPPER, creature.fangs[UPPER_FANG_LEFT].health, creature.fangs[UPPER_FANG_RIGHT].health);
+			print_fang_art(lower_fangs, FANG_ROWS_LOWER, creature.fangs[LOWER_FANG_LEFT].health, creature.fangs[LOWER_FANG_RIGHT].health);
 			printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
 			printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			       fang_idx_to_name(i), creature.fangs[i].length,
@@ -757,7 +777,7 @@ main(int argc, char *argv[])
 		err(1, "unveil fluoride file");
 		return EXIT_FAILURE;
 	}
-	
+
 	if (pledge("stdio rpath wpath cpath", NULL) == -1)
 		err(1, "pledge");
 #endif

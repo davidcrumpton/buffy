@@ -20,7 +20,8 @@ TEST_PROG= 	buffy-unittest
 TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
 TEST_LDFLAGS=      -L/usr/local/lib -lcunit
 
-SRCS=          buffy.c gamestate.c 
+SRCS=          buffy.c gamestate.c fangs.c
+HDRS=          buffy.h gamestate.h fangs.h
 HDRS=		  gamestate.h buffy.h
 TEST_SRCS=      unittest/buffy_unittest.c
 MAN=           buffy.1 
