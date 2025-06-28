@@ -686,6 +686,12 @@ main(int argc, char *argv[])
 		{"daggerset", no_argument, &game_state.daggerset, 1},
 	{NULL, 0, NULL, 0}};
 
+#ifdef __OpenBSD__
+
+        if (pledge("stdio rpath wpath cpath unveil", NULL) == -1)
+                err(1, "pledge");
+#endif
+
 	while ((ch = getopt_long(argc, argv, "bf:", longopts, NULL)) != -1)
 		switch (ch) {
 		case 'b':
@@ -741,10 +747,6 @@ main(int argc, char *argv[])
 		init_game_state(bflag);
 #ifdef __OpenBSD__
 
-	if (pledge("stdio rpath wpath cpath unveil", NULL) == -1)
-		err(1, "pledge");
-	
-	
 	if(!fflag)
 		if (unveil(save_path, "rwc") == -1) {
 			err(1, "unveil");
@@ -755,7 +757,9 @@ main(int argc, char *argv[])
 		err(1, "unveil fluoride file");
 		return EXIT_FAILURE;
 	}
-
+	
+	if (pledge("stdio rpath wpath cpath", NULL) == -1)
+		err(1, "pledge");
 #endif
 
 	exit(main_program(fflag));
