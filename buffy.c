@@ -354,6 +354,26 @@ fang_idx_to_name(int fang_index)
 	}
 	return "Unknown Fang";
 }
+
+static void
+print_fang_logo(int compact_printing)
+{
+	#include <stdio.h>
+
+	if (compact_printing) {
+		    printf("v---v\n");
+    		printf(" \\_/\n");
+	} else {
+		printf("  /\\     /\\\n");
+		printf(" (  o___o  )\n");
+		printf("  \\__ V __/\n");
+		printf("     | |\n");
+		printf("    /   \\\n");
+		printf("   V     V\n");
+	}
+}
+
+
 static void
 print_fang_info(int index, struct creature_fangs *fang, int compact_printing)
 {
@@ -589,6 +609,7 @@ success:
 	print_creature_info(&creature, 1);
 	print_tool_info();
 	print_game_state(&game_state);
+
 	return EXIT_SUCCESS;
 }
 
@@ -616,6 +637,7 @@ exit_game(void)
 		exit(EXIT_FAILURE);
 	}
 	print_flouride_info();
+
 	exit(EXIT_SUCCESS);
 }
 
@@ -639,6 +661,8 @@ main_program(int reloadflag)
 
 	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
 	/* Default dagger effort value */
+
+	print_fang_logo(0);
 
 	printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
 	/* printf("%s is ready to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name ? creature.name : "the patient"); */
