@@ -207,11 +207,11 @@ validate_game_file(char *optarg)
 	int		fd;
 
 	if ((fd = stat(optarg, &st)) == -1)
-		err(1, "unable to stat %s", optarg);
+		errx(1, "unable to stat %s", optarg);
 	if (!S_ISREG(st.st_mode))
 		errx(1, "%s is not a regular file", optarg);
 	if ((fd = open(optarg, O_RDONLY)) == -1)
-		err(1, "unable to open %s", optarg);
+		errx(1, "unable to open %s", optarg);
 	if (st.st_size < sizeof(struct database_info) + sizeof(game_state_type) + sizeof(creature_type))
 		errx(1, "%s is too small to be a valid game file", optarg);
 	struct database_info db_info;
