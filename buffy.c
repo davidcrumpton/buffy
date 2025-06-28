@@ -366,7 +366,7 @@ print_fang_logo(int compact_printing)
 	} else {
 		printf("  /\\     /\\\n");
 		printf(" (  o___o  )\n");
-		printf("  \\__ V __/\n");
+		printf("  \\_ V V __/\n");
 		printf("     | |\n");
 		printf("    /   \\\n");
 		printf("   V     V\n");
