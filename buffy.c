@@ -34,6 +34,10 @@ PERFORMANCE OF THIS SOFTWARE.
 
 #include "buffy.h"
 
+#ifdef __FreeBSD__
+#define __dead
+#endif
+
 extern int  validate_game_file(char *optarg);
 static int	exit_game(void);
 
