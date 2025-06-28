@@ -1,12 +1,7 @@
-.\" buffy.6 mandoc
-.\"
 .\" BSD Zero Clause License
-
 .\" Copyright (c) 2025 David M Crumpton david.m.crumpton [at] gmail [dot] com
-
 .\" Permission to use, copy, modify, and/or distribute this software for any
 .\" purpose with or without fee is hereby granted.
-
 .\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
 .\" REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
 .\" AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
@@ -14,16 +9,18 @@
 .\" LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 .\" OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 .\" PERFORMANCE OF THIS SOFTWARE.
-
 .Dd $Mdocdate: June 27 2025 $
-.Dt Buffy 6
+.Dt BUFFY 6
 .Os
 .Sh NAME
 .Nm buffy
 .Nd Buffy the flouride dispenser game
 .Sh SYNOPSIS
-.Nm Buffy
+.Nm
+.Op Fl bf
+--daggerset
 .Sh DESCRIPTION
+For creature lovers, 
 .Nm
 is a game of dental hygenic fun.  Use your randomly selected tool
 on whatever creature happens your way to clean the fangs before
@@ -39,6 +36,11 @@ of four fangs, you may continue cleaning, skip a fang, quit, or save and quit.  
 enter integer values for applying flouride.  
 .Pp
 Your score is printed out at the end.
+.Sh BUGS
+The game only saves in your home directory when asked to save, but can only load the game
+with option 
+.Fl f
+and its option argument is a loadable file.
 .Sh HISTORY
 The 
 .Nm
