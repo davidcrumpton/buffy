@@ -101,7 +101,7 @@ void testPRINT_FANG_INFO(void)
 	creature_init(&creature);
 	randomize_fangs(&creature, 4);
 	for (int i = 0; i < 4; i++) {
-		print_fang_info(i, &creature.fangs[i]);
+		print_fang_info(i, &creature.fangs[i], 0);
 		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
 		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
 		CU_ASSERT(creature.fangs[i].health >= 60 && creature.fangs[i].health <= 100);
