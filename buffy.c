@@ -702,8 +702,8 @@ main(int argc, char *argv[])
 			err(1, "unveil");
 			return EXIT_FAILURE;
 		}
-	/* If we are not using the fluoride file, we will unveil the lock */
-	if (fflag && unveil(NULL, NULL) == -1) {
+	
+	if (unveil(NULL, NULL) == -1) {
 		err(1, "unveil fluoride file");
 		return EXIT_FAILURE;
 	}
