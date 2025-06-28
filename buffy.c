@@ -59,10 +59,10 @@ fang_info_type  fang_names[] = {
 tool tools[] = {
 	{"Buffy's Fingernail", "A sharp fingernail for cleaning teeth", 5, 0, 10, 1, 50, 0},
 	{"Rock", "A rough rock for scraping teeth", 8, 0, 15, 2, 30, 0},
-	{"Shark Tooth", "A sharp shark tooth for cleaning teeth", 6, 0, 20, 3, 40, 0},
-	{"Wooden Dagger", "A wooden dagger for applying fluoride", 10, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 5, 100, 0},
+	{"Shark Tooth", "A sharp shark tooth precisely cleaning teeth", 6, 0, 20, 3, 40, 0},
+	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 5, 100, 0},
 	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 7, 150, 0},
-	{"Steel Dagger", "A steel dagger for applying fluoride", 14, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 10, 200, 0}
+	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 10, 200, 0}
 };
 
 /* we will have vampire, orc, werewolf, serpent, dragon */
