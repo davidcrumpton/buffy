@@ -112,7 +112,7 @@ void testPRINT_CREATURE_INFO(void)
 {
 	creature_init(&creature);
 	randomize_fangs(&creature, 4);
-	print_creature_info(&creature);
+	print_creature_info(&creature,0);
 	/* The creature is randomly chosen so DEFAULTs can not be tested with 
 	   assertions here.
 	*/
