@@ -381,10 +381,11 @@ print_creature_info(struct creature *fanged_beast, int compact_printing)
 		printf("Creature: %s, Age: %d, Species: %s\n", fanged_beast->name, fanged_beast->age, fanged_beast->species);
 
 		return;
-	} else 
+	} else {
 		printf("Creature Name: %s\n", fanged_beast->name);
 		printf("Creature Age: %d\n", fanged_beast->age);
 		printf("Creature Species: %s\n", fanged_beast->species);
+	}
 }
 
 static void
