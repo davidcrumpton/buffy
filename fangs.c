@@ -5,10 +5,10 @@
 
 void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right);
 
-/* Dirtiest to cleanest: '*', '#', '=', '+', '-', ':', '.' */
-const char health_markers[] = {'#', '*', '=', '+', '-', ':', '.'};
+/* Dirtiest to cleanest: '#', '=', '*', '+', '-', ':', '.' */
+const char health_markers[] = {'#', '=', '*', '+', '-', ':', '.'};
 /* ASCII art for upper and lower fangs (R/L for upper, r/l for lower) */
-const char *upper_fangs[FANG_ROWS_UPPER] = {    
+const char *maxillary_fangs[FANG_ROWS_UPPER] = {    
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
     "@@@@@@@@@@@.... @@@-....@@@......@@@....:@@@.....@@@@@@@@@@@",
     "@RRRRRRR@@.......@.......@........@.......@.......@@LLLLLLL@",
@@ -22,7 +22,7 @@ const char *upper_fangs[FANG_ROWS_UPPER] = {
     "@@@RR-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+LL@@@", 
     "@@@@R@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@L@@@@", 
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"};
-const char *lower_fangs[FANG_ROWS_LOWER] = {
+const char *mandibular_fangs[FANG_ROWS_LOWER] = {
     "@@@@@@@@@@@@@@@@@r@@@@@@@@@@@@@@@@@@@@@@@l+@@@@@@@@@@@@@@@@@",
     "@@@@@@@@@@@@@@@@rr@@@@@@@@@@@@@@@@@@@@@@@ll#@@@@@@@@@@@@@@@@",
     "@@@@@@@@@@@@@@@rrr@@@@@@@@@@@@@@@@@@@@@@@lll@@@@@@@@@@@@@@@@",
@@ -47,7 +47,7 @@ const char *lower_fangs[FANG_ROWS_LOWER] = {
  * based on the health level of the left fang. If the character is not one of these,
  * it returns the character unchanged.  With a scale of 60 to 100, and 6 characters,
  * we can map   the health levels as follows:
- * 60-64 -> '*', 65-69 -> '#', 70-74 -> '=', 75-79 -> '+',
+ * 60-64 -> '#', 65-69 -> '=', 70-74 -> '*', 75-79 -> '+',
  * 80-84 -> '-', 85-95 -> ':', 96-100 -> '.'.   
  * The range is special on the high end, where 96-100 maps to the cleanest marker '.'.
  * 
@@ -56,33 +56,38 @@ const char *lower_fangs[FANG_ROWS_LOWER] = {
 char substitute_marker(char c, int health_level_left, int health_level_right)
 {
     /* Upper fangs: R/L, Lower fangs: r/l */
-
-    if (c == 'R' || c == 'L' || c == 'r' || c == 'l') {
+    int index = 0; /* Index for health_markers array */
+    if (c == 'R' || c == 'L' || c == 'r' || c == 'l')
+    {
         /* Ensure health_level is within bounds */
-        if (health_level_left < 60 || health_level_left > 100) {
-            health_level_left = 60; /* Default to dirtiest if out of bounds */
+        if (c == 'L' || c == 'l') 
+        {
+            /* For upper fangs, use health_level_left */
+            if (health_level_left < 60 || health_level_left > 100) {
+                health_level_left = 60; /* Default to dirtiest if out of bounds */
+            }
+                index = (health_level_left - 60) / 5; /* Maps 60-64 to 0, ..., 96-100 to 6 */
         }
-        if (health_level_right < 60 || health_level_right > 100) {
-            health_level_right = 60; /* Default to dirtiest if out of bounds */
-        }
-
-        int index = 0; /* Index for health_markers array */
-        /* Calculate the index for the health markers array */
-        if(c == 'R' || c == 'r') 
+        if(c == 'R' || c == 'r') {
+            /* For right fang, use health_level_right */
+            if (health_level_right < 60 || health_level_right > 100) {
+                health_level_right = 60; /* Default to dirtiest if out of bounds */
+            }
             index = (health_level_right - 60) / 5; /* Maps 60-64 to 0, ..., 96-100 to 6 */
-        else
-            index = (health_level_left - 60) / 5; /* Maps 60-64 to 0, ..., 96-100 to 6 */
+            }
+        
         /* Ensure index is within bounds */
         if (index < 0) {
             index = 0; /* Default to dirtiest if out of bounds */
         } else if (index > 6) {
             index = 6; /* Default to cleanest if out of bounds */
         }
-        return health_markers[index];
+        return health_markers[index];     
     }
 
     return c;
 }
+
 
 
 void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right) {
