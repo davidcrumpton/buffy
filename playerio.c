@@ -22,6 +22,25 @@ get_input(const char *prompt, char *buffer, size_t size)
 	}
 }
 
+
+void my_print_err(const char *format, ...) {
+	va_list args;
+	va_start(args, format);
+	if (game_state.using_curses) {
+		// Use a separate window for error messages
+		WINDOW *err_win = newwin(3, COLS - 2, LINES - 3, 1);
+		wattron(err_win, A_BOLD | COLOR_PAIR(1)); // Use color pair 1
+		mvwprintw(err_win, 1, 1, format, args);
+		wattroff(err_win, A_BOLD | COLOR_PAIR(1));
+		wrefresh(err_win);
+		delwin(err_win);
+	} else {
+		vfprintf(stderr, format, args);
+		fflush(stderr);
+	}
+	va_end(args);
+}
+
 void my_printf(const char *format, ...) {
     va_list args;
     va_start(args, format);
@@ -46,6 +65,7 @@ void mv_printw(int row, int col, const char *format, ...) {
     }
     va_end(args);
 }
+
 
 void my_putchar(char c) {
 	if(game_state.using_curses) {

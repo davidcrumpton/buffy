@@ -272,7 +272,7 @@ calculate_flouride_used(int dagger_dip, int dagger_effort)
 {
 	/* Calculate the amount of fluoride used based on the selected tool, dip, effort, and creature species */
 	if (dagger_dip < 0 || dagger_effort < 0) {
-		fprintf(stderr, "Negative value for dagger dip or effort detected. Using default values instead.\n");
+		my_print_err("Negative value for dagger dip or effort detected. Using default values instead.\n");
 		dagger_dip = tools[game_state.tool_in_use].dip_amount;
 		dagger_effort = tools[game_state.tool_in_use].effort;
 	}
@@ -303,7 +303,7 @@ calculate_flouride_used(int dagger_dip, int dagger_effort)
 	if (game_state.flouride_used > game_state.flouride) {
 		printf("Fluoride used (%d) exceeds available fluoride (%d).\n",
 			   game_state.flouride_used, game_state.flouride);
-		fprintf(stderr, "Not enough fluoride available.\n");
+		my_print_err("Not enough fluoride available.\n");
 		exit_game();
 	}
 	game_state.flouride -= game_state.flouride_used;
@@ -315,7 +315,7 @@ calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_ef
 {
 	/* Calculate health based on dagger dip and effort, with creature species adjustment */
 	if (dagger_dip < 0 || dagger_effort < 0) {
-		fprintf(stderr, "%s dip and effort must be non-negative. Using default values instead.\n", tools[game_state.tool_in_use].name);
+		my_print_err("%s dip and effort must be non-negative. Using default values instead.\n", tools[game_state.tool_in_use].name);
 		dagger_dip = DEFAULT_DAGGER_DIP;
 		dagger_effort = DEFAULT_DAGGER_EFFORT;
 	}
@@ -400,7 +400,7 @@ static void
 print_fang_info(int index, struct creature_fangs *fang, int compact_printing)
 {
 	if (fang == NULL) {
-		fprintf(stderr, "Fang is NULL.\n");
+		my_print_err("Fang is NULL.\n");
 		return;
 	}
 	if (compact_printing) {
@@ -462,7 +462,7 @@ static void
 print_tool_in_use(void)
 {
 	if (game_state.tool_in_use < 0 || game_state.tool_in_use >= sizeof(tools) / sizeof(tools[0])) {
-		fprintf(stderr, "Invalid tool index: %d\n", game_state.tool_in_use);
+		my_print_err("Invalid tool index: %d\n", game_state.tool_in_use);
 		return;
 	}
 	my_printf("Current tool in use: %s\n", tools[game_state.tool_in_use].name);
@@ -473,7 +473,7 @@ print_tool_in_use(void)
 static void print_creature(struct creature *fanged_beast)
 {
 	if (fanged_beast == NULL) {
-		fprintf(stderr, "Creature is NULL.\n");
+		my_print_err("Creature is NULL.\n");
 		return;
 	}
 	my_printf("Creature Name: %s\n", fanged_beast->name);
@@ -483,7 +483,7 @@ static void print_creature(struct creature *fanged_beast)
 static void print_creature_fangs(struct creature *fanged_beast, int compact_printing)
 {
 	if (fanged_beast == NULL) {
-		fprintf(stderr, "Creature is NULL.\n");
+		my_print_err("Creature is NULL.\n");
 		return;
 	}
 	if (compact_printing) {
@@ -539,11 +539,14 @@ apply_fluoride_to_fangs(void)
 	 */
 
 	print_creature_info(&creature, 1);
+	print_flouride_info();
+	if(game_state.using_curses)
+		sleep(4);
 	int		cleaning = 1;
 	do {
 		char		answer[4];
 
-		print_flouride_info();
+
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
 				if (creature.fangs[i].health >= MAX_HEALTH) {
@@ -557,6 +560,7 @@ apply_fluoride_to_fangs(void)
 			} else {
 				print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health);
 			}
+
 			my_printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
 			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			       fang_idx_to_name(i), creature.fangs[i].length,
@@ -619,7 +623,7 @@ apply_fluoride_to_fangs(void)
 			my_printf("Saving game to %s...\n", save_path);
 			/* Save the game state to the specified file */
 			if(default_game_save() == -1) {
-				fprintf(stderr, "Failed to save game state.\n");
+				my_print_err("Failed to save game state.\n");
 				exit(EXIT_FAILURE);
 			}
 			/* Print success message */
@@ -627,7 +631,7 @@ apply_fluoride_to_fangs(void)
 			cleaning = 0;
 			/* Exit the loop after saving */
 		} else {
-			fprintf(stderr, "Thanks for playing.\n");
+			my_print_err("Thanks for playing.\n");
 			goto success;
 		}
 	} while (cleaning);

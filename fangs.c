@@ -4,6 +4,8 @@
 #include "playerio.h"
 #include "fangs.h"
 
+extern game_state_type game_state;
+
 void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right);
 
 /* Dirtiest to cleanest: '#', '=', '*', '+', '-', ':', '.' */
@@ -92,10 +94,41 @@ char substitute_marker(char c, int health_level_left, int health_level_right)
 
 
 void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right) {
+    if(game_state.using_curses) {
+        // Clear the screen if using curses
+        clear();
+    }
+    if(!game_state.using_curses)
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; fangs[i][j] != '\0'; ++j) {
+                my_putchar(substitute_marker(fangs[i][j], health_level_left, health_level_right  ));
+            }
+            my_putchar('\n');
+        }
+    else {
+        static char buffer[1024]; // Adjust size as needed
+        buffer[0] = '\0'; // Initialize buffer      
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; fangs[i][j] != '\0'; ++j) {
+                char c = substitute_marker(fangs[i][j], health_level_left, health_level_right);
+                strncat(buffer, &c, 1); // Append character to buffer
+            }
+            strncat(buffer, "\n", 1); // Append newline
+        }
+        my_printf("%s", buffer); // Print the buffer containing the fang art
+    }
+}
+
+// return buffer with fang art
+char *get_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right) {
+    static char buffer[1024]; // Adjust size as needed
+    buffer[0] = '\0'; // Initialize buffer      
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; fangs[i][j] != '\0'; ++j) {
-            my_putchar(substitute_marker(fangs[i][j], health_level_left, health_level_right  ));
+            char c = substitute_marker(fangs[i][j], health_level_left, health_level_right);
+            strncat(buffer, &c, 1); // Append character to buffer
         }
-        my_putchar('\n');
+        strncat(buffer, "\n", 1); // Append newline
     }
+    return buffer; // Return the buffer containing the fang art
 }
