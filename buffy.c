@@ -234,7 +234,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 
 	/* Prompt for dagger dip */
 	while (!valid) {
-		sprintf(prompt, "How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_dagger_dip);
+		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_dagger_dip);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && game_state.using_curses < 1) {
 			my_printf("Input error. Please try again.\n");
@@ -257,7 +257,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 	valid = 0;
 	/* Prompt for dagger effort */
 	while (!valid) {
-		sprintf(prompt, "How much effort to apply to the fang [%d]? ", last_dagger_effort);
+		snprintf(prompt, sizeof(prompt), "How much effort to apply to the fang [%d]? ", last_dagger_effort);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && game_state.using_curses < 1) {
 			my_printf("Input error. Please try again.\n");
