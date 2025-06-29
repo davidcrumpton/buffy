@@ -1,3 +1,20 @@
+/*
+BSD Zero Clause License
+
+Copyright (c) 2025 David M Crumpton david.m.crumpton [at] gmail [dot] com
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+*/
+
 #include "playerio.h"
 #include "buffy.h"
 
@@ -27,9 +44,9 @@ void my_print_err(const char *format, ...) {
 	va_list args;
 	va_start(args, format);
 	if (game_state.using_curses) {
-		// Use a separate window for error messages
+		/* Use a separate window for error messages */
 		WINDOW *err_win = newwin(3, COLS - 2, LINES - 3, 1);
-		wattron(err_win, A_BOLD | COLOR_PAIR(1)); // Use color pair 1
+		wattron(err_win, A_BOLD | COLOR_PAIR(1)); /* Use color pair 1 */
 		mvwprintw(err_win, 1, 1, format, args);
 		wattroff(err_win, A_BOLD | COLOR_PAIR(1));
 		wrefresh(err_win);
@@ -57,7 +74,7 @@ void mv_printw(int row, int col, const char *format, ...) {
     va_list args;
     va_start(args, format);
     if (game_state.using_curses) {
-        move(row, col); // Move to the desired position
+        move(row, col); /* Move to the desired position */
         vw_printw(stdscr, format, args);
         refresh();
     } else {

@@ -1,3 +1,20 @@
+/*
+BSD Zero Clause License
+
+Copyright (c) 2025 David M Crumpton david.m.crumpton [at] gmail [dot] com
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+*/
+
 #include <stdio.h>
 #include <string.h>
 
@@ -55,7 +72,7 @@ const char *mandibular_fangs[FANG_ROWS_LOWER] = {
  * The range is special on the high end, where 96-100 maps to the cleanest marker '.'.
  * 
  */
-
+static const
 char substitute_marker(char c, int health_level_left, int health_level_right)
 {
     /* Upper fangs: R/L, Lower fangs: r/l */
@@ -95,7 +112,7 @@ char substitute_marker(char c, int health_level_left, int health_level_right)
 
 void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right) {
     if(game_state.using_curses) {
-        // Clear the screen if using curses
+        /* Clear the screen if using curses */
         clear();
     }
     if(!game_state.using_curses)
@@ -106,29 +123,15 @@ void print_fang_art(const char **fangs, int rows, int health_level_left, int hea
             my_putchar('\n');
         }
     else {
-        static char buffer[1024]; // Adjust size as needed
-        buffer[0] = '\0'; // Initialize buffer      
+        static char buffer[1024]; /* Adjust size as needed */
+        buffer[0] = '\0'; /* Initialize buffer */
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; fangs[i][j] != '\0'; ++j) {
                 char c = substitute_marker(fangs[i][j], health_level_left, health_level_right);
-                strncat(buffer, &c, 1); // Append character to buffer
+                strncat(buffer, &c, 1); /* Append character to buffer */
             }
-            strncat(buffer, "\n", 1); // Append newline
+            strncat(buffer, "\n", 1); /* Append newline */
         }
-        my_printf("%s", buffer); // Print the buffer containing the fang art
+        my_printf("%s", buffer); /* Print the buffer containing the fang art */
     }
-}
-
-// return buffer with fang art
-char *get_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right) {
-    static char buffer[1024]; // Adjust size as needed
-    buffer[0] = '\0'; // Initialize buffer      
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; fangs[i][j] != '\0'; ++j) {
-            char c = substitute_marker(fangs[i][j], health_level_left, health_level_right);
-            strncat(buffer, &c, 1); // Append character to buffer
-        }
-        strncat(buffer, "\n", 1); // Append newline
-    }
-    return buffer; // Return the buffer containing the fang art
 }
