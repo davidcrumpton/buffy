@@ -767,7 +767,7 @@ main(int argc, char *argv[])
 		err(1, "pledge");
 #endif
 
-	while ((ch = getopt_long(argc, argv, "cbf:", longopts, NULL)) != -1)
+	while ((ch = getopt_long(argc, argv, "cbvf:", longopts, NULL)) != -1)
 		switch (ch) {
 		case 'v':
 			printf("%s version %s\n", __progname, VERSION);
