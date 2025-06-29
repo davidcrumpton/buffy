@@ -693,13 +693,14 @@ main_program(int reloadflag)
 	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
 	/* Default dagger effort value */
 
-	print_fang_logo(0);
 
-	printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
+
 	/* printf("%s is ready to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name ? creature.name : "the patient"); */
 	if(game_state.using_curses) {
 		initalize_curses();
 	}
+		print_fang_logo(0);
+	my_printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
 	return apply_fluoride_to_fangs();
 }
 
