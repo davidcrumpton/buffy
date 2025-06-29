@@ -47,6 +47,16 @@ void mv_printw(int row, int col, const char *format, ...) {
     va_end(args);
 }
 
+void my_putchar(char c) {
+	if(game_state.using_curses) {
+		wmove(stdscr, 0, 0); /* move to (0, 0) position */
+		waddch(stdscr, c); /* add the character at the current cursor position */
+		wrefresh(stdscr); /* refresh the window */
+	} else {
+		putchar(c); /* Print character to standard output */
+		fflush(stdout); /* Ensure it is printed immediately */
+	}	
+}
 
 void
 initalize_curses(void)

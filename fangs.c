@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "playerio.h"
 #include "fangs.h"
 
 void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right);
@@ -93,7 +94,7 @@ char substitute_marker(char c, int health_level_left, int health_level_right)
 void print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right) {
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; fangs[i][j] != '\0'; ++j) {
-            putchar(substitute_marker(fangs[i][j], health_level_left, health_level_right  ));
+            my_putchar(substitute_marker(fangs[i][j], health_level_left, health_level_right  ));
         }
         putchar('\n');
     }

@@ -28,6 +28,7 @@ PERFORMANCE OF THIS SOFTWARE.
 #include <unistd.h>
 #include <string.h>
 
+#include "playerio.h"
 #include "buffy.h"
 #include "gamestate.h"
 
@@ -90,7 +91,7 @@ save_game(char *file)
 		}
 	}
 	fclose(fp);
-	printf("Game saved successfully to %s\n", file);
+	my_printf("Game saved successfully to %s\n", file);
 	return 0;
 }
 
@@ -195,7 +196,7 @@ load_game(char *file)
 	}
 
 	fclose(fp);
-	printf("Game loaded successfully from %s\n", file);
+	my_printf("Game loaded successfully from %s\n", file);
 	return 0;
 }
 

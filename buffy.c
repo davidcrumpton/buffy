@@ -381,14 +381,14 @@ print_fang_logo(int compact_printing)
 
 	if (compact_printing) {
 		    printf("v---v\n");
-    		printf(" \\_/\n");
+    		my_printf(" \\_/\n");
 	} else {
-		printf("  /\\     /\\\n");
-		printf(" (  o___o  )\n");
-		printf("  \\_ V V __/\n");
-		printf("     | |\n");
-		printf("    /   \\\n");
-		printf("   V     V\n");
+		my_printf("  /\\     /\\\n");
+		my_printf(" (  o___o  )\n");
+		my_printf("  \\_ V V __/\n");
+		my_printf("     | |\n");
+		my_printf("    /   \\\n");
+		my_printf("   V     V\n");
 	}
 }
 
@@ -401,58 +401,58 @@ print_fang_info(int index, struct creature_fangs *fang, int compact_printing)
 		return;
 	}
 	if (compact_printing) {
-		printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
+		my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 		       fang_idx_to_name(index), fang->length, fang->sharpness,
 		       fang->color, fang->health);
 		return;
 	} else {
-		printf("Fang %s:\n", fang_idx_to_name(index));
-		printf("  Length: %d\n", fang->length);
-		printf("  Sharpness: %d\n", fang->sharpness);
-		printf("  Color: %s\n", fang->color);
-		printf("  Health: %d\n", fang->health);
+		my_printf("Fang %s:\n", fang_idx_to_name(index));
+		my_printf("  Length: %d\n", fang->length);
+		my_printf("  Sharpness: %d\n", fang->sharpness);
+		my_printf("  Color: %s\n", fang->color);
+		my_printf("  Health: %d\n", fang->health);
 	}
 }
 static void
 print_creature_info(struct creature *fanged_beast, int compact_printing)
 {
 	if(compact_printing) {
-		printf("Creature: %s, Age: %d, Species: %s\n", fanged_beast->name, fanged_beast->age, fanged_beast->species);
+		my_printf("Creature: %s, Age: %d, Species: %s\n", fanged_beast->name, fanged_beast->age, fanged_beast->species);
 
 		return;
 	} else {
-		printf("Creature Name: %s\n", fanged_beast->name);
-		printf("Creature Age: %d\n", fanged_beast->age);
-		printf("Creature Species: %s\n", fanged_beast->species);
+		my_printf("Creature Name: %s\n", fanged_beast->name);
+		my_printf("Creature Age: %d\n", fanged_beast->age);
+		my_printf("Creature Species: %s\n", fanged_beast->species);
 	}
 }
 
 static void
 print_tool_info(void)
 {
-	printf("Using tool: %s\n", tools[game_state.tool_in_use].name);
-	printf("Tool Description: %s\n", tools[game_state.tool_in_use].description);
-	printf("Tool Dip Amount: %d\n", tools[game_state.tool_in_use].dip_amount);
-	printf("Tool Effort: %d\n", tools[game_state.tool_in_use].effort);
-	printf("Tool Durability: %d\n", tools[game_state.tool_in_use].durability);
+	my_printf("Using tool: %s\n", tools[game_state.tool_in_use].name);
+	my_printf("Tool Description: %s\n", tools[game_state.tool_in_use].description);
+	my_printf("Tool Dip Amount: %d\n", tools[game_state.tool_in_use].dip_amount);
+	my_printf("Tool Effort: %d\n", tools[game_state.tool_in_use].effort);
+	my_printf("Tool Durability: %d\n", tools[game_state.tool_in_use].durability);
 }
 static void
 print_flouride_info(void)
 {
-	printf("Remaining fluoride: %d\n", game_state.flouride);
+	my_printf("Remaining fluoride: %d\n", game_state.flouride);
 }
 
 static void
 print_game_state(struct game_state *state)
 {
-	printf("Game State:\n");
-	printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
-	printf("  Fluoride remaining: %d\n", state->flouride);
-	printf("  Final %s Dip: %d\n", tools[game_state.tool_in_use].name, state->dagger_dip);
-	printf("  Final %s Effort: %d\n", tools[game_state.tool_in_use].name, state->dagger_effort);
-	printf("  Fluoride Used: %d\n", state->flouride_used);
-	printf("  Score: %d\n", state->score);
-	printf("  Turns: %d\n", state->turns);
+	my_printf("Game State:\n");
+	my_printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
+	my_printf("  Fluoride remaining: %d\n", state->flouride);
+	my_printf("  Final %s Dip: %d\n", tools[game_state.tool_in_use].name, state->dagger_dip);
+	my_printf("  Final %s Effort: %d\n", tools[game_state.tool_in_use].name, state->dagger_effort);
+	my_printf("  Fluoride Used: %d\n", state->flouride_used);
+	my_printf("  Score: %d\n", state->score);
+	my_printf("  Turns: %d\n", state->turns);
 }
 
 static void 
@@ -462,10 +462,10 @@ print_tool_in_use(void)
 		fprintf(stderr, "Invalid tool index: %d\n", game_state.tool_in_use);
 		return;
 	}
-	printf("Current tool in use: %s\n", tools[game_state.tool_in_use].name);
-	printf("Tool description: %s\n", tools[game_state.tool_in_use].description);
-	printf("Tool dip amount: %d\n", tools[game_state.tool_in_use].dip_amount);
-	printf("Tool effort: %d\n", tools[game_state.tool_in_use].effort);
+	my_printf("Current tool in use: %s\n", tools[game_state.tool_in_use].name);
+	my_printf("Tool description: %s\n", tools[game_state.tool_in_use].description);
+	my_printf("Tool dip amount: %d\n", tools[game_state.tool_in_use].dip_amount);
+	my_printf("Tool effort: %d\n", tools[game_state.tool_in_use].effort);
 }
 static void print_creature(struct creature *fanged_beast)
 {
@@ -473,9 +473,9 @@ static void print_creature(struct creature *fanged_beast)
 		fprintf(stderr, "Creature is NULL.\n");
 		return;
 	}
-	printf("Creature Name: %s\n", fanged_beast->name);
-	printf("Creature Age: %d\n", fanged_beast->age);
-	printf("Creature Species: %s\n", fanged_beast->species);
+	my_printf("Creature Name: %s\n", fanged_beast->name);
+	my_printf("Creature Age: %d\n", fanged_beast->age);
+	my_printf("Creature Species: %s\n", fanged_beast->species);
 }
 static void print_creature_fangs(struct creature *fanged_beast, int compact_printing)
 {
@@ -484,23 +484,23 @@ static void print_creature_fangs(struct creature *fanged_beast, int compact_prin
 		return;
 	}
 	if (compact_printing) {
-		printf("Fangs of %s:\n", fanged_beast->name);
+		my_printf("Fangs of %s:\n", fanged_beast->name);
 		for (int i = 0; i < 4; i++) {
-			printf("\tFang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
+			my_printf("\tFang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			       fang_idx_to_name(i), fanged_beast->fangs[i].length,
 			       fanged_beast->fangs[i].sharpness, fanged_beast->fangs[i].color,
 			       fanged_beast->fangs[i].health);
 		}
 		return;
 	} else {
-		printf("Fangs of %s:\n", fanged_beast->name);
+		my_printf("Fangs of %s:\n", fanged_beast->name);
 
 		for (int i = 0; i < 4; i++) {
-			printf("Fang %s:\n", fang_idx_to_name(i));
-			printf("  Length: %d\n", fanged_beast->fangs[i].length);
-			printf("  Sharpness: %d\n", fanged_beast->fangs[i].sharpness);
-			printf("  Color: %s\n", fanged_beast->fangs[i].color);
-			printf("  Health: %d\n", fanged_beast->fangs[i].health);
+			my_printf("Fang %s:\n", fang_idx_to_name(i));
+			my_printf("  Length: %d\n", fanged_beast->fangs[i].length);
+			my_printf("  Sharpness: %d\n", fanged_beast->fangs[i].sharpness);
+			my_printf("  Color: %s\n", fanged_beast->fangs[i].color);
+			my_printf("  Health: %d\n", fanged_beast->fangs[i].health);
 		}
 	}
 }
@@ -544,7 +544,7 @@ apply_fluoride_to_fangs(void)
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
 				if (creature.fangs[i].health >= MAX_HEALTH) {
-				printf("Fang %s is already healthy and shiny!\n", fang_idx_to_name(i));
+				my_printf("Fang %s is already healthy and shiny!\n", fang_idx_to_name(i));
 				continue;
 			}
 			/* determine if upper or lower fang and call print_fang_art()
@@ -554,8 +554,8 @@ apply_fluoride_to_fangs(void)
 			} else {
 				print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health);
 			}
-			printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
-			printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
+			my_printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
+			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			       fang_idx_to_name(i), creature.fangs[i].length,
 			       creature.fangs[i].sharpness, creature.fangs[i].color,
 			       creature.fangs[i].health);
@@ -586,41 +586,41 @@ apply_fluoride_to_fangs(void)
 			}
 		}
 		if (all_fangs_healthy) {
-			printf("All of %s's fangs are now healthy and shiny!\n", creature.name);
-			printf("%s has successfully applied fluoride to %s's fangs.\n", game_state.character_name, creature.name);
-			printf("%s is ready to slay more fangs!\n", game_state.character_name);
+			my_printf("All of %s's fangs are now healthy and shiny!\n", creature.name);
+			my_printf("%s has successfully applied fluoride to %s's fangs.\n", game_state.character_name, creature.name);
+			my_printf("%s is ready to slay more fangs!\n", game_state.character_name);
 			game_state.score += BONUS_ALL_HEALTH;
 			goto success;
 		}
 		game_state.turns++;
 
 		game_state.score += 5;
-		printf("Apply fluoride to %s's fangs? (y/n/q/s): ", creature.name);
-		scanf("%3s", answer);
+
+		get_input("Apply fluoride to %s's fangs? (y/n/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y') {
 			if (game_state.daggerset) {
-				printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
-				printf("Dagger dip: %d, %s effort: %d\n", dagger_dip, tools[game_state.tool_in_use].name, dagger_effort);
+				my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
+				my_printf("Dagger dip: %d, %s effort: %d\n", dagger_dip, tools[game_state.tool_in_use].name, dagger_effort);
 				game_state.flouride_used += calculate_flouride_used(dagger_dip, dagger_effort);
 			}
 		} else if (answer[0] == 'n' || answer[0] == 'N') {
-			printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
+			my_printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
 			cleaning = 0;
 			/* Exit the loop */
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
-			printf("%s quits the game.\n", game_state.character_name);
+			my_printf("%s quits the game.\n", game_state.character_name);
 			goto success;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
 			/* fetch user's home directory is done in init and placed in save_path */
 			/* so printing the save path */
-			printf("Saving game to %s...\n", save_path);
+			my_printf("Saving game to %s...\n", save_path);
 			/* Save the game state to the specified file */
 			if(default_game_save() == -1) {
 				fprintf(stderr, "Failed to save game state.\n");
 				exit(EXIT_FAILURE);
 			}
 			/* Print success message */
-			printf("Game saved successfully to %s\n", save_path);
+			my_printf("Game saved successfully to %s\n", save_path);
 			cleaning = 0;
 			/* Exit the loop after saving */
 		} else {
@@ -628,10 +628,10 @@ apply_fluoride_to_fangs(void)
 			goto success;
 		}
 	} while (cleaning);
-	printf("%s has finished applying fluoride to %s's fangs.\n", game_state.character_name, creature.name);
+	my_printf("%s has finished applying fluoride to %s's fangs.\n", game_state.character_name, creature.name);
 
 success:
-	printf("Remaining fluoride: %d\n", game_state.flouride);
+	my_printf("Remaining fluoride: %d\n", game_state.flouride);
 	print_creature_info(&creature, 1);
 	print_tool_info();
 	print_game_state(&game_state);
@@ -650,19 +650,19 @@ success:
 static int	__dead
 exit_game(void)
 {
-	printf("Exiting the game...\n");
+	my_printf("Exiting the game...\n");
 	print_fang_art(maxillary_fangs, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health);
 	print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
 	print_tool_info();
-	printf("Thank you for playing Buffy the Fang Slayer: Fluoride Edition!\n");
-	printf("Final Score: %d\n", game_state.score);
-	printf("Turns taken: %d\n", game_state.turns);
+	my_printf("Thank you for playing Buffy the Fang Slayer: Fluoride Edition!\n");
+	my_printf("Final Score: %d\n", game_state.score);
+	my_printf("Turns taken: %d\n", game_state.turns);
 	print_creature(&creature);
 	print_creature_fangs(&creature,0);
 	print_tool_in_use();
-	printf("Game saved to: %s\n", save_path);
+	my_printf("Game saved to: %s\n", save_path);
 	if (default_game_save() == -1) {
 		fprintf(stderr, "Failed to save game state.\n");
 		exit(EXIT_FAILURE);
