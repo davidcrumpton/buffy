@@ -62,7 +62,7 @@ initalize_curses(void)
 	}
 }
 
-int exit_curses(void)
+int end_curses(void)
 {	
 	
 	if (!game_state.using_curses) {

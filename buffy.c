@@ -637,7 +637,7 @@ success:
 	print_game_state(&game_state);
 
 	if(game_state.using_curses) {
-		exit_curses();
+		end_curses();
 	}
 	return EXIT_SUCCESS;
 }
