@@ -219,12 +219,14 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 	int valid = 0;
 	char input[32];
 	char *endptr;
+	char prompt[128];
 
 	/* Prompt for dagger dip */
 	while (!valid) {
-		printf("How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_dagger_dip);
-		if (fgets(input, sizeof(input), stdin) == NULL) {
-			fprintf(stderr, "Input error. Please try again.\n");
+		sprintf(prompt,"How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_dagger_dip);
+		get_input(prompt, input, sizeof(input));
+		if (strlen(input) == 0) {
+			my_printf("Input error. Please try again.\n");
 			continue;
 		}
 		/* If user just presses enter, use last value */
@@ -235,7 +237,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 		}
 		*dagger_dip = (int)strtol(input, &endptr, 10);
 		if (endptr == input || *dagger_dip < 0) {
-			fprintf(stderr, "Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			my_printf("Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
 			continue;
 		}
 		valid = 1;
@@ -244,9 +246,10 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 	valid = 0;
 	/* Prompt for dagger effort */
 	while (!valid) {
-		printf("How much effort to apply to the fang [%d]? ", last_dagger_effort);
-		if (fgets(input, sizeof(input), stdin) == NULL) {
-			fprintf(stderr, "Input error. Please try again.\n");
+		sprintf(prompt,"How much effort to apply to the fang [%d]? ", last_dagger_effort);
+		get_input(prompt, input, sizeof(input));
+		if (strlen(input) == 0) {
+			my_printf("Input error. Please try again.\n");
 			continue;
 		}
 		if (input[0] == '\n') {
@@ -256,7 +259,7 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 		}
 		*dagger_effort = (int)strtol(input, &endptr, 10);
 		if (endptr == input || *dagger_effort < 0) {
-			fprintf(stderr, "Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			my_printf("Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
 			continue;
 		}
 		valid = 1;
@@ -596,7 +599,7 @@ apply_fluoride_to_fangs(void)
 
 		game_state.score += 5;
 
-		get_input("Apply fluoride to %s's fangs? (y/n/q/s):", answer, sizeof(answer));
+		get_input("Apply fluoride to fangs? (y/n/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y') {
 			if (game_state.daggerset) {
 				my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);

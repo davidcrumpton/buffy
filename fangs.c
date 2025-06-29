@@ -96,6 +96,6 @@ void print_fang_art(const char **fangs, int rows, int health_level_left, int hea
         for (int j = 0; fangs[i][j] != '\0'; ++j) {
             my_putchar(substitute_marker(fangs[i][j], health_level_left, health_level_right  ));
         }
-        putchar('\n');
+        my_putchar('\n');
     }
 }

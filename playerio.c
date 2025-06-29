@@ -17,7 +17,7 @@ get_input(const char *prompt, char *buffer, size_t size)
 		printf("%s", prompt);
 		fflush(stdout);
 		fgets(buffer, size, stdin);
-		buffer[strcspn(buffer, "\n")] = 0;
+		//buffer[strcspn(buffer, "\n")] = 0;
 		/* Remove newline */
 	}
 }
