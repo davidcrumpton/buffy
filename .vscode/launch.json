@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Buffy",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/buffy",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "make",
+      "stopOnEntry": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Debug Buffy (with -f)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/buffy",
+      "args": ["-f", "fluoride.dat"],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "make",
+      "stopOnEntry": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Debug Buffy Unittest",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/buffy-unittest",
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "make",
+      "stopOnEntry": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}
