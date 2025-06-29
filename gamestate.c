@@ -1,19 +1,19 @@
 /*
-BSD Zero Clause License
-
-Copyright (c) 2025 David M Crumpton david.m.crumpton [at] gmail [dot] com
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-*/
+ * BSD Zero Clause License
+ *
+ * Copyright (c) 2025 David M Crumpton david.m.crumpton [at] gmail [dot] com
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 
 /*
  * gamestate.c: saves the game structures to file specified by filename
@@ -33,7 +33,7 @@ PERFORMANCE OF THIS SOFTWARE.
 #include "gamestate.h"
 
 extern game_state_type game_state;
-extern creature_type  creature;
+extern creature_type creature;
 
 struct database_info {
 	int		gamecode;
@@ -100,12 +100,12 @@ int
 load_game(char *file)
 {
 	/*
-	 * open file for reading using err/errx if failed
-	 * read database_info structure, validate structure looks right or err/errx if not
-	 * read struct game_state, read struct creature
-	 * read all string pointers from structures
+	 * open file for reading using err/errx if failed read database_info
+	 * structure, validate structure looks right or err/errx if not read
+	 * struct game_state, read struct creature read all string pointers
+	 * from structures
 	 */
-	FILE *fp = fopen(file, "rb");
+	FILE	       *fp = fopen(file, "rb");
 	if (fp == NULL)
 		errx(1, "Unable to open file %s for reading", file);
 
@@ -122,18 +122,19 @@ load_game(char *file)
 	if (fread(&creature, sizeof(creature), 1, fp) != 1)
 		errx(1, "Failed to read creature data from file %s", file);
 
-	/*  Read all string pointers from structures
-	 *	character_name
+	/*
+	 * Read all string pointers from structures character_name
 	 */
 	if (game_state.character_name != NULL) {
-		size_t len = 0;
-		int c;
-		long pos = ftell(fp);
+		size_t		len = 0;
+		int		c;
+		long		pos = ftell(fp);
 		/* Find length of string (including null terminator) */
-		while ((c = fgetc(fp)) != EOF && c != '\0') len++;
+		while ((c = fgetc(fp)) != EOF && c != '\0')
+			len++;
 		if (c == EOF)
 			errx(1, "Unexpected EOF while reading character name from %s", file);
-		len++; /* Include null terminator */
+		len++;		/* Include null terminator */
 		fseek(fp, pos, SEEK_SET);
 		game_state.character_name = malloc(len);
 		if (game_state.character_name == NULL)
@@ -144,10 +145,11 @@ load_game(char *file)
 
 	/* creature name */
 	if (creature.name != NULL) {
-		size_t len = 0;
-		int c;
-		long pos = ftell(fp);
-		while ((c = fgetc(fp)) != EOF && c != '\0') len++;
+		size_t		len = 0;
+		int		c;
+		long		pos = ftell(fp);
+		while ((c = fgetc(fp)) != EOF && c != '\0')
+			len++;
 		if (c == EOF)
 			errx(1, "Unexpected EOF while reading creature name from %s", file);
 		len++;
@@ -161,10 +163,11 @@ load_game(char *file)
 
 	/* creature.species */
 	if (creature.species != NULL) {
-		size_t len = 0;
-		int c;
-		long pos = ftell(fp);
-		while ((c = fgetc(fp)) != EOF && c != '\0') len++;
+		size_t		len = 0;
+		int		c;
+		long		pos = ftell(fp);
+		while ((c = fgetc(fp)) != EOF && c != '\0')
+			len++;
 		if (c == EOF)
 			errx(1, "Unexpected EOF while reading creature species from %s", file);
 		len++;
@@ -179,10 +182,11 @@ load_game(char *file)
 	/* Read fang colors */
 	for (int i = 0; i < 4; i++) {
 		if (creature.fangs[i].color != NULL) {
-			size_t len = 0;
-			int c;
-			long pos = ftell(fp);
-			while ((c = fgetc(fp)) != EOF && c != '\0') len++;
+			size_t		len = 0;
+			int		c;
+			long		pos = ftell(fp);
+			while ((c = fgetc(fp)) != EOF && c != '\0')
+				len++;
 			if (c == EOF)
 				errx(1, "Unexpected EOF while reading fang color from %s", file);
 			len++;
@@ -199,6 +203,7 @@ load_game(char *file)
 	my_printf("Game loaded successfully from %s\n", file);
 	return 0;
 }
+
 
 
 void

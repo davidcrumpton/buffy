@@ -1,19 +1,19 @@
 /*
-BSD Zero Clause License
-
-Copyright (c) 2025 David M Crumpton david.m.crumpton [at] gmail [dot] com
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-*/
+ * BSD Zero Clause License
+ *
+ * Copyright (c) 2025 David M Crumpton david.m.crumpton [at] gmail [dot] com
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 /*
  * unittest.c: CUnit tests for the Buffy game.
  *
@@ -21,17 +21,17 @@ PERFORMANCE OF THIS SOFTWARE.
 #ifdef __UNIT_TEST__
 
 /*
- *  CUnit tests for edoas 
+ * CUnit tests for edoas
  *
  */
 
 #include "CUnit/Basic.h"
 
-int startup = 0;
-int isclean = 0;
+int		startup = 0;
+int		isclean = 0;
 
 struct game_state game_state;
-struct creature creature;
+struct creature	creature;
 
 /* Pointer to the file used by the tests. */
 
@@ -39,7 +39,7 @@ struct creature creature;
  * The suite initialization function. Opens the temporary file used by the
  * tests. Returns zero on success, non-zero otherwise.
  */
-int 
+int
 init_suite1(void)
 {
 	startup = 1;
@@ -50,14 +50,14 @@ init_suite1(void)
  * The suite cleanup function. Closes the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
-int 
+int
 clean_suite1(void)
 {
 	isclean = 1;
 	return 0;
 }
 
-void 
+void
 testINIT_GAME_STATE(void)
 {
 	init_game_state(1);
@@ -71,20 +71,24 @@ testINIT_GAME_STATE(void)
 	CU_ASSERT(game_state.turns == 0);
 }
 
-void 
+void
 testCHOOSE_RANDOM_TOOL(void)
 {
-	int tool_index = choose_random_tool(1);
-	CU_ASSERT(tool_index >= 0 && tool_index < 6); /* Assuming there are 6 tools */
+	int		tool_index = choose_random_tool(1);
+	CU_ASSERT(tool_index >= 0 && tool_index < 6);	/* Assuming there are 6
+							 * tools */
 }
 
-void testCHOOSE_RANDOM_TOOL_NON_DAGGER(void)
+void
+testCHOOSE_RANDOM_TOOL_NON_DAGGER(void)
 {
-	int tool_index = choose_random_tool(0);
-	CU_ASSERT(tool_index >= 0 && tool_index < 3); /* Assuming there are 3 non-dagger tools */
+	int		tool_index = choose_random_tool(0);
+	CU_ASSERT(tool_index >= 0 && tool_index < 3);	/* Assuming there are 3
+							 * non-dagger tools */
 }
 
-void testRANDOMIZE_FANGS(void)
+void
+testRANDOMIZE_FANGS(void)
 {
 	creature_init(&creature);
 	randomize_fangs(&creature, 4);
@@ -96,7 +100,8 @@ void testRANDOMIZE_FANGS(void)
 	}
 }
 
-void testPRINT_FANG_INFO(void)
+void
+testPRINT_FANG_INFO(void)
 {
 	creature_init(&creature);
 	randomize_fangs(&creature, 4);
@@ -108,20 +113,22 @@ void testPRINT_FANG_INFO(void)
 	}
 }
 
-void testPRINT_CREATURE_INFO(void)
+void
+testPRINT_CREATURE_INFO(void)
 {
 	creature_init(&creature);
 	randomize_fangs(&creature, 4);
-	print_creature_info(&creature,0);
-	/* The creature is randomly chosen so DEFAULTs can not be tested with 
-	   assertions here.
-	*/
-	CU_ASSERT(creature.age >= 100); /* Assuming age is set to 100 or more */
+	print_creature_info(&creature, 0);
+	/*
+	 * The creature is randomly chosen so DEFAULTs can not be tested with
+	 * assertions here.
+	 */
+	CU_ASSERT(creature.age >= 100);	/* Assuming age is set to 100 or more */
 	CU_ASSERT(creature.name != NULL);
 	CU_ASSERT(strlen(creature.name) > 0);
 	CU_ASSERT(creature.species != NULL);
 	CU_ASSERT(strlen(creature.species) > 0);
-	CU_ASSERT(creature.fangs != NULL);	
+	CU_ASSERT(creature.fangs != NULL);
 	for (int i = 0; i < 4; i++) {
 		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
 		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
@@ -129,55 +136,61 @@ void testPRINT_CREATURE_INFO(void)
 	}
 }
 
-void testPRINT_TOOL_INFO(void)
+void
+testPRINT_TOOL_INFO(void)
 {
-	game_state.tool_in_use = 0; /*  Assuming tool index 0 is valid */
+	game_state.tool_in_use = 0;	/* Assuming tool index 0 is valid */
 	print_tool_info();
-	/* 
-	* The dagger is randomly chosen in the latest version of the code
-	* so we will just check if the tool in use is a dagger and has valid properties
-	*/
-	CU_ASSERT(game_state.tool_in_use >= 0 && game_state.tool_in_use < 6); /* Assuming 6 tools */
+	/*
+	 * The dagger is randomly chosen in the latest version of the code so
+	 * we will just check if the tool in use is a dagger and has valid
+	 * properties
+	 */
+	CU_ASSERT(game_state.tool_in_use >= 0 && game_state.tool_in_use < 6);	/* Assuming 6 tools */
 	CU_ASSERT(tools[game_state.tool_in_use].dip_amount >= 0);
 	CU_ASSERT(tools[game_state.tool_in_use].effort >= 0);
 	CU_ASSERT(tools[game_state.tool_in_use].durability >= 0);
 	CU_ASSERT(tools[game_state.tool_in_use].name != NULL);
 	CU_ASSERT(tools[game_state.tool_in_use].description != NULL);
 	CU_ASSERT(strlen(tools[game_state.tool_in_use].name) > 0);
-	CU_ASSERT(strlen(tools[game_state.tool_in_use].description) > 0);	
+	CU_ASSERT(strlen(tools[game_state.tool_in_use].description) > 0);
 }
 
-void testPRINT_FLOURIDE_INFO(void)
+void
+testPRINT_FLOURIDE_INFO(void)
 {
-	game_state.flouride = 100; /* Set a test value */
-	game_state.flouride_used = 0; /* Reset used flouride for testing */
+	game_state.flouride = 100;	/* Set a test value */
+	game_state.flouride_used = 0;	/* Reset used flouride for testing */
 	print_flouride_info();
 	CU_ASSERT(game_state.flouride == 100);
 }
 
-void testFANG_IDX_TO_NAME(void)
+void
+testFANG_IDX_TO_NAME(void)
 {
 	CU_ASSERT(strcmp(fang_idx_to_name(0), "Maxillary Right Canine") == 0);
 	CU_ASSERT(strcmp(fang_idx_to_name(1), "Maxillary Left Canine") == 0);
 	CU_ASSERT(strcmp(fang_idx_to_name(2), "Mandibular Left Canine") == 0);
 	CU_ASSERT(strcmp(fang_idx_to_name(3), "Mandibular Right Canine") == 0);
-	CU_ASSERT(strcmp(fang_idx_to_name(4), "Unknown Fang") == 0); /* unkown fang index */
+	CU_ASSERT(strcmp(fang_idx_to_name(4), "Unknown Fang") == 0);	/* unkown fang index */
 }
 
-void testSAVEGAME(void)
+void
+testSAVEGAME(void)
 {
-	int result = save_game(save_path);
-	CU_ASSERT(result == 0); /* Assuming save_game returns 0 on success */
+	int		result = save_game(save_path);
+	CU_ASSERT(result == 0);	/* Assuming save_game returns 0 on success */
 
 	/* Now load the game to verify */
 	result = load_game(save_path);
-	CU_ASSERT(result == 0); /* Assuming load_game returns 0 on success */
+	CU_ASSERT(result == 0);	/* Assuming load_game returns 0 on success */
 
 }
-void testLOADGAME(void)
+void
+testLOADGAME(void)
 {
-	int result = load_game(save_path);
-	CU_ASSERT(result == 0); /* Assuming load_game returns 0 on success */
+	int		result = load_game(save_path);
+	CU_ASSERT(result == 0);	/* Assuming load_game returns 0 on success */
 
 	/* Check if the game state is loaded correctly */
 	CU_ASSERT(game_state.character_name != NULL);
@@ -198,14 +211,14 @@ void testLOADGAME(void)
 void
 testCONCAT_PATH(void)
 {
-	char *path = return_concat_path(DEFAULT_SAVE_FILE);
+	char	       *path = return_concat_path(DEFAULT_SAVE_FILE);
 	CU_ASSERT(path != NULL);
 	CU_ASSERT(strlen(path) > 0);
 }
-int 
+int
 main()
 {
-	CU_pSuite 	pSuite = NULL;
+	CU_pSuite	pSuite = NULL;
 
 	/* initialize the CUnit test registry */
 	if (CUE_SUCCESS != CU_initialize_registry())
@@ -218,18 +231,18 @@ main()
 		return CU_get_error();
 	}
 	/* add the tests to the suite */
-	if ( (NULL == CU_add_test(pSuite, "test of init_game_state)", testINIT_GAME_STATE) ) ||
-	     (NULL == CU_add_test(pSuite, "test of choose_random_tool)", testCHOOSE_RANDOM_TOOL) ) ||
-	     (NULL == CU_add_test(pSuite, "test of choose_random_tool_non_dagger)", testCHOOSE_RANDOM_TOOL_NON_DAGGER) ) ||
-	     (NULL == CU_add_test(pSuite, "test of randomize_fangs()", testRANDOMIZE_FANGS) ) ||
-	     (NULL == CU_add_test(pSuite, "test of print_fang_info()", testPRINT_FANG_INFO) ) ||
-	     (NULL == CU_add_test(pSuite, "test of print_creature_info()", testPRINT_CREATURE_INFO) ) ||
-	     (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO) ) ||
-	     (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO) ) ||
-	     (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)  ) || 
-		 (NULL == CU_add_test(pSuite, "test of save_game()", testSAVEGAME))  ||
-	     (NULL == CU_add_test(pSuite, "test of load_game()", testLOADGAME))  ||
-	     (NULL == CU_add_test(pSuite, "test of return_concat_path()", testCONCAT_PATH)) ) {
+	if ((NULL == CU_add_test(pSuite, "test of init_game_state)", testINIT_GAME_STATE)) ||
+	    (NULL == CU_add_test(pSuite, "test of choose_random_tool)", testCHOOSE_RANDOM_TOOL)) ||
+	    (NULL == CU_add_test(pSuite, "test of choose_random_tool_non_dagger)", testCHOOSE_RANDOM_TOOL_NON_DAGGER)) ||
+	    (NULL == CU_add_test(pSuite, "test of randomize_fangs()", testRANDOMIZE_FANGS)) ||
+	    (NULL == CU_add_test(pSuite, "test of print_fang_info()", testPRINT_FANG_INFO)) ||
+	    (NULL == CU_add_test(pSuite, "test of print_creature_info()", testPRINT_CREATURE_INFO)) ||
+	    (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO)) ||
+	    (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO)) ||
+	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
+	(NULL == CU_add_test(pSuite, "test of save_game()", testSAVEGAME)) ||
+	(NULL == CU_add_test(pSuite, "test of load_game()", testLOADGAME)) ||
+	    (NULL == CU_add_test(pSuite, "test of return_concat_path()", testCONCAT_PATH))) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}
@@ -239,4 +252,4 @@ main()
 	return CU_get_error();
 }
 
-#endif /*__UNIT_TEST__ */
+#endif				/* __UNIT_TEST__ */
