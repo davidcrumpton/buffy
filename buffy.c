@@ -378,21 +378,14 @@ fang_idx_to_name(int fang_index)
 }
 
 static void
-print_fang_logo(int compact_printing)
+print_fang_logo(void)
 {
-	#include <stdio.h>
-
-	if (compact_printing) {
-		    printf("v---v\n");
-    		my_printf(" \\_/\n");
-	} else {
-		my_printf("  /\\     /\\\n");
-		my_printf(" (  o___o  )\n");
-		my_printf("  \\_ V V __/\n");
-		my_printf("     | |\n");
-		my_printf("    /   \\\n");
-		my_printf("   V     V\n");
-	}
+	my_printf("  /\\     /\\\n");
+	my_printf(" (  o___o  )\n");
+	my_printf("  \\_ V V __/\n");
+	my_printf("     | |\n");
+	my_printf("    /   \\\n");
+	my_printf("   V     V\n");	
 }
 
 
@@ -706,7 +699,7 @@ main_program(int reloadflag)
 	if(game_state.using_curses) {
 		initalize_curses();
 	}
-		print_fang_logo(0);
+		print_fang_logo();;
 	my_printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
 	return apply_fluoride_to_fangs();
 }
