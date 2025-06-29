@@ -225,12 +225,12 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 	while (!valid) {
 		sprintf(prompt,"How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_dagger_dip);
 		get_input(prompt, input, sizeof(input));
-		if (strlen(input) == 0) {
+		if (strlen(input) == 0 && game_state.using_curses < 1) {
 			my_printf("Input error. Please try again.\n");
 			continue;
 		}
 		/* If user just presses enter, use last value */
-		if (input[0] == '\n') {
+		if (input[0] == '\n' || strlen(input) == 0) {
 			*dagger_dip = last_dagger_dip;
 			valid = 1;
 			continue;
@@ -248,11 +248,11 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 	while (!valid) {
 		sprintf(prompt,"How much effort to apply to the fang [%d]? ", last_dagger_effort);
 		get_input(prompt, input, sizeof(input));
-		if (strlen(input) == 0) {
+		if (strlen(input) == 0 && game_state.using_curses < 1) {
 			my_printf("Input error. Please try again.\n");
 			continue;
 		}
-		if (input[0] == '\n') {
+		if (input[0] == '\n' || strlen(input) == 0) {
 			*dagger_effort = last_dagger_effort;
 			valid = 1;
 			continue;
@@ -600,7 +600,7 @@ apply_fluoride_to_fangs(void)
 		game_state.score += 5;
 
 		get_input("Apply fluoride to fangs? (y/n/q/s):", answer, sizeof(answer));
-		if (answer[0] == 'y' || answer[0] == 'Y') {
+		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
 			if (game_state.daggerset) {
 				my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
 				my_printf("Dagger dip: %d, %s effort: %d\n", dagger_dip, tools[game_state.tool_in_use].name, dagger_effort);
