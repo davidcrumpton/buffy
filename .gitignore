@@ -16,3 +16,4 @@ parse.c
 *.dSYM
 edoas-unittest
 *.btfd
+.vscode
