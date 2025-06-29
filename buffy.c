@@ -662,14 +662,15 @@ apply_fluoride_to_fangs(void)
 	my_printf("%s has finished applying fluoride to %s's fangs.\n", game_state.character_name, creature.name);
 
 success:
-	my_printf("Remaining fluoride: %d\n", game_state.flouride);
-	print_creature_info(&creature, 1);
-	print_tool_info();
-	print_game_state(&game_state);
+
 
 	if (game_state.using_curses) {
 		end_curses();
 	}
+	my_printf("Remaining fluoride: %d\n", game_state.flouride);
+	print_creature_info(&creature, 1);
+	print_tool_info();
+	print_game_state(&game_state);
 	return EXIT_SUCCESS;
 }
 
@@ -681,6 +682,9 @@ success:
 static int	__dead
 exit_game(void)
 {
+	if (game_state.using_curses) {
+		end_curses();
+	}
 	my_printf("Exiting the game...\n");
 	print_fang_art(maxillary_fangs, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
 	print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health,0);

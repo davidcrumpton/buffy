@@ -146,5 +146,6 @@ end_curses(void)
 		/* endwin(); */
 		/* Initialize curses mode */
 	}
+	game_state.using_curses = 0;	/* Reset the flag */
 	return 0;
 }
