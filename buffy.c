@@ -45,7 +45,7 @@ extern int	validate_game_file(char *optarg);
 extern const char *maxillary_fangs[];
 extern const char *mandibular_fangs[];
 
-extern void	print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right);
+extern void	print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right, int using_curses);
 static int	exit_game(void);
 
 
@@ -577,9 +577,9 @@ apply_fluoride_to_fangs(void)
 			 * right fang
 			 */
 			if (i < 2) {
-				print_fang_art(maxillary_fangs, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health);
+				print_fang_art(maxillary_fangs, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
-				print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health);
+				print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
 
 			my_printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
@@ -682,8 +682,8 @@ static int	__dead
 exit_game(void)
 {
 	my_printf("Exiting the game...\n");
-	print_fang_art(maxillary_fangs, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health);
-	print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health);
+	print_fang_art(maxillary_fangs, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health,0);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
 	print_tool_info();
