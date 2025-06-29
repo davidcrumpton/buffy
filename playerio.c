@@ -14,7 +14,10 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
+/*
+ * playerio.c: Provides functions for input/output operations in the Buffy game.
+ *
+ */
 #include "playerio.h"
 #include "buffy.h"
 
