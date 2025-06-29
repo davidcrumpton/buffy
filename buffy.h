@@ -33,6 +33,8 @@ typedef struct game_state
     int bflag;
     int score;
     int turns;
+    int using_curses;   /* Flag to indicate if curses is used */
+    int color_mode;    /* Flag to indicate if color mode is enabled */
     int last_dagger_dip; /* Last dip amount used */
     int last_dagger_effort; /* Last effort used */
     int tool_in_use; /* Index of the tool currently in use */
@@ -104,4 +106,6 @@ int load_game(char *file);
 #define LOGIN_NAME_MAX              64
 #endif /* LOGIN_NAME_MAX */
 #define DEFAULT_SAVE_FILE ".buffy_save.btfd"
+
+#define VERSION "1.0.0"
 #endif /* BUFFY_H */

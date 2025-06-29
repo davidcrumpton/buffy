@@ -34,6 +34,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
 #include "buffy.h"
 #include "fangs.h"
+#include "playerio.h"
 
 #ifdef __FreeBSD__
 #define __dead
@@ -141,7 +142,7 @@ int default_game_save(void)
 		return -1;
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
-	printf("Saving game to: %s\n", save_path);
+	my_printf("Saving game to: %s\n", save_path);
 	save_game(save_path);
 	return 0;
 }
@@ -635,6 +636,9 @@ success:
 	print_tool_info();
 	print_game_state(&game_state);
 
+	if(game_state.using_curses) {
+		exit_curses();
+	}
 	return EXIT_SUCCESS;
 }
 
@@ -693,7 +697,9 @@ main_program(int reloadflag)
 
 	printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
 	/* printf("%s is ready to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name ? creature.name : "the patient"); */
-
+	if(game_state.using_curses) {
+		initalize_curses();
+	}
 	return apply_fluoride_to_fangs();
 }
 
@@ -704,11 +710,16 @@ main(int argc, char *argv[])
 	int		bflag = 0;
 	int		ch;
 	int		fflag = 0;
+	int 	curses = 0;
 	char		login_name[256];
 
 	/* options descriptor */
 	static struct option longopts[] = {
 		{"not-buffy", no_argument, NULL, 'b'},
+		{"curses", no_argument, NULL, 'c'},
+		{"colorized", no_argument, &game_state.color_mode, 1}, /* Alias for curses with color */
+		{"help", no_argument, NULL, '?'},
+		{"version", no_argument, NULL, 'v'},
 		{"fluoride-file", required_argument, NULL, 'f'},
 		{"daggerset", no_argument, &game_state.daggerset, 1},
 	{NULL, 0, NULL, 0}};
@@ -719,8 +730,29 @@ main(int argc, char *argv[])
                 err(1, "pledge");
 #endif
 
-	while ((ch = getopt_long(argc, argv, "bf:", longopts, NULL)) != -1)
+	while ((ch = getopt_long(argc, argv, "cbf:", longopts, NULL)) != -1)
 		switch (ch) {
+		case 'v':
+			printf("%s version %s\n", __progname, VERSION);
+			exit(EXIT_SUCCESS);
+		case 'c':
+			/*
+			 * increase curses by one for each -c option
+			 * if curse is greater than 1 then we will
+			 * enable colorized mode, otherwise we will
+			 * enable curses mode
+			 */
+			curses++;
+			if (curses > 1) {
+				fprintf(stderr, "Curses colorized mode enabled.\n");
+				game_state.using_curses = 1;
+				game_state.color_mode = 1;
+			} else {
+				fprintf(stderr, "Curses mode enabled.\n");
+				game_state.using_curses = 1;
+				game_state.color_mode = 0;
+			}
+			break;
 		case 'b':
 			/*
 			 * not named buffy we will use the user login name
@@ -755,6 +787,8 @@ main(int argc, char *argv[])
 			if (game_state.daggerset)
 				fprintf(stderr, "%s will use the %s to "
 					"apply fluoride to %s's teeth\n", game_state.character_name, tools[game_state.tool_in_use].name, creature.name);
+			if(game_state.color_mode)
+				game_state.using_curses = 1;
 			break;
 		default:
 			usage();

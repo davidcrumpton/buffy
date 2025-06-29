@@ -16,13 +16,13 @@
 # 
 # Default to release build
 PROG=          buffy
+LDFLAGS= 	-lncurses
 TEST_PROG= 	buffy-unittest
 TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
-TEST_LDFLAGS=      -L/usr/local/lib -lcunit
+TEST_LDFLAGS=      -L/usr/local/lib -lcunit -lncurses
 
-SRCS=          buffy.c gamestate.c fangs.c
-HDRS=          buffy.h gamestate.h fangs.h
-HDRS=		  gamestate.h buffy.h
+SRCS=          buffy.c gamestate.c fangs.c playerio.c
+HDRS=          buffy.h gamestate.h fangs.h playerio.h 
 TEST_SRCS=      unittest/buffy_unittest.c
 MAN=           buffy.1 
 BINOWN=        root
@@ -32,7 +32,7 @@ BINMODE=       555
 CPPFLAGS+=     -I${.CURDIR} -I/usr/local/include
 
 buffy: ${SRCS}
-	cc -g -o ${PROG} -Wall ${SRCS}
+	cc -g ${LDFLAGS} -o ${PROG} -Wall ${SRCS}
 
 clean: 
 	rm -rf -- *.dSYM *.o buffy buffy-unittest *.BAK
