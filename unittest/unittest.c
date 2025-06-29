@@ -195,7 +195,7 @@ void testLOADGAME(void)
 	CU_ASSERT(game_state.score == 10);
 	CU_ASSERT(game_state.turns == 0);
 }
-
+void
 testCONCAT_PATH(void)
 {
 	char *path = return_concat_path(DEFAULT_SAVE_FILE);
