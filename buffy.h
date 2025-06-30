@@ -23,12 +23,12 @@
 
 #ifndef BUFFY_H
 #define BUFFY_H
-
+/* refactor dagger as tool */
 typedef struct game_state {
 	int		daggerset;
 	int		flouride;
-	int		dagger_dip;
-	int		dagger_effort;
+	int		tool_dip;
+	int		tool_effort;
 	int		flouride_used;
 	int		bflag;
 	int		score;
@@ -36,8 +36,8 @@ typedef struct game_state {
 	int		using_curses;	/* Flag to indicate if curses is used */
 	int		color_mode;	/* Flag to indicate if color mode is
 					 * enabled */
-	int		last_dagger_dip;	/* Last dip amount used */
-	int		last_dagger_effort;	/* Last effort used */
+	int		last_tool_dip;	/* Last dip amount used */
+	int		last_tool_effort;	/* Last effort used */
 	int		tool_in_use;	/* Index of the tool currently in use */
 	char	       *character_name;	/* Name of the character, e.g.,
 					 * "Buffy" */
@@ -85,8 +85,10 @@ int		load_game(char *file);
 /* Define default values as constants */
 #define DEFAULT_DAGGERSET       0
 #define DEFAULT_FLOURIDE        200
-#define DEFAULT_DAGGER_DIP      10
-#define DEFAULT_DAGGER_EFFORT    5
+#define DEFAULT_TOOL_DIP      5
+#define DEFAULT_TOOL_EFFORT    2
+#define DEFAULT_DAGGER_DIP     10
+#define DEFAULT_DAGGER_EFFORT  5
 #define DEFAULT_FLOURIDE_USED    0
 #define DEFAULT_SCORE           10
 #define DEFAULT_TURNS           0

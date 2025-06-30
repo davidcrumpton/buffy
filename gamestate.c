@@ -231,7 +231,7 @@ validate_game_file(char *optarg)
 		errx(1, "Failed to read game state from file %s", optarg);
 	if (read(fd, &creature, sizeof(creature)) != sizeof(creature))
 		errx(1, "Failed to read creature data from file %s", optarg);
-	if (game_state.flouride < 0 || game_state.dagger_dip < 0 || game_state.dagger_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
+	if (game_state.flouride < 0 || game_state.tool_dip < 0 || game_state.tool_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
 		errx(1, "Invalid game state in %s", optarg);
 	close(fd);
 }

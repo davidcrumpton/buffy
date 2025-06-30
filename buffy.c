@@ -70,9 +70,9 @@ fang_info_type	fang_names[] = {
 /* a structure to use for the selected tool */
 
 tool		tools[] = {
-	{"Buffy's Fingernail", "A sharp fingernail for cleaning teeth", 5, 0, 10, 1, 50, 0},
-	{"Rock", "A rough rock for scraping teeth", 8, 0, 15, 2, 30, 0},
-	{"Shark Tooth", "A sharp shark tooth precisely cleaning teeth", 6, 0, 20, 3, 40, 0},
+	{"Buffy's Fingernail", "A sharp fingernail for cleaning teeth", 5, 1, 10, 1, 50, 0},
+	{"Rock", "A rough rock for scraping teeth", 8, 3, 15, 2, 30, 0},
+	{"Shark Tooth", "A sharp shark tooth precisely cleaning teeth", 6, 5, 20, 3, 40, 0},
 	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 5, 100, 0},
 	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 7, 150, 0},
 	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 10, 200, 0}
@@ -160,8 +160,8 @@ init_game_state(int bflag)
 {
 	/* Initialize game state with default values */
 	game_state.flouride = DEFAULT_FLOURIDE;
-	game_state.dagger_dip = DEFAULT_DAGGER_DIP;
-	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
+	game_state.tool_dip = DEFAULT_TOOL_DIP;
+	game_state.tool_effort = DEFAULT_TOOL_EFFORT;
 	game_state.flouride_used = DEFAULT_FLOURIDE_USED;
 	game_state.bflag = bflag;
 	game_state.score = DEFAULT_SCORE;
@@ -188,8 +188,8 @@ init_game_state(int bflag)
 		exit(EXIT_FAILURE);
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
-	game_state.last_dagger_dip = DEFAULT_DAGGER_DIP;
-	game_state.last_dagger_effort = DEFAULT_DAGGER_EFFORT;
+	game_state.last_tool_dip = DEFAULT_TOOL_DIP;
+	game_state.last_tool_effort = DEFAULT_TOOL_EFFORT;
 }
 static void
 randomize_fangs(struct creature *fanged_beast, int count)
@@ -224,16 +224,16 @@ randomize_fangs(struct creature *fanged_beast, int count)
 
 
 static void
-ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_dagger_effort)
+ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_effort)
 {
 	int		valid = 0;
 	char		input[32];
 	char	       *endptr;
 	char		prompt[128];
 
-	/* Prompt for dagger dip */
+	/* Prompt for tool dip */
 	while (!valid) {
-		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_dagger_dip);
+		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_tool_dip);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && game_state.using_curses < 1) {
 			my_printf("Input error. Please try again.\n");
@@ -241,12 +241,12 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 		}
 		/* If user just presses enter, use last value */
 		if (input[0] == '\n' || strlen(input) == 0) {
-			*dagger_dip = last_dagger_dip;
+			*tool_dip = last_tool_dip;
 			valid = 1;
 			continue;
 		}
-		*dagger_dip = (int)strtol(input, &endptr, 10);
-		if (endptr == input || *dagger_dip < 0) {
+		*tool_dip = (int)strtol(input, &endptr, 10);
+		if (endptr == input || *tool_dip < 0) {
 			my_printf("Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
 			continue;
 		}
@@ -254,21 +254,21 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 	}
 
 	valid = 0;
-	/* Prompt for dagger effort */
+	/* Prompt for tool effort */
 	while (!valid) {
-		snprintf(prompt, sizeof(prompt), "How much effort to apply to the fang [%d]? ", last_dagger_effort);
+		snprintf(prompt, sizeof(prompt), "How much effort to apply to the fang [%d]? ", last_tool_effort);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && game_state.using_curses < 1) {
 			my_printf("Input error. Please try again.\n");
 			continue;
 		}
 		if (input[0] == '\n' || strlen(input) == 0) {
-			*dagger_effort = last_dagger_effort;
+			*tool_effort = last_tool_effort;
 			valid = 1;
 			continue;
 		}
-		*dagger_effort = (int)strtol(input, &endptr, 10);
-		if (endptr == input || *dagger_effort < 0) {
+		*tool_effort = (int)strtol(input, &endptr, 10);
+		if (endptr == input || *tool_effort < 0) {
 			my_printf("Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
 			continue;
 		}
@@ -278,20 +278,20 @@ ask_slayer(int *dagger_dip, int *dagger_effort, int last_dagger_dip, int last_da
 
 
 int
-calculate_flouride_used(int dagger_dip, int dagger_effort)
+calculate_flouride_used(int tool_dip, int tool_effort)
 {
 	/*
 	 * Calculate the amount of fluoride used based on the selected tool,
 	 * dip, effort, and creature species
 	 */
-	if (dagger_dip < 0 || dagger_effort < 0) {
-		my_print_err("Negative value for dagger dip or effort detected. Using default values instead.\n");
-		dagger_dip = tools[game_state.tool_in_use].dip_amount;
-		dagger_effort = tools[game_state.tool_in_use].effort;
+	if (tool_dip < 0 || tool_effort < 0) {
+		my_print_err("Negative value for tool dip or effort detected. Using default values instead.\n");
+		tool_dip = tools[game_state.tool_in_use].dip_amount;
+		tool_effort = tools[game_state.tool_in_use].effort;
 	}
 
-	int		dip = (tools[game_state.tool_in_use].dip_amount > 0) ? dagger_dip : 0;
-	int		effort = (tools[game_state.tool_in_use].effort > 0) ? dagger_effort : 0;
+	int		dip = (tools[game_state.tool_in_use].dip_amount > 0) ? tool_dip : 0;
+	int		effort = (tools[game_state.tool_in_use].effort > 0) ? tool_effort : 0;
 
 	int		used = (dip * 2) + (effort * 3);
 
@@ -326,19 +326,19 @@ calculate_flouride_used(int dagger_dip, int dagger_effort)
 }
 
 void
-calculate_fang_health(struct creature_fangs *fang, int dagger_dip, int dagger_effort)
+calculate_fang_health(struct creature_fangs *fang, int tool_dip, int tool_effort)
 {
 	/*
-	 * Calculate health based on dagger dip and effort, with creature
+	 * Calculate health based on tool dip and effort, with creature
 	 * species adjustment
 	 */
-	if (dagger_dip < 0 || dagger_effort < 0) {
+	if (tool_dip < 0 || tool_effort < 0) {
 		my_print_err("%s dip and effort must be non-negative. Using default values instead.\n", tools[game_state.tool_in_use].name);
-		dagger_dip = DEFAULT_DAGGER_DIP;
-		dagger_effort = DEFAULT_DAGGER_EFFORT;
+		tool_dip = DEFAULT_TOOL_DIP;
+		tool_effort = DEFAULT_TOOL_EFFORT;
 	}
 
-	int		health_gain = (dagger_dip / 2) + (dagger_effort / 3);
+	int		health_gain = (tool_dip / 2) + (tool_effort / 3);
 
 	/* Adjust health gain based on creature species */
 	if (strcmp(creature.species, "Vampire") == 0) {
@@ -466,8 +466,8 @@ print_game_state(struct game_state *state)
 	my_printf("Game State:\n");
 	my_printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
 	my_printf("  Fluoride remaining: %d\n", state->flouride);
-	my_printf("  Final %s Dip: %d\n", tools[game_state.tool_in_use].name, state->dagger_dip);
-	my_printf("  Final %s Effort: %d\n", tools[game_state.tool_in_use].name, state->dagger_effort);
+	my_printf("  Final %s Dip: %d\n", tools[game_state.tool_in_use].name, state->tool_dip);
+	my_printf("  Final %s Effort: %d\n", tools[game_state.tool_in_use].name, state->tool_effort);
 	my_printf("  Fluoride Used: %d\n", state->flouride_used);
 	my_printf("  Score: %d\n", state->score);
 	my_printf("  Turns: %d\n", state->turns);
@@ -545,13 +545,13 @@ creature_init(struct creature *fanged_beast)
 int
 apply_fluoride_to_fangs(void)
 {
-	int		dagger_dip = DEFAULT_DAGGER_DIP;
-	int		dagger_effort = DEFAULT_DAGGER_EFFORT;
+	int		tool_dip = DEFAULT_TOOL_DIP;
+	int		tool_effort = DEFAULT_TOOL_EFFORT;
 
 	creature_init(&creature);
 	/*
 	 * Next we will loop through the fangs asking the user how much to
-	 * dip the dagger in the flouride and how much effort to apply to the
+	 * dip the tool in the flouride and how much effort to apply to the
 	 * current fang
 	 */
 
@@ -586,17 +586,17 @@ apply_fluoride_to_fangs(void)
 			      fang_idx_to_name(i), creature.fangs[i].length,
 			creature.fangs[i].sharpness, creature.fangs[i].color,
 				  creature.fangs[i].health);
-			ask_slayer(&dagger_dip, &dagger_effort, game_state.last_dagger_dip, game_state.last_dagger_effort);
-			game_state.last_dagger_dip = dagger_dip;
-			game_state.last_dagger_effort = dagger_effort;
-			calculate_fang_health(&creature.fangs[i], dagger_dip, dagger_effort);
+			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
+			game_state.last_tool_dip = tool_dip;
+			game_state.last_tool_effort = tool_effort;
+			calculate_fang_health(&creature.fangs[i], tool_dip, tool_effort);
 
 			game_state.score += BONUS_FANG_CLEANED;
 
 			if (creature.fangs[i].health >= MAX_HEALTH)
 				game_state.score += BONUS_FANG_HEALTH;
 
-			calculate_flouride_used(dagger_dip, dagger_effort);
+			calculate_flouride_used(tool_dip, tool_effort);
 
 			print_fang_info(i, &creature.fangs[i], 1);
 		}
@@ -624,12 +624,12 @@ apply_fluoride_to_fangs(void)
 		game_state.score += 5;
 
 		get_input("Apply fluoride to fangs? (y/n/q/s):", answer, sizeof(answer));
-		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
-			if (game_state.daggerset) {
-				my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
-				my_printf("Dagger dip: %d, %s effort: %d\n", dagger_dip, tools[game_state.tool_in_use].name, dagger_effort);
-				game_state.flouride_used += calculate_flouride_used(dagger_dip, dagger_effort);
-			}
+		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) 
+		{
+			/* All tools use some fluoride */
+			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
+			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
+			game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);	
 		} else if (answer[0] == 'n' || answer[0] == 'N') {
 			my_printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
 			cleaning = 0;
@@ -718,22 +718,14 @@ main_program(int reloadflag)
 		init_game_state(game_state.bflag);
 
 	/* If daggerset is not set, we will not use the dagger */
-	if (!game_state.daggerset)
-		game_state.dagger_dip = 0;
-	else
-		game_state.dagger_dip = DEFAULT_DAGGER_DIP;
-	/* Default dagger dip value */
+	if (!game_state.daggerset) {
+		game_state.tool_dip = DEFAULT_TOOL_DIP;
+		game_state.tool_effort = DEFAULT_TOOL_EFFORT;
+	} else {
+		game_state.tool_dip = DEFAULT_DAGGER_DIP;
+		game_state.tool_effort = DEFAULT_DAGGER_EFFORT;
+	}
 
-	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
-	/* Default dagger effort value */
-
-
-
-	/*
-	 * printf("%s is ready to apply fluoride to %s's fangs.\n",
-	 * game_state.character_name, creature.name ? creature.name : "the
-	 * patient");
-	 */
 	if (game_state.using_curses) {
 		initalize_curses();
 	}
