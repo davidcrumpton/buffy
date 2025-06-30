@@ -159,7 +159,6 @@ static void
 init_game_state(int bflag)
 {
 	/* Initialize game state with default values */
-	game_state.daggerset = DEFAULT_DAGGERSET;
 	game_state.flouride = DEFAULT_FLOURIDE;
 	game_state.dagger_dip = DEFAULT_DAGGER_DIP;
 	game_state.dagger_effort = DEFAULT_DAGGER_EFFORT;
@@ -815,8 +814,7 @@ main(int argc, char *argv[])
 			strlcpy(character_name, login_name, sizeof(game_state.character_name));
 			game_state.character_name = character_name;
 
-			fprintf(stderr, "%s is ready to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
-
+			fprintf(stderr,"%s is ready to apply fluoride to fangs.\n", game_state.character_name);
 
 			bflag = 1;
 			break;
@@ -831,8 +829,8 @@ main(int argc, char *argv[])
 			break;
 		case 0:
 			if (game_state.daggerset)
-				fprintf(stderr, "%s will use the %s to "
-					"apply fluoride to %s's teeth\n", game_state.character_name, tools[game_state.tool_in_use].name, creature.name);
+				fprintf(stderr, "Player will use a dagger to "
+					"apply fluoride to fangs\n");
 			if (game_state.color_mode)
 				game_state.using_curses = 1;
 			break;

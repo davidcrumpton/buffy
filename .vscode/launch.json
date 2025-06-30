@@ -12,6 +12,17 @@
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
+      "name": "Debug Daggerset",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/buffy",
+      "args": ["--daggerset"],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "make",
+      "stopOnEntry": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
       "name": "Debug Buffy (with -f)",
       "type": "lldb",
       "request": "launch",
