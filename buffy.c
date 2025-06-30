@@ -624,12 +624,12 @@ apply_fluoride_to_fangs(void)
 		game_state.score += 5;
 
 		get_input("Apply fluoride to fangs? (y/n/q/s):", answer, sizeof(answer));
-		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
-			if (game_state.daggerset) {
-				my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
-				my_printf("Dagger dip: %d, %s effort: %d\n", tool_dip, tools[game_state.tool_in_use].name, tool_effort);
-				game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);
-			}
+		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) 
+		{
+			/* All tools use some fluoride */
+			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
+			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
+			game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);	
 		} else if (answer[0] == 'n' || answer[0] == 'N') {
 			my_printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
 			cleaning = 0;
