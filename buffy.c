@@ -862,7 +862,7 @@ main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	if (pledge("stdio rpath wpath cpath proc", NULL) == -1)
+	if (pledge("stdio rpath wpath cpath", NULL) == -1)
 		err(1, "pledge");
 #endif
 
