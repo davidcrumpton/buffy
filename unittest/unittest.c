@@ -178,7 +178,7 @@ testFANG_IDX_TO_NAME(void)
 void
 testSAVEGAMESTATE(void)
 {
-	int     result = save_game_state(save_path, game_state, size_t gs_len, const creature_type * creature, size_t plen)
+	int     result = save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature))
 	CU_ASSERT(result == 0);	/* Assuming save_game returns 0 on success */
 
 	/* Now load the game to verify */
