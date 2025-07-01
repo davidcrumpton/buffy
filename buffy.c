@@ -761,7 +761,7 @@ main(int argc, char *argv[])
 
 #ifdef __OpenBSD__
 
-	if (pledge("stdio rpath wpath cpath unveil", NULL) == -1)
+	if (pledge("stdio rpath wpath cpath unveil proc", NULL) == -1)
 		err(1, "pledge");
 #endif
 
