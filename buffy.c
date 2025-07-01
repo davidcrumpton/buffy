@@ -41,12 +41,12 @@
 #define __dead
 #endif
 
-extern int	validate_game_file(char *optarg);
+extern int  validate_game_file(const char *file);
 extern const char *maxillary_fangs[];
 extern const char *mandibular_fangs[];
 
 extern void	print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right, int using_curses);
-void save_game_state_sandboxed(const char *save_path, const void *gamestate, size_t len, const void *patient, size_t plen);
+void save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen);
 static int	exit_game(void);
 
 
@@ -151,8 +151,8 @@ default_game_save(void)
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
 	my_printf("Saving game to: %s\n", save_path);
-	save_game_state_sandboxed(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature));
-	/* save_game(save_path); */
+	save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature));
+
 	return 0;
 }
 
@@ -815,7 +815,9 @@ main(int argc, char *argv[])
 			break;
 		case 'f':
 			fflag = 1;
-			validate_game_file(optarg);
+
+			if(validate_game_file(optarg) == 1)
+				errx(1,"Game file %s is not a valid file", optarg);
 			/*
 			 * If the file is valid, we will load all game data
 			 * from it

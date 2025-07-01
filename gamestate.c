@@ -54,51 +54,7 @@ init_db_info(struct database_info *db_info)
 }
 
 int
-save_game(char *file)
-{
-	/*
-	 * open file for writing, use err/errx if failed read database_info
-	 * structiure validate structure looks right or err/errx if not write
-	 * struct game_state write struct creature
-	 */
-	FILE	       *fp = fopen(file, "wb");
-	if (fp == NULL)
-		errx(1, "Unable to open file %s for writing", file);
-	struct database_info db_info;
-	init_db_info(&db_info);
-	if (fwrite(&db_info, sizeof(db_info), 1, fp) != 1)
-		errx(1, "Failed to write database info to file %s", file);
-	if (fwrite(&game_state, sizeof(game_state), 1, fp) != 1)
-		errx(1, "Failed to write game state to file %s", file);
-	if (fwrite(&creature, sizeof(creature), 1, fp) != 1)
-		errx(1, "Failed to write creature data to file %s", file);
-	/* write all string pointers from structures */
-	if (game_state.character_name != NULL) {
-		if (fwrite(game_state.character_name, strlen(game_state.character_name) + 1, 1, fp) != 1)
-			errx(1, "Failed to write character name to file %s", file);
-	}
-	if (creature.name != NULL) {
-		if (fwrite(creature.name, strlen(creature.name) + 1, 1, fp) != 1)
-			errx(1, "Failed to write creature name to file %s", file);
-	}
-	if (creature.species != NULL) {
-		if (fwrite(creature.species, strlen(creature.species) + 1, 1, fp) != 1)
-			errx(1, "Failed to write creature species to file %s", file);
-	}
-	for (int i = 0; i < 4; i++) {
-		if (creature.fangs[i].color != NULL) {
-			if (fwrite(creature.fangs[i].color, strlen(creature.fangs[i].color) + 1, 1, fp) != 1)
-				errx(1, "Failed to write fang color to file %s", file);
-		}
-	}
-	fclose(fp);
-	my_printf("Game saved successfully to %s\n", file);
-	return 0;
-}
-
-
-int
-load_game(char *file)
+load_game(const char *file)
 {
 	/*
 	 * open file for reading using err/errx if failed read database_info
@@ -110,7 +66,7 @@ load_game(char *file)
 	if (fp == NULL)
 		errx(1, "Unable to open file %s for reading", file);
 
-	struct database_info db_info;
+	static struct database_info db_info;
 	if (fread(&db_info, sizeof(db_info), 1, fp) != 1)
 		errx(1, "Failed to read database info from file %s", file);
 
@@ -207,40 +163,9 @@ load_game(char *file)
 
 
 
-void
-validate_game_file(char *optarg)
-{
-	struct stat	st;
-	int		fd;
-
-	if ((fd = stat(optarg, &st)) == -1)
-		errx(1, "unable to stat %s", optarg);
-	if (!S_ISREG(st.st_mode))
-		errx(1, "%s is not a regular file", optarg);
-	if ((fd = open(optarg, O_RDONLY)) == -1)
-		errx(1, "unable to open %s", optarg);
-	if (st.st_size < sizeof(struct database_info) + sizeof(game_state_type) + sizeof(creature_type))
-		errx(1, "%s is too small to be a valid game file", optarg);
-	struct database_info db_info;
-	if (read(fd, &db_info, sizeof(db_info)) != sizeof(db_info))
-		errx(1, "Failed to read database info from file %s", optarg);
-	if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE)
-		errx(1, "Incompatible game file version in %s", optarg);
-	if (lseek(fd, sizeof(db_info), SEEK_SET) == -1)
-		err(1, "Failed to seek in file %s", optarg);
-	if (read(fd, &game_state, sizeof(game_state)) != sizeof(game_state))
-		errx(1, "Failed to read game state from file %s", optarg);
-	if (read(fd, &creature, sizeof(creature)) != sizeof(creature))
-		errx(1, "Failed to read creature data from file %s", optarg);
-	if (game_state.flouride < 0 || game_state.tool_dip < 0 || game_state.tool_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
-		errx(1, "Invalid game state in %s", optarg);
-	close(fd);
-}
-
-
 
 void
-save_game_state_sandboxed(const char *save_path, const game_state_type *gamestate, size_t gs_len, const creature_type *patient, size_t plen)
+save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen)
 {
 	int		pipefd[2];
 	if (pipe(pipefd) == -1)
@@ -323,5 +248,102 @@ save_game_state_sandboxed(const char *save_path, const game_state_type *gamestat
 			warnx("writer exited with code %d", WEXITSTATUS(status));
 		else if (WIFSIGNALED(status))
 			warnx("writer killed by signal %d", WTERMSIG(status));
+	}
+}
+
+
+
+
+
+/*
+ * validate_game_file (subprocess) environment creates subprocess
+ * which returns 0 if valid and 1 if not
+ */
+int
+validate_game_file(const char *file)
+{
+	pid_t		pid = fork();
+#ifdef __OpenBSD__
+	if (unveil(file, "r") == -1)
+		err(1, "unveil file");
+	if (unveil(NULL, NULL) == -1)
+		err(1, "lock unveil");
+
+	if (pledge("stdio rpath", NULL) == -1)
+		err(1, "pledge");
+#endif
+
+	if (pid == -1) {
+		errx(1, "fork");
+	} else if (pid == 0) {
+		/* child */
+
+		struct stat	st;
+		int		fd;
+		int		isvalid = 1;
+
+		if ((fd = stat(optarg, &st)) == -1) {
+			err(1, "unable to stat %s", optarg);
+			goto end_validation;
+		}
+		if (!S_ISREG(st.st_mode)) {
+			err(1, "%s is not a regular file", optarg);
+			goto end_validation;
+		}
+		if ((fd = open(optarg, O_RDONLY)) == -1) {
+			err(1, "unable to open %s", optarg);
+			goto end_validation;
+		}
+		if (st.st_size < sizeof(struct database_info) + sizeof(game_state_type) + sizeof(creature_type)) {
+			err(1, "%s is too small to be a valid game file", optarg);
+			goto end_validation;
+		}
+		struct database_info db_info;
+		if (read(fd, &db_info, sizeof(db_info)) != sizeof(db_info)) {
+			err(1, "Failed to read database info from file %s", optarg);
+			goto end_validation;
+		}
+		if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE) {
+			err(1, "Incompatible game file version in %s", optarg);
+			goto end_validation;
+		}
+		if (lseek(fd, sizeof(db_info), SEEK_SET) == -1) {
+			err(1, "Failed to seek in file %s", optarg);
+			goto end_validation;
+		}
+		static game_state_type game_state;
+		if (read(fd, &game_state, sizeof(game_state)) != sizeof(game_state)) {
+			err(1, "Failed to read game state from file %s", optarg);
+			goto end_validation;
+		}
+		if (read(fd, &creature, sizeof(creature)) != sizeof(creature)) {
+			err(1, "Failed to read creature data from file %s", optarg);
+			goto end_validation;
+		}
+		if (game_state.flouride < 0 || game_state.tool_dip < 0 || game_state.tool_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0) {
+			err(1, "Invalid game state in %s", optarg);
+			goto end_validation;
+		}
+
+		isvalid = 0;
+
+end_validation:
+
+		close(fd);
+
+		return isvalid;	/* child ends */
+	} else {
+		int		status;
+		if (waitpid(pid, &status, 0) == -1) {
+			warn("waitpid failed");
+			return 1;
+		}
+
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+
+		if (WIFSIGNALED(status))
+			fprintf(stderr, "Subprocess killed by signal %d\n", WTERMSIG(status));
+		return 1;
 	}
 }
