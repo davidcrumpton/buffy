@@ -179,6 +179,7 @@ void
 testSAVEGAMESTATE(void)
 {
 	int		result = save_game_state(save_path);
+	int     result = save_game_state(save_path, game_state, size_t gs_len, const creature_type * creature, size_t plen)
 	CU_ASSERT(result == 0);	/* Assuming save_game returns 0 on success */
 
 	/* Now load the game to verify */
@@ -218,7 +219,7 @@ testCONCAT_PATH(void)
 
 void testVALIDATE_GAME(void) 
 {
-	char failed_path = "/dev/null";
+	char *failed_path = "/dev/null";
 	CU_ASSERT(validate_game(failed_path) == 1);
 }
 int
@@ -246,7 +247,7 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
-		(NULL == CU_add_test(pSuite, "test validate game()", testVALIDATE_GAME) || )
+		(NULL == CU_add_test(pSuite, "test validate game()", testVALIDATE_GAME)) ||
 	(NULL == CU_add_test(pSuite, "test of save_game_state()", testSAVEGAMESTATE)) ||
 	(NULL == CU_add_test(pSuite, "test of load_game()", testLOADGAME)) ||
 	    (NULL == CU_add_test(pSuite, "test of return_concat_path()", testCONCAT_PATH))) {
