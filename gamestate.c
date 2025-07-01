@@ -52,6 +52,223 @@ init_db_info(struct database_info *db_info)
 	db_info->patch = PATCH;
 	db_info->gamecode = GAMECODE;
 }
+void
+load_game_state(const char *load_path,game_state_type * gamestate_g, size_t gs_len,
+	creature_type * patient_g, size_t plen, char *character_name_g, char *patient_name_g, char *patient_species_g)
+{
+    int pipefd[2];
+    pid_t pid;
+
+
+#ifdef __OpenBSD__
+	if (unveil(file, "r") == -1)
+		err(1, "unveil file");
+	if (unveil(NULL, NULL) == -1)
+		err(1, "lock unveil");
+
+	if (pledge("stdio rpath", NULL) == -1)
+		err(1, "pledge");
+#endif
+
+    if (pipe(pipefd) == -1) {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
+
+    pid = fork();
+
+    if (pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0) { /* Child process to read the file and send to parent */
+        close(pipefd[0]); /* close stdin since we are output */
+
+	FILE	       *fp = fopen(load_path, "rb");
+	if (fp == NULL)
+		errx(1, "Unable to open file %s for reading", load_path);
+
+	static struct database_info db_info;
+	if (fread(&db_info, sizeof(db_info), 1, fp) != 1)
+		errx(1, "Failed to read database info from file %s", load_path);
+
+	if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE)
+		errx(1, "Incompatible game file version in %s", load_path);
+	
+	game_state_type gamestate;
+	if (fread(&gamestate, sizeof(gamestate), 1, fp) != 1)
+		errx(1, "Failed to read game state from file %s", load_path);
+	else
+		if(write(pipefd[1], &gamestate, sizeof(gamestate)) <= 0)
+			errx(1,"Couldn't write gamestate to parent process");
+	
+	creature_type patient;
+	if (fread(&patient, sizeof(patient), 1, fp) != 1)
+		errx(1, "Failed to read patient data from file %s", load_path);
+	else
+		if(write(pipefd[1], &patient, sizeof(patient)) <= 0)
+			errx(1,"Couldn't write patient to parent process");
+
+
+	if (gamestate.character_name != NULL) {
+		size_t		len = 0;
+		int		c;
+		long		pos = ftell(fp);
+		/* Find length of string (including null terminator) */
+		while ((c = fgetc(fp)) != EOF && c != '\0')
+			len++;
+		if (c == EOF)
+			errx(1, "Unexpected EOF while reading character name from %s", load_path);
+		len++;		/* Include null terminator */
+		fseek(fp, pos, SEEK_SET);
+		gamestate.character_name = malloc(len);
+		if (gamestate.character_name == NULL)
+			errx(1, "Failed to allocate memory for character name");
+		if (fread(gamestate.character_name, len, 1, fp) != 1)
+			errx(1, "Failed to read character name from file %s", load_path);
+		else
+			if(write(pipefd[1], gamestate.character_name, strlen(gamestate.character_name) + 1) != (strlen(gamestate.character_name) + 1))
+				errx(1, "Failed to write patient name to parent");
+		free(gamestate.character_name);
+	}
+
+
+	/* patient name */
+	if (patient.name != NULL) {
+		size_t		len = 0;
+		int		c;
+		long		pos = ftell(fp);
+		while ((c = fgetc(fp)) != EOF && c != '\0')
+			len++;
+		if (c == EOF)
+			errx(1, "Unexpected EOF while reading patient name from %s", load_path);
+		len++;
+		fseek(fp, pos, SEEK_SET);
+		patient.name = malloc(len);
+		if (patient.name == NULL)
+			errx(1, "Failed to allocate memory for patient name");
+		if (fread(patient.name, len, 1, fp) != 1)
+			errx(1, "Failed to read patient name from file %s", load_path);
+		else
+			if(write(pipefd[1], patient.name, strlen(patient.name) + 1) != (strlen(patient.name) + 1))
+				errx(1, "Failed to write patient name to parent");
+		free(patient.name);
+	}
+
+	/* patient.species */
+	if (patient.species != NULL) {
+		size_t		len = 0;
+		int		c;
+		long		pos = ftell(fp);
+		while ((c = fgetc(fp)) != EOF && c != '\0')
+			len++;
+		if (c == EOF)
+			errx(1, "Unexpected EOF while reading patient species from %s", load_path);
+		len++;
+		fseek(fp, pos, SEEK_SET);
+		patient.species = malloc(len);
+		if (patient.species == NULL)
+			errx(1, "Failed to allocate memory for patient species");
+		if (fread(patient.species, len, 1, fp) != 1)
+			errx(1, "Failed to read patient species from file %s", load_path);
+		else
+			if(write(pipefd[1], patient.species, strlen(patient.species) + 1) != (strlen(patient.species) + 1))
+				errx(1, "Failed to write patient species to parent");
+		free(patient.species);
+	}
+
+	/* Read fang colors */
+	for (int i = 0; i < 4; i++) {
+		if (patient.fangs[i].color != NULL) {
+			size_t		len = 0;
+			int		c;
+			long		pos = ftell(fp);
+			while ((c = fgetc(fp)) != EOF && c != '\0')
+				len++;
+			if (c == EOF)
+				errx(1, "Unexpected EOF while reading fang color from %s", load_path);
+			len++;
+			fseek(fp, pos, SEEK_SET);
+			patient.fangs[i].color = malloc(len);
+			if (patient.fangs[i].color == NULL)
+				errx(1, "Failed to allocate memory for fang color");
+			if (fread(patient.fangs[i].color, len, 1, fp) != 1)
+				errx(1, "Failed to read fang color from file %s", load_path);
+			else
+				if(write(pipefd[1], patient.fangs[i].color, strlen(patient.fangs[i].color) + 1) != (strlen(patient.fangs[i].color) + 1))
+					errx(1, "Failed to write patient fang color to parent");
+				else
+					free(patient.fangs[i].color);
+		}
+	}
+
+        close(pipefd[1]); /* Close the write end of the pipe */
+        exit(EXIT_SUCCESS);
+    } else { /* Parent process */
+        close(pipefd[1]); /* Close unused write end of the pipe */
+
+		/* Begin parent read from stdin pipe */
+
+	if (read(pipefd[0], gamestate_g, gs_len) != gs_len)
+		errx(1, "Failed to read game state from file %s", load_path);
+	if (read(pipefd[0], &patient_g, plen) != plen)
+		errx(1, "Failed to read creature data from file %s", load_path);
+
+		/* Remaining strings are null terminated with no fixed length 
+		   requiring byte by byte read until NULL is found
+		*/
+		/* read character name from stream */
+	int ch = 0;
+	do
+	{
+		if(read(pipefd[0], &ch, 1) != -1)
+			*(character_name_g++)=ch;
+		/* code */
+	} while (ch != 0);
+
+
+	ch = 0;
+	do
+	{
+		if(read(pipefd[0], &ch, 1) != -1)
+			*(patient_name_g++)=ch;
+		/* code */
+	} while (ch != 0);
+
+	ch = 0;
+	do
+	{
+		if(read(pipefd[0], &ch, 1) != -1)
+			*(patient_species_g++)=ch;
+		/* code */
+	} while (ch != 0);
+		/* read patient species from stream */
+		/* read fang colors from stream */
+
+        close(pipefd[0]); // Close the read end of the pipe
+    }
+	/* Read fang colors */
+	int ch = 0;
+	for (int i = 0; i < 4; i++) {
+		if (patient_g->fangs[i].color != NULL) {
+
+			do
+			{
+				if(read(pipefd[0], &ch, 1) != -1)
+					*(patient_g->fangs[i].color++)=ch;
+				/* code */
+			} while (ch != 0);
+		}
+	}
+	close(pipefd[0]);
+
+/*
+ * PARENT END
+ */
+    return;
+}
+
 
 int
 load_game(const char *file)
@@ -298,39 +515,46 @@ validate_game_file(const char *file)
 			err(1, "%s is too small to be a valid game file", optarg);
 			goto end_validation;
 		}
+		puts("518");
 		struct database_info db_info;
 		if (read(fd, &db_info, sizeof(db_info)) != sizeof(db_info)) {
 			err(1, "Failed to read database info from file %s", optarg);
 			goto end_validation;
 		}
+		puts("524");
 		if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE) {
 			err(1, "Incompatible game file version in %s", optarg);
 			goto end_validation;
 		}
+		puts("529");
 		if (lseek(fd, sizeof(db_info), SEEK_SET) == -1) {
 			err(1, "Failed to seek in file %s", optarg);
 			goto end_validation;
 		}
-		static game_state_type game_state;
-		if (read(fd, &game_state, sizeof(game_state)) != sizeof(game_state)) {
+		puts("534");
+		static game_state_type game_state_v;
+		if (read(fd, &game_state_v, sizeof(game_state_v)) != sizeof(game_state_v)) {
 			err(1, "Failed to read game state from file %s", optarg);
 			goto end_validation;
 		}
+		puts("540");
 		if (read(fd, &creature, sizeof(creature)) != sizeof(creature)) {
 			err(1, "Failed to read creature data from file %s", optarg);
 			goto end_validation;
 		}
-		if (game_state.flouride < 0 || game_state.tool_dip < 0 || game_state.tool_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0) {
+		puts("545");
+		if (game_state_v.flouride < 0 || game_state_v.tool_dip < 0 || game_state_v.tool_effort < 0 || game_state_v.flouride_used < 0 || game_state_v.bflag < 0 || game_state_v.daggerset < 0) {
 			err(1, "Invalid game state in %s", optarg);
 			goto end_validation;
 		}
-
+		puts("550");
 		isvalid = 0;
 
 end_validation:
 
+		puts("555");
 		close(fd);
-
+		puts("557");
 		return isvalid;	/* child ends */
 	} else {
 		int		status;
@@ -347,3 +571,4 @@ end_validation:
 		return 1;
 	}
 }
+

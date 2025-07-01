@@ -79,6 +79,8 @@ typedef struct fang_info {
 
 void save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen);
 int		load_game(const char *file);
+void load_game_state(const char *load_path,game_state_type * gamestate_g, size_t gs_len,
+	creature_type * patient_g, size_t plen, char *character_name_g, char *patient_name_g, char *patient_species_g);
 
 #define DEFAULT_CHARACTER_NAME "Buffy"
 /* Define default values as constants */
