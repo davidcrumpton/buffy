@@ -46,7 +46,7 @@ extern const char *maxillary_fangs[];
 extern const char *mandibular_fangs[];
 
 extern void	print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right, int using_curses);
-void save_game_state_sandboxed(const char *save_path, const void *gamestate, size_t len);
+void save_game_state_sandboxed(const char *save_path, const void *gamestate, size_t len, const void *patient, size_t plen);
 static int	exit_game(void);
 
 
@@ -151,7 +151,7 @@ default_game_save(void)
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
 	my_printf("Saving game to: %s\n", save_path);
-	save_game_state_sandboxed(save_path, &game_state, sizeof(game_state));
+	save_game_state_sandboxed(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature));
 	/* save_game(save_path); */
 	return 0;
 }
@@ -550,7 +550,6 @@ apply_fluoride_to_fangs(void)
 	int		tool_dip = DEFAULT_TOOL_DIP;
 	int		tool_effort = DEFAULT_TOOL_EFFORT;
 
-	creature_init(&creature);
 	/*
 	 * Next we will loop through the fangs asking the user how much to
 	 * dip the tool in the flouride and how much effort to apply to the
@@ -716,8 +715,10 @@ main_program(int reloadflag)
 	 * If we are reloading the game state, we do not need to initialize
 	 * it again
 	 */
-	if (!reloadflag)
+	if (!reloadflag) {
 		init_game_state(game_state.bflag);
+		creature_init(&creature);
+	}
 
 	/* If daggerset is not set, we will not use the dagger */
 	if (!game_state.daggerset) {

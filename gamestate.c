@@ -240,7 +240,7 @@ validate_game_file(char *optarg)
 
 
 void
-save_game_state_sandboxed(const char *save_path, const void *gamestate, size_t len)
+save_game_state_sandboxed(const char *save_path, const game_state_type *gamestate, size_t gs_len, const creature_type *patient, size_t plen)
 {
 	int		pipefd[2];
 	if (pipe(pipefd) == -1)
@@ -289,27 +289,27 @@ save_game_state_sandboxed(const char *save_path, const void *gamestate, size_t l
 		if (write(pipefd[1], &db_info, sizeof(db_info)) != sizeof(db_info))
 			errx(1, "Failed to write database info to file %s", save_path);
 
-		if (write(pipefd[1], gamestate, len) != (ssize_t) len)
+		if (write(pipefd[1], gamestate, gs_len) != (ssize_t) gs_len)
 			warn("partial write");
 
-		if (write(pipefd[1], &creature, sizeof(creature)) != sizeof(creature))
-			errx(1, "Failed to write creature data to file %s", save_path);
+		if (write(pipefd[1], patient, plen) != plen)
+			errx(1, "Failed to write patient data to file %s", save_path);
 		/* write all string pointers from structures */
-		if (game_state.character_name != NULL) {
-			if (write(pipefd[1], game_state.character_name, strlen(game_state.character_name) + 1) != (strlen(game_state.character_name) + 1))
+		if (gamestate->character_name != NULL) {
+			if (write(pipefd[1], gamestate->character_name, strlen(gamestate->character_name) + 1) != (strlen(gamestate->character_name) + 1))
 				errx(1, "Failed to write character name to file %s", save_path);
 		}
-		if (creature.name != NULL) {
-			if (write(pipefd[1], creature.name, strlen(creature.name) + 1) != (strlen(creature.name) + 1))
+		if (patient->name != NULL) {
+			if (write(pipefd[1], patient->name, strlen(patient->name) + 1) != (strlen(patient->name) + 1))
 				errx(1, "Failed to write creature name to file %s", save_path);
 		}
-		if (creature.species != NULL) {
-			if (write(pipefd[1], creature.species, strlen(creature.species) + 1) != (strlen(creature.species) + 1))
+		if (patient->species != NULL) {
+			if (write(pipefd[1], patient->species, strlen(patient->species) + 1) != (strlen(patient->species) + 1))
 				errx(1, "Failed to write creature species to file %s", save_path);
 		}
 		for (int i = 0; i < 4; i++) {
-			if (creature.fangs[i].color != NULL) {
-				if (write(pipefd[1], creature.fangs[i].color, strlen(creature.fangs[i].color) + 1) != (strlen(creature.fangs[i].color) + 1))
+			if (patient->fangs[i].color != NULL) {
+				if (write(pipefd[1], patient->fangs[i].color, strlen(patient->fangs[i].color) + 1) != (strlen(patient->fangs[i].color) + 1))
 					errx(1, "Failed to write fang color to file %s", save_path);
 			}
 		}
