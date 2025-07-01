@@ -216,10 +216,10 @@ testCONCAT_PATH(void)
 	CU_ASSERT(strlen(path) > 0);
 }
 
-void testVALIDATE_GAME(void) 
+void testVALIDATE_GAME_FILE(void) 
 {
 	char *failed_path = "/dev/null";
-	CU_ASSERT(validate_game(failed_path) == 1);
+	CU_ASSERT(validate_game_file(failed_path) == 1);
 }
 int
 main()
@@ -246,7 +246,7 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
-		(NULL == CU_add_test(pSuite, "test validate game()", testVALIDATE_GAME)) ||
+		(NULL == CU_add_test(pSuite, "test validate game()", testVALIDATE_GAME_FILE)) ||
 	(NULL == CU_add_test(pSuite, "test of save_game_state()", testSAVEGAMESTATE)) ||
 	(NULL == CU_add_test(pSuite, "test of load_game()", testLOADGAME)) ||
 	    (NULL == CU_add_test(pSuite, "test of return_concat_path()", testCONCAT_PATH))) {
