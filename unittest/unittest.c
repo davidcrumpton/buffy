@@ -174,19 +174,7 @@ testFANG_IDX_TO_NAME(void)
 	CU_ASSERT(strcmp(fang_idx_to_name(3), "Mandibular Right Canine") == 0);
 	CU_ASSERT(strcmp(fang_idx_to_name(4), "Unknown Fang") == 0);	/* unkown fang index */
 }
-/*
-	void
-	testSAVEGAMESTATE(void)
-	{
-		int     result = save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature))
-		CU_ASSERT(result == 0);	/* Assuming save_game returns 0 on success */
 
-		/* Now load the game to verify */
-		result = load_game(save_path);
-		CU_ASSERT(result == 0);	/* Assuming load_game returns 0 on success */
-
-	}
-*/
 void
 testLOADGAME(void)
 {
