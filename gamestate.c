@@ -20,6 +20,7 @@
  *
  */
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -234,4 +235,93 @@ validate_game_file(char *optarg)
 	if (game_state.flouride < 0 || game_state.tool_dip < 0 || game_state.tool_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0)
 		errx(1, "Invalid game state in %s", optarg);
 	close(fd);
+}
+
+
+
+void
+save_game_state_sandboxed(const char *save_path, const void *gamestate, size_t len)
+{
+	int		pipefd[2];
+	if (pipe(pipefd) == -1)
+		err(1, "pipe");
+
+	pid_t		pid = fork();
+	if (pid == -1) {
+		err(1, "fork");
+	} else if (pid == 0) {
+		/* Writer subprocess */
+		close(pipefd[1]);	/* Close write end */
+
+		if (dup2(pipefd[0], STDIN_FILENO) == -1)
+			err(1, "dup2");
+		close(pipefd[0]);
+
+#ifdef __OpenBSD__
+		if (unveil(save_path, "wc") == -1)
+			err(1, "unveil");
+		if (unveil(NULL, NULL) == -1)
+			err(1, "lock unveil");
+
+		if (pledge("stdio wpath cpath", NULL) == -1)
+			err(1, "pledge");
+#endif
+		int		fd = open(save_path, O_WRONLY | O_TRUNC | O_CREAT, 0600);
+		if (fd == -1)
+			err(1, "open save file");
+
+		char		buf[1024];
+		ssize_t		n;
+		while ((n = read(STDIN_FILENO, buf, sizeof(buf))) > 0) {
+			if (write(fd, buf, n) != n)
+				err(1, "write save");
+		}
+
+		close(fd);
+		_exit(0);	/* Success */
+	} else {
+		/* Main process */
+		close(pipefd[0]);	/* Close read end */
+
+		struct database_info db_info;
+		init_db_info(&db_info);
+
+		if (write(pipefd[1], &db_info, sizeof(db_info)) != sizeof(db_info))
+			errx(1, "Failed to write database info to file %s", save_path);
+
+		if (write(pipefd[1], gamestate, len) != (ssize_t) len)
+			warn("partial write");
+
+		if (write(pipefd[1], &creature, sizeof(creature)) != sizeof(creature))
+			errx(1, "Failed to write creature data to file %s", save_path);
+		/* write all string pointers from structures */
+		if (game_state.character_name != NULL) {
+			if (write(pipefd[1], game_state.character_name, strlen(game_state.character_name) + 1) != (strlen(game_state.character_name) + 1))
+				errx(1, "Failed to write character name to file %s", save_path);
+		}
+		if (creature.name != NULL) {
+			if (write(pipefd[1], creature.name, strlen(creature.name) + 1) != (strlen(creature.name) + 1))
+				errx(1, "Failed to write creature name to file %s", save_path);
+		}
+		if (creature.species != NULL) {
+			if (write(pipefd[1], creature.species, strlen(creature.species) + 1) != (strlen(creature.species) + 1))
+				errx(1, "Failed to write creature species to file %s", save_path);
+		}
+		for (int i = 0; i < 4; i++) {
+			if (creature.fangs[i].color != NULL) {
+				if (write(pipefd[1], creature.fangs[i].color, strlen(creature.fangs[i].color) + 1) != (strlen(creature.fangs[i].color) + 1))
+					errx(1, "Failed to write fang color to file %s", save_path);
+			}
+		}
+
+
+		close(pipefd[1]);
+
+		int		status;
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+			warnx("writer exited with code %d", WEXITSTATUS(status));
+		else if (WIFSIGNALED(status))
+			warnx("writer killed by signal %d", WTERMSIG(status));
+	}
 }

@@ -46,6 +46,7 @@ extern const char *maxillary_fangs[];
 extern const char *mandibular_fangs[];
 
 extern void	print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right, int using_curses);
+void save_game_state_sandboxed(const char *save_path, const void *gamestate, size_t len);
 static int	exit_game(void);
 
 
@@ -150,7 +151,8 @@ default_game_save(void)
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
 	my_printf("Saving game to: %s\n", save_path);
-	save_game(save_path);
+	save_game_state_sandboxed(save_path, &game_state, sizeof(game_state));
+	/* save_game(save_path); */
 	return 0;
 }
 
