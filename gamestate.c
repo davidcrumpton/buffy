@@ -188,7 +188,7 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		if (unveil(NULL, NULL) == -1)
 			err(1, "lock unveil");
 
-		if (pledge("stdio wpath cpath", NULL) == -1)
+		if (pledge("stdio wpath cpath proc", NULL) == -1)
 			err(1, "pledge");
 #endif
 		int		fd = open(save_path, O_WRONLY | O_TRUNC | O_CREAT, 0600);
