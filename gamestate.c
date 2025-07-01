@@ -405,7 +405,7 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		if (unveil(NULL, NULL) == -1)
 			err(1, "lock unveil");
 
-		if (pledge("stdio wpath cpath", NULL) == -1)
+		if (pledge("stdio wpath cpath proc", NULL) == -1)
 			err(1, "pledge");
 #endif
 		int		fd = open(save_path, O_WRONLY | O_TRUNC | O_CREAT, 0600);
@@ -515,46 +515,37 @@ validate_game_file(const char *file)
 			err(1, "%s is too small to be a valid game file", optarg);
 			goto end_validation;
 		}
-		puts("518");
 		struct database_info db_info;
 		if (read(fd, &db_info, sizeof(db_info)) != sizeof(db_info)) {
 			err(1, "Failed to read database info from file %s", optarg);
 			goto end_validation;
 		}
-		puts("524");
 		if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE) {
 			err(1, "Incompatible game file version in %s", optarg);
 			goto end_validation;
 		}
-		puts("529");
 		if (lseek(fd, sizeof(db_info), SEEK_SET) == -1) {
 			err(1, "Failed to seek in file %s", optarg);
 			goto end_validation;
 		}
-		puts("534");
 		static game_state_type game_state_v;
 		if (read(fd, &game_state_v, sizeof(game_state_v)) != sizeof(game_state_v)) {
 			err(1, "Failed to read game state from file %s", optarg);
 			goto end_validation;
 		}
-		puts("540");
 		if (read(fd, &creature, sizeof(creature)) != sizeof(creature)) {
 			err(1, "Failed to read creature data from file %s", optarg);
 			goto end_validation;
 		}
-		puts("545");
 		if (game_state_v.flouride < 0 || game_state_v.tool_dip < 0 || game_state_v.tool_effort < 0 || game_state_v.flouride_used < 0 || game_state_v.bflag < 0 || game_state_v.daggerset < 0) {
 			err(1, "Invalid game state in %s", optarg);
 			goto end_validation;
 		}
-		puts("550");
 		isvalid = 0;
 
 end_validation:
 
-		puts("555");
 		close(fd);
-		puts("557");
 		return isvalid;	/* child ends */
 	} else {
 		int		status;
