@@ -120,7 +120,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Unexpected EOF while reading character name from %s", load_path);
 			len++;	/* Include null terminator */
 			fseek(fp, pos, SEEK_SET);
-			gamestate.character_name = character_name_g;
+			gamestate.character_name = malloc(len);
 			if (gamestate.character_name == NULL)
 				errx(1, "Failed to allocate memory for character name");
 			if (fread(gamestate.character_name, len, 1, fp) != 1)
@@ -140,7 +140,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Unexpected EOF while reading patient name from %s", load_path);
 			len++;
 			fseek(fp, pos, SEEK_SET);
-			patient.name = patient_name_g;
+			patient.name = malloc(len);
 			if (patient.name == NULL)
 				errx(1, "Failed to allocate memory for patient name");
 			if (fread(patient.name, len, 1, fp) != 1)
@@ -159,7 +159,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Unexpected EOF while reading patient species from %s", load_path);
 			len++;
 			fseek(fp, pos, SEEK_SET);
-			patient.species = patient_species_g;
+			patient.species = malloc(len);
 			if (patient.species == NULL)
 				errx(1, "Failed to allocate memory for patient species");
 			if (fread(patient.species, len, 1, fp) != 1)
