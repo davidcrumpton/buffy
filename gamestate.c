@@ -363,11 +363,11 @@ validate_game_file(const char *file)
 		/* child */
 #ifdef __OpenBSD__
 		if (unveil(file, "r") == -1)
-			err(1, "unveil file");
+			err(1, "unveil");
 		if (unveil(NULL, NULL) == -1)
 			err(1, "lock unveil");
 
-		if (pledge("stdio rpath unveil proc", NULL) == -1)
+		if (pledge("stdio rpath", NULL) == -1)
 			err(1, "pledge: 371");
 #endif
 
