@@ -77,7 +77,7 @@ typedef struct fang_info {
 	/* Universal tooth numbering system */
 }		fang_info_type;
 
-void save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen);
+int save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen);
 
 int		load_game(const char *file);
 

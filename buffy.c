@@ -47,7 +47,7 @@ extern const char *maxillary_fangs[];
 extern const char *mandibular_fangs[];
 
 extern void	print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right, int using_curses);
-void save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen);
+int save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen);
 void
 load_game_state(const char *load_path,game_state_type * gamestate_g, size_t gs_len,
 	creature_type * patient_g, size_t plen, char *character_name_g, char *patient_name_g, char *patient_species_g);
@@ -146,19 +146,18 @@ choose_random_tool(int isdaggerset)
  * need a default_game_save wrapper to set the path returns 0 on success and
  * -1 on failure calls return_concat_path to build out path
  */
-int
+static void
 default_game_save(void)
 {
 	char	       *saved_pathname = return_concat_path(DEFAULT_SAVE_FILE);
 	if (saved_pathname == NULL) {
-		fprintf(stderr, "Unable to determine save path.\n");
-		return -1;
+		errx(1, "Unable to determine save path.\n");
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
 	my_printf("Saving game to: %s\n", save_path);
-	save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature));
-
-	return 0;
+	if(save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature)) != 0) {
+		errx(1, "Unable to save game state to %s", save_path);
+	}
 }
 
 /* Initialize the game state with default values */
@@ -644,19 +643,10 @@ apply_fluoride_to_fangs(void)
 			my_printf("%s quits the game.\n", game_state.character_name);
 			goto success;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
-			/*
-			 * fetch user's home directory is done in init and
-			 * placed in save_path
-			 */
-			/* Save the game state to the specified file */
-			if (default_game_save() == -1) {
-				my_print_err("Failed to save game state.\n");
-				exit(EXIT_FAILURE);
-			}
-			/* Print success message */
-			my_printf("Game saved successfully to %s\n", save_path);
-			cleaning = 0;
-			/* Exit the loop after saving */
+			/* Save the game state to the default file */
+			/* and quit */
+			default_game_save();
+			exit_game();
 		} else {
 			my_print_err("Thanks for playing.\n");
 			goto success;
@@ -701,7 +691,7 @@ exit_game(void)
 	print_creature_fangs(&creature, 0);
 	print_tool_in_use();
 	// my_printf("Game saved to: %s\n", save_path);
-	// if (default_game_save() == -1) {
+	// if (default_game_save() != 0) {
 	// 	fprintf(stderr, "Failed to save game state.\n");
 	// 	exit(EXIT_FAILURE);
 	// }

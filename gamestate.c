@@ -251,7 +251,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 
 
 
-void
+int
 save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen)
 {
 	int		pipefd[2];
@@ -333,15 +333,16 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		while (waitpid(pid, &status, 0) == -1) {
 			if (errno == EINTR)
 				continue;
-		warn("waitpid failed");
+			warn("waitpid failed");
 
-   		return;
-}
-		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-			warnx("writer exited with code %d", WEXITSTATUS(status));
+   		return 1;	
+ 		}
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
 		else if (WIFSIGNALED(status))
 			warnx("writer killed by signal %d", WTERMSIG(status));
 	}
+	return 0;
 }
 
 
