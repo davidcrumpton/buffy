@@ -56,16 +56,16 @@ creature_type	creature;
 
 
 
-/* Array of fangs with proper dental names and numbers */
+
 fang_info_type	fang_names[] = {
 	{"Maxillary Right Canine", 6},
 	{"Maxillary Left Canine", 11},
 	{"Mandibular Right Canine", 27},
 	{"Mandibular Left Canine", 22},
-	{"Unknown Fang", 0}	/* Default for unknown fang */
+	{"Unknown Fang", 0}	
 };
 
-/* a structure to use for the selected tool */
+
 
 tool		tools[] = {
 	{"Buffy's Fingernail", "A sharp fingernail for cleaning teeth", 5, 1, 10, 1, 50, 0},
@@ -76,7 +76,7 @@ tool		tools[] = {
 	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 10, 200, 0}
 };
 
-/* we will have vampire, orc, werewolf, serpent, dragon */
+
 struct creature	creatures[] = {
 	{DEFAULT_CREATURE_AGE, "Dracula", "Vampire", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{DEFAULT_CREATURE_AGE, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
@@ -94,12 +94,7 @@ usage(void)
 	fprintf(stderr, "%s: [ -b | --not-named-buffy ] [ -f | --fluoride-file <file> ] [ --daggerset ]\n", __progname);
 	exit(EXIT_FAILURE);
 }
-/*
- * return_home_dir(append_str) returns pointer to string containing home
- * directory appended with append_str if not NULL Returns NULL pointer if
- * unable to determine home directory or other error occurs.
- *
- */
+
 
 char	       *
 return_concat_path(const char *append_str)
@@ -119,17 +114,16 @@ return_concat_path(const char *append_str)
 	return home_dir;
 }
 
-/* choose random tool returns one of the array index from 0 -5 */
+
 int
 choose_random_tool(int isdaggerset)
 {
-	/* Generate a random number between 0 and 5 */
+	
 	if (isdaggerset) {
-		return arc4random_uniform(3) + 3;	/* Return index 3, 4, or
-							 * 5 for daggers */
+		return arc4random_uniform(3) + 3;	/* daggers idx 3, 4, or
+							 * 5 */
 	} else {
-		return arc4random_uniform(3);	/* Return index 0, 1, or 2
-						 * for non-daggers */
+		return arc4random_uniform(3);	
 	}
 }
 
@@ -156,7 +150,7 @@ default_game_save(void)
 static void
 init_game_state(int bflag)
 {
-	/* Initialize game state with default values */
+
 	game_state.flouride = DEFAULT_FLOURIDE;
 	game_state.tool_dip = DEFAULT_TOOL_DIP;
 	game_state.tool_effort = DEFAULT_TOOL_EFFORT;
@@ -193,10 +187,6 @@ static void
 randomize_fangs(struct creature *fanged_beast, int count)
 {
 	for (int i = 0; i < count; i++) {
-		/*
-		 * arc4random_uniform(n) returns 0 to n-1, so add offset as
-		 * needed
-		 */
 		fanged_beast->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
 		fanged_beast->fangs[i].sharpness = 5 + arc4random_uniform(4);	/* 5–8 */
 
@@ -209,7 +199,7 @@ randomize_fangs(struct creature *fanged_beast, int count)
 		else
 			fanged_beast->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */
 
-		/* Set color based on health */
+			
 		if (fanged_beast->fangs[i].health >= 90)
 			fanged_beast->fangs[i].color = "white";
 		else if (fanged_beast->fangs[i].health >= 80)
@@ -308,9 +298,6 @@ calculate_flouride_used(int tool_dip, int tool_effort)
 		used = (int)(used * 1.5);	/* Dragons need much more */
 	}
 
-	/* Some tools may not use fluoride at all */
-	if (tools[game_state.tool_in_use].dip_amount == 0)
-		used = 0;
 
 	game_state.flouride_used = used;
 	if (game_state.flouride_used > game_state.flouride) {
@@ -635,8 +622,6 @@ apply_fluoride_to_fangs(void)
 			my_printf("%s quits the game.\n", game_state.character_name);
 			goto success;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
-			/* Save the game state to the default file */
-			/* and quit */
 			default_game_save();
 			exit_game();
 		} else {
@@ -682,11 +667,6 @@ exit_game(void)
 	print_creature(&creature);
 	print_creature_fangs(&creature, 0);
 	print_tool_in_use();
-	// my_printf("Game saved to: %s\n", save_path);
-	// if (default_game_save() != 0) {
-	// 	fprintf(stderr, "Failed to save game state.\n");
-	// 	exit(EXIT_FAILURE);
-	// }
 	print_flouride_info();
 
 	exit(EXIT_SUCCESS);
@@ -705,7 +685,7 @@ main_program(int reloadflag)
 		creature_init(&creature);
 	}
 
-	/* If daggerset is not set, we will not use the dagger */
+	/* Use dagger only with --daggerset option */
 	if (!game_state.daggerset) {
 		game_state.tool_dip = DEFAULT_TOOL_DIP;
 		game_state.tool_effort = DEFAULT_TOOL_EFFORT;
@@ -756,11 +736,6 @@ main(int argc, char *argv[])
 			printf("%s version %s\n", __progname, VERSION);
 			exit(EXIT_SUCCESS);
 		case 'c':
-			/*
-			 * increase curses by one for each -c option if curse
-			 * is greater than 1 then we will enable colorized
-			 * mode, otherwise we will enable curses mode
-			 */
 			curses++;
 			if (curses > 1) {
 				fprintf(stderr, "Curses colorized mode enabled.\n");
@@ -836,8 +811,8 @@ main(int argc, char *argv[])
 		usage();
 
 	/*
-	 * Initialize game state if fflag is not set we do not care about any
-	 * other options since options are stored in the game_state struct
+	 * Initialize game state if fflag is not since we are not
+	 * restoring a saved game
 	 */
 
 	if (!fflag)
