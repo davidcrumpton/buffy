@@ -60,7 +60,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 	pid_t		pid;
 
 
-	
+
 
 	if (pipe(pipefd) == -1) {
 		perror("pipe");
@@ -238,7 +238,6 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 			if (!patient_g->fangs[i].color)
 				errx(1, "Failed to allocate memory for fang color %d", i);
 			memcpy(patient_g->fangs[i].color, temp, n);
-			printf("color %d: %s\n", i, patient_g->fangs[i].color);
 		}
 		close(pipefd[0]);
 	}
