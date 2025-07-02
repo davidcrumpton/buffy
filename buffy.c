@@ -670,7 +670,6 @@ success:
 
 
 	if (game_state.using_curses) {
-		game_state.using_curses = 0;
 		end_curses();
 	}
 	my_printf("Remaining fluoride: %d\n", game_state.flouride);
@@ -689,7 +688,6 @@ static int	__dead
 exit_game(void)
 {
 	if (game_state.using_curses) {
-		game_state.using_curses = 0;
 		end_curses();
 	}
 	my_printf("Exiting the game...\n");
