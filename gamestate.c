@@ -17,6 +17,7 @@
 
 /*
  * gamestate.c: saves the game structures to file specified by filename
+ * save, loads, and verify use privsep to read and write the game
  *
  */
 #include <sys/stat.h>

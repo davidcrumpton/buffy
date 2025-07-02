@@ -17,7 +17,8 @@
 
 /*
  * buffy.c: contains the main game loop and initialization code for the Buffy
- * game.
+ * game. It initializes the game state, handles command line arguments, and
+ * 
  */
 #include <sys/stat.h>
 #include <sys/param.h>
