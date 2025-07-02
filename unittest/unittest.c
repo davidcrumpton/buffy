@@ -113,6 +113,42 @@ testPRINT_FANG_INFO(void)
 	}
 }
 
+void testSAVE_GAME_STATE(void)
+{
+	/* Initialize game state and creature */
+	init_game_state(1);
+	creature_init(&creature);
+	randomize_fangs(&creature, 4);
+	/* Assuming the game state is saved to a file */
+	const char *save_path = "test_game_state.dat";
+	save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature));
+	/* Check if the file exists and has the expected size */
+	struct stat st;
+	CU_ASSERT(stat(save_path, &st) == 0);
+	CU_ASSERT(st.st_size > 0);	/* Ensure the file is not empty */
+}
+
+void testLOAD_GAME_STATE(void)
+{
+/* Create our own storage for the game state and creature */
+	struct game_state_type game_state;
+	struct creature_type creature;
+	creature_init(&creature);
+	randomize_fangs(&creature, 4);
+	/* Assuming the game state is loaded from a file */
+	const char *load_path = "test_game_state.dat";
+	load_game_state(load_path, &game_state, sizeof(game_state), &creature, sizeof(creature),
+			"test_character_name", "test_creature_name", "test_creature_species");
+	CU_ASSERT(game_state.flouride >= 0);
+	CU_ASSERT(game_state.tool_dip >= 0);
+	CU_ASSERT(game_state.tool_effort >= 0);
+	CU_ASSERT(game_state.flouride_used >= 0);
+	CU_ASSERT(game_state.bflag >= 0);
+	CU_ASSERT(game_state.score >= 0);
+	CU_ASSERT(game_state.turns >= 0);
+	CU_ASSERT(game_state.tool_in_use >= 0 && game_state.tool_in_use < 6);	/* Assuming 6 tools */
+}
+
 void
 testPRINT_CREATURE_INFO(void)
 {
@@ -214,6 +250,10 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
 		(NULL == CU_add_test(pSuite, "test validate game()", testVALIDATE_GAME_FILE)) ||
+		(NULL == CU_add_test(pSuite, "test of save_game_state()", testSAVE_GAME_STATE)) ||
+		(NULL == CU_add_test(pSuite, "test of load_game_state()", testLOAD_GAME_STATE)) ||
+
+		
 	    (NULL == CU_add_test(pSuite, "test of return_concat_path()", testCONCAT_PATH))) {
 		CU_cleanup_registry();
 		return CU_get_error();
