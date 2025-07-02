@@ -78,10 +78,10 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				 * parent */
 		close(pipefd[0]);	/* close stdin since we are output */
 #ifdef __OpenBSD__
-	// if (unveil(load_path, "r") == -1)
-	// 	err(1, "unveil file proc");
-	// if (unveil(NULL, NULL) == -1)
-	// 	err(1, "lock unveil");
+	if (unveil(load_path, "r") == -1)
+		err(1, "unveil file proc");
+	if (unveil(NULL, NULL) == -1)
+		err(1, "lock unveil");
 
 	if (pledge("stdio rpath", NULL) == -1)
 		err(1, "pledge: 87");
@@ -270,13 +270,13 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		close(pipefd[0]);
 
 #ifdef __OpenBSD__
-		if (unveil(save_path, "rwc") == -1)
+		if ((save_path, "rwc") == -1)
 			err(1, "unveil");
 		if (unveil(NULL, NULL) == -1)
 			err(1, "lock unveil");
 
-		if (pledge("stdio wpath cpath unveil proc tty", NULL) == -1)
-			err(1, "pledge: 279");
+		if (pledge("stdio wpath cpath", NULL) == -1)
+			err(1, "pledge:");
 #endif
 		int		fd = open(save_path, O_WRONLY | O_TRUNC | O_CREAT, 0600);
 		if (fd == -1)
