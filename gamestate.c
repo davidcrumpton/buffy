@@ -58,7 +58,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 	pid_t		pid;
 
 #ifdef __OpenBSD__
-	if (unveil(file, "r") == -1)
+	if (unveil(load_path, "r") == -1)
 		err(1, "unveil file");
 	if (unveil(NULL, NULL) == -1)
 		err(1, "lock unveil");
