@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
@@ -119,7 +120,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Unexpected EOF while reading character name from %s", load_path);
 			len++;	/* Include null terminator */
 			fseek(fp, pos, SEEK_SET);
-			gamestate.character_name = malloc(len);
+			gamestate.character_name = character_name_g;
 			if (gamestate.character_name == NULL)
 				errx(1, "Failed to allocate memory for character name");
 			if (fread(gamestate.character_name, len, 1, fp) != 1)
@@ -139,7 +140,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Unexpected EOF while reading patient name from %s", load_path);
 			len++;
 			fseek(fp, pos, SEEK_SET);
-			patient.name = malloc(len);
+			patient.name = patient_name_g;
 			if (patient.name == NULL)
 				errx(1, "Failed to allocate memory for patient name");
 			if (fread(patient.name, len, 1, fp) != 1)
@@ -158,7 +159,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Unexpected EOF while reading patient species from %s", load_path);
 			len++;
 			fseek(fp, pos, SEEK_SET);
-			patient.species = malloc(len);
+			patient.species = patient_species_g;
 			if (patient.species == NULL)
 				errx(1, "Failed to allocate memory for patient species");
 			if (fread(patient.species, len, 1, fp) != 1)
@@ -329,7 +330,13 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		close(pipefd[1]);
 
 		int		status;
-		waitpid(pid, &status, 0);
+		while (waitpid(pid, &status, 0) == -1) {
+			if (errno == EINTR)
+				continue;
+		warn("waitpid failed");
+
+   		return;
+}
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 			warnx("writer exited with code %d", WEXITSTATUS(status));
 		else if (WIFSIGNALED(status))
@@ -413,18 +420,20 @@ validate_game_file(const char *file)
 		}
 		isvalid = 0;
 		printf("valid file %s", file);
-		return isvalid;
+		exit(isvalid);
 
 end_validation:
 
 		close(fd);
-		return isvalid;	/* child ends */
+		exit(isvalid);	/* child ends */
 	} else {		/* Parent */
 		int		status;
-		if (waitpid(pid, &status, 0) == -1) {
-			warn("waitpid failed");
-			return 1;
-		}
+		while (waitpid(pid, &status, 0) == -1) {
+			if (errno == EINTR)
+				continue;
+		warn("waitpid failed");
+		return 1;
+}
 
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));

@@ -702,11 +702,11 @@ exit_game(void)
 	print_creature(&creature);
 	print_creature_fangs(&creature, 0);
 	print_tool_in_use();
-	my_printf("Game saved to: %s\n", save_path);
-	if (default_game_save() == -1) {
-		fprintf(stderr, "Failed to save game state.\n");
-		exit(EXIT_FAILURE);
-	}
+	// my_printf("Game saved to: %s\n", save_path);
+	// if (default_game_save() == -1) {
+	// 	fprintf(stderr, "Failed to save game state.\n");
+	// 	exit(EXIT_FAILURE);
+	// }
 	print_flouride_info();
 
 	exit(EXIT_SUCCESS);
@@ -828,6 +828,10 @@ main(int argc, char *argv[])
 			 * from it
 			 */
 			load_game_state(optarg, &game_state, sizeof(game_state), &creature, sizeof(creature), character_name, creature_name, creature_species);
+			creature.name = creature_name;
+			creature.species = creature_species;
+			game_state.character_name = character_name;
+
 			break;
 		case 0:
 			if (game_state.daggerset)
