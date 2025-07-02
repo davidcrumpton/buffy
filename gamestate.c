@@ -78,10 +78,10 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				 * parent */
 		close(pipefd[0]);	/* close stdin since we are output */
 #ifdef __OpenBSD__
-	if (unveil(load_path, "r") == -1)
-		err(1, "unveil file proc");
-	if (unveil(NULL, NULL) == -1)
-		err(1, "lock unveil");
+	// if (unveil(load_path, "r") == -1)
+	// 	err(1, "unveil file proc");
+	// if (unveil(NULL, NULL) == -1)
+	// 	err(1, "lock unveil");
 
 	if (pledge("stdio rpath", NULL) == -1)
 		err(1, "pledge: 87");

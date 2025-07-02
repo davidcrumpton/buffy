@@ -866,15 +866,15 @@ main(int argc, char *argv[])
 		if (unveil(save_path, "rwc") == -1) {
 			err(1, "unveil");
 			return EXIT_FAILURE;
-		}
 
-	if (unveil(NULL, NULL) == -1) {
-		err(1, "unveil fluoride file");
-		return EXIT_FAILURE;
+		if (unveil(NULL, NULL) == -1) {
+			err(1, "unveil lock");
+			return EXIT_FAILURE;
+		}
 	}
 
 	if (pledge("stdio rpath wpath cpath proc unveil", NULL) == -1)
-		err(1, "pledge:879");
+		err(1, "pledge");
 #endif
 
 	exit(main_program(fflag));
