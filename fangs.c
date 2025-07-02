@@ -126,7 +126,6 @@ print_fang_art(const int upper_fangs, int rows, int health_level_left, int healt
 		fangs = mandibular_fangs;
 
 	if (using_curses) {
-		/* Clear the screen if using curses */
 		clear();
 	}
 	if (!using_curses)
@@ -138,16 +137,14 @@ print_fang_art(const int upper_fangs, int rows, int health_level_left, int healt
 		}
 	else {
 		static char	buffer[1024];	/* Adjust size as needed */
-		buffer[0] = '\0';	/* Initialize buffer */
+		buffer[0] = '\0';
 		for (int i = 0; i < rows; ++i) {
 			for (int j = 0; fangs[i][j] != '\0'; ++j) {
 				char		c = substitute_marker(fangs[i][j], health_level_left, health_level_right);
-				strncat(buffer, &c, 1);	/* Append character to
-							 * buffer */
+				strncat(buffer, &c, 1);	
 			}
-			strncat(buffer, "\n", 1);	/* Append newline */
+			strncat(buffer, "\n", 1);
 		}
-		my_printf("%s", buffer);	/* Print the buffer
-						 * containing the fang art */
+		my_printf("%s", buffer);
 	}
 }

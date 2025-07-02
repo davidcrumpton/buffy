@@ -22,20 +22,18 @@
 #include "buffy.h"
 
 static int using_curses = 0;
-static int color_mode = 0;	/* Global flag to indicate if curses is used */
-
-/* Global flag to switch modes */
+static int color_mode = 0;	
 
 void
 set_using_curses(int flag)
 {
-	using_curses = flag;	/* Set the global flag */
+	using_curses = flag;
 }
 
 void
 set_color_mode(int flag)
 {
-	color_mode = flag;	/* Set the global color mode flag */
+	color_mode = flag;	
 }
 void
 get_input(const char *prompt, char *buffer, size_t size)
@@ -49,8 +47,6 @@ get_input(const char *prompt, char *buffer, size_t size)
 		printf("%s", prompt);
 		fflush(stdout);
 		fgets(buffer, size, stdin);
-		/* buffer[strcspn(buffer, "\n")] = 0; */
-		/* Remove newline */
 	}
 }
 
@@ -61,9 +57,9 @@ my_print_err(const char *format,...)
 	va_list		args;
 	va_start(args, format);
 	if (using_curses) {
-		/* Use a separate window for error messages */
+		/* Uses a separate window for error messages */
 		WINDOW	       *err_win = newwin(3, COLS - 2, LINES - 3, 1);
-		wattron(err_win, A_BOLD | COLOR_PAIR(1));	/* Use color pair 1 */
+		wattron(err_win, A_BOLD | COLOR_PAIR(1));	
 		mvwprintw(err_win, 1, 1, format, args);
 		wattroff(err_win, A_BOLD | COLOR_PAIR(1));
 		wrefresh(err_win);
@@ -95,7 +91,7 @@ mv_printw(int row, int col, const char *format,...)
 	va_list		args;
 	va_start(args, format);
 	if (using_curses) {
-		move(row, col);	/* Move to the desired position */
+		move(row, col);	
 		vw_printw(stdscr, format, args);
 		refresh();
 	} else {
@@ -109,13 +105,13 @@ void
 my_putchar(char c)
 {
 	if (using_curses) {
-		wmove(stdscr, 0, 0);	/* move to (0, 0) position */
+		wmove(stdscr, 0, 0);	/* top left */
 		waddch(stdscr, c);	/* add the character at the current
 					 * cursor position */
-		wrefresh(stdscr);	/* refresh the window */
+		wrefresh(stdscr);
 	} else {
-		putchar(c);	/* Print character to standard output */
-		fflush(stdout);	/* Ensure it is printed immediately */
+		putchar(c);	
+		fflush(stdout);	
 	}
 }
 
@@ -127,9 +123,10 @@ initalize_curses(void)
 		initscr();
 	}
 	if (using_curses && color_mode && has_colors()) {
-		start_color();	/* Initialize color support */
-		init_pair(1, COLOR_RED, COLOR_BLACK);	/* Example color pair */
-		attron(COLOR_PAIR(1));	/* Use the color pair */
+		start_color();	
+		init_pair(1, COLOR_RED, COLOR_BLACK);	/* red and black is a friend
+				of Jack */
+		attron(COLOR_PAIR(1));
 	}
 }
 
@@ -139,24 +136,14 @@ end_curses(void)
 
 
 	if (!using_curses) {
-		return 0;	/* If not using curses, nothing to exit */
+		return 0;
 	}
-	if (has_colors()) {
-		start_color();	/* Initialize color support */
-		init_pair(1, COLOR_RED, COLOR_BLACK);	/* Example color pair */
-		attron(COLOR_PAIR(1));	/* Use the color pair */
-	}
-
 	if (using_curses) {
 		sleep(2);
-		refresh();	/* Ensure everything is drawn */
-		def_prog_mode();	/* Save current terminal state */
-		endwin();	/* Exit curses mode */
-		reset_shell_mode();	/* Restore terminal without clearing
-					 * screen */
-
-		/* endwin(); */
-		/* Initialize curses mode */
+		refresh();
+		def_prog_mode();
+		endwin();
+		reset_shell_mode();
 	}
 	using_curses = 0;	/* Reset the flag */
 	return 0;

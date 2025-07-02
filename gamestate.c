@@ -114,12 +114,12 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 			size_t		len = 0;
 			int		c;
 			long		pos = ftell(fp);
-			/* Find length of string (including null terminator) */
+
 			while ((c = fgetc(fp)) != EOF && c != '\0')
 				len++;
 			if (c == EOF)
 				errx(1, "Unexpected EOF while reading character name from %s", load_path);
-			len++;	/* Include null terminator */
+			len++;	/* Include null */
 			fseek(fp, pos, SEEK_SET);
 			gamestate.character_name = malloc(len);
 			if (gamestate.character_name == NULL)
@@ -130,7 +130,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Failed to write patient name to parent");
 		}
 
-		/* patient name */
+
 		if (patient.name != NULL) {
 			size_t		len = 0;
 			int		c;
@@ -149,7 +149,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 			else if (write(pipefd[1], patient.name, strlen(patient.name) + 1) != (strlen(patient.name) + 1))
 				errx(1, "Failed to write patient name to parent");
 		}
-		/* patient.species */
+
 		if (patient.species != NULL) {
 			size_t		len = 0;
 			int		c;
@@ -169,7 +169,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Failed to write patient species to parent");
 
 		}
-		/* Read fang colors */
+		/* process fang colors */
 		for (int i = 0; i < 4; i++) {
 			if (patient.fangs[i].color != NULL) {
 				size_t		len = 0;
@@ -191,19 +191,19 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 			}
 		}
 
-		close(pipefd[1]);	/* Close the write end of the pipe */
-		exit(EXIT_SUCCESS);
+		close(pipefd[1]);
+		_exit(EXIT_SUCCESS);
 	} else {		/* Parent process */
-		close(pipefd[1]);	/* Close unused write end of the pipe */
+		close(pipefd[1]);	/* Close stdout */
 
-		/* Begin parent read from stdin pipe */
+		/* read from stdin pipe */
 
 		if (read(pipefd[0], gamestate_g, gs_len) != gs_len)
 			errx(1, "Failed to read game state from file %s", load_path);
 		if (read(pipefd[0], patient_g, plen) != plen)
 			errx(1, "Failed to read creature data from file %s", load_path);
 
-		/* Read identify strings */
+		/* Read strings */
 		int ch = 0, n = 0;
 		do {
 			if (read(pipefd[0], &ch, 1) != -1)
@@ -262,8 +262,8 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 	if (pid == -1) {
 		err(1, "fork");
 	} else if (pid == 0) {
-		/* Writer subprocess */
-		close(pipefd[1]);	/* Close write end */
+		/* Writer subprocess (Child) */
+		close(pipefd[1]);	/* Close stdout*/
 
 		if (dup2(pipefd[0], STDIN_FILENO) == -1)
 			err(1, "dup2");
@@ -290,7 +290,7 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		}
 
 		close(fd);
-		_exit(0);	/* Success */
+		_exit(EXIT_SUCCESS);	/* Success */
 	} else {
 		/* Main process */
 		close(pipefd[0]);	/* Close read end */
@@ -423,12 +423,12 @@ validate_game_file(const char *file)
 		}
 		isvalid = 0;
 		printf("valid file %s", file);
-		exit(isvalid);
+		_exit(isvalid);
 
 end_validation:
 
 		close(fd);
-		exit(isvalid);	/* child ends */
+		_exit(isvalid);	/* child ends */
 	} else {		/* Parent */
 		int		status;
 		while (waitpid(pid, &status, 0) == -1) {

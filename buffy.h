@@ -23,7 +23,7 @@
 
 #ifndef BUFFY_H
 #define BUFFY_H
-/* refactor dagger as tool */
+
 typedef struct game_state {
 	int		daggerset;
 	int		flouride;
@@ -33,14 +33,12 @@ typedef struct game_state {
 	int		bflag;
 	int		score;
 	int		turns;
-	int		using_curses;	/* Flag to indicate if curses is used */
-	int		color_mode;	/* Flag to indicate if color mode is
-					 * enabled */
-	int		last_tool_dip;	/* Last dip amount used */
-	int		last_tool_effort;	/* Last effort used */
-	int		tool_in_use;	/* Index of the tool currently in use */
-	char	       *character_name;	/* Name of the character, e.g.,
-					 * "Buffy" */
+	int		using_curses;
+	int		color_mode;	
+	int		last_tool_dip;
+	int		last_tool_effort;
+	int		tool_in_use;
+	char	       *character_name;	
 }		game_state_type;
 
 typedef struct creature {
@@ -51,38 +49,35 @@ typedef struct creature {
 		int		length;
 		int		sharpness;
 		char	       *color;
-		int		health;	/* health of the fangs from 0 to 10 */
+		int		health;
 	}		fangs[4];
 }		creature_type;
 
 typedef struct tool {
-	char	       *name;	/* Name of the tool, e.g., "Dagger" */
-	char	       *description;	/* Description of the tool */
-	int		length;	/* Length of the tool, e.g., 10 for a dagger */
-	int		dip_amount;	/* Amount of fluoride the tool can
-					 * hold */
-	int		effort;	/* Effort required to use the tool */
+	char	       *name;
+	char	       *description;
+	int		length;
+	int		dip_amount;	
+	int		effort;
 
-	int		effectiveness;	/* Effectiveness of the tool, e.g., 5
-					 * for a dagger */
-	int		durability;	/* Durability of the tool, e.g., 100
-					 * for a dagger */
-	int		used;	/* Amount of fluoride used with the tool */
+	int		effectiveness;
+	int		durability;
+	int		used;
 }		tool;
 
-/* Define a struct for detailed fang information */
+
 typedef struct fang_info {
 	const char     *name;
 	int		tooth_number;
-	/* Universal tooth numbering system */
+
 }		fang_info_type;
 
 
 
-int		load_game(const char *file);
+
 
 #define DEFAULT_CHARACTER_NAME "Buffy"
-/* Define default values as constants */
+
 #define DEFAULT_DAGGERSET       0
 #define DEFAULT_FLOURIDE        200
 #define DEFAULT_TOOL_DIP      5
@@ -103,14 +98,15 @@ int		load_game(const char *file);
 #define FANG_COLOR_MEDIUM        "dull"
 #define FANG_COLOR_LOW           "yellow"
 
-#define DEFAULT_CREATURE_AGE         100	/* Default age for the
-						 * creature */
+#define DEFAULT_CREATURE_AGE         100
 #define CREATURE_NAME_MAX_LENGTH    25
 
 #ifndef LOGIN_NAME_MAX
 #define LOGIN_NAME_MAX              64
-#endif				/* LOGIN_NAME_MAX */
+#endif /* End Login Name Max*/
+
 #define DEFAULT_SAVE_FILE ".buffy_save.btfd"
 
 #define VERSION "1.0.0"
-#endif				/* BUFFY_H */
+
+#endif
