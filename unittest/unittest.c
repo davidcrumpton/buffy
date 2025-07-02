@@ -131,8 +131,8 @@ void testSAVE_GAME_STATE(void)
 void testLOAD_GAME_STATE(void)
 {
 /* Create our own storage for the game state and creature */
-	struct game_state_type game_state;
-	struct creature_type creature;
+	game_state_type game_state;
+	creature_type creature;
 	creature_init(&creature);
 	randomize_fangs(&creature, 4);
 	/* Assuming the game state is loaded from a file */
