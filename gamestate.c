@@ -84,7 +84,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 		err(1, "lock unveil");
 
 	if (pledge("stdio rpath", NULL) == -1)
-		err(1, "pledge");
+		err(1, "pledge: 87");
 #endif
 		FILE	       *fp = fopen(load_path, "rb");
 		if (fp == NULL)
@@ -275,8 +275,8 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		if (unveil(NULL, NULL) == -1)
 			err(1, "lock unveil");
 
-		if (pledge("stdio wpath cpath unveil proc", NULL) == -1)
-			err(1, "pledge");
+		if (pledge("stdio wpath cpath unveil proc tty", NULL) == -1)
+			err(1, "pledge: 279");
 #endif
 		int		fd = open(save_path, O_WRONLY | O_TRUNC | O_CREAT, 0600);
 		if (fd == -1)
@@ -368,7 +368,7 @@ validate_game_file(const char *file)
 			err(1, "lock unveil");
 
 		if (pledge("stdio rpath unveil proc", NULL) == -1)
-			err(1, "pledge");
+			err(1, "pledge: 371");
 #endif
 
 

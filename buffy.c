@@ -767,7 +767,7 @@ main(int argc, char *argv[])
 #ifdef __OpenBSD__
 
 	if (pledge("stdio rpath wpath cpath unveil proc", NULL) == -1)
-		err(1, "pledge");
+		err(1, "pledge: 769");
 #endif
 
 	while ((ch = getopt_long(argc, argv, "cbvf:", longopts, NULL)) != -1)
@@ -876,7 +876,7 @@ main(int argc, char *argv[])
 	}
 
 	if (pledge("stdio rpath wpath cpath proc unveil", NULL) == -1)
-		err(1, "pledge");
+		err(1, "pledge:879");
 #endif
 
 	exit(main_program(fflag));
