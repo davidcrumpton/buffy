@@ -356,20 +356,22 @@ int
 validate_game_file(const char *file)
 {
 	pid_t		pid = fork();
-#ifdef __OpenBSD__
-	if (unveil(file, "r") == -1)
-		err(1, "unveil file");
-	if (unveil(NULL, NULL) == -1)
-		err(1, "lock unveil");
-
-	if (pledge("stdio rpath", NULL) == -1)
-		err(1, "pledge");
-#endif
 
 	if (pid == -1) {
 		errx(1, "fork");
 	} else if (pid == 0) {
 		/* child */
+#ifdef __OpenBSD__
+		if (unveil(file, "r") == -1)
+			err(1, "unveil file");
+		if (unveil(NULL, NULL) == -1)
+			err(1, "lock unveil");
+
+		if (pledge("stdio rpath unveil", NULL) == -1)
+			err(1, "pledge");
+#endif
+
+
 
 		struct stat	st;
 		int		fd;
