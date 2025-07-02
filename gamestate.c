@@ -59,15 +59,8 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 	int		pipefd[2];
 	pid_t		pid;
 
-#ifdef __OpenBSD__
-	if (unveil(load_path, "r") == -1)
-		err(1, "unveil file");
-	if (unveil(NULL, NULL) == -1)
-		err(1, "lock unveil");
 
-	if (pledge("stdio rpath", NULL) == -1)
-		err(1, "pledge");
-#endif
+	
 
 	if (pipe(pipefd) == -1) {
 		perror("pipe");
@@ -84,7 +77,15 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 	if (pid == 0) {		/* Child process to read the file and send to
 				 * parent */
 		close(pipefd[0]);	/* close stdin since we are output */
+#ifdef __OpenBSD__
+	if (unveil(load_path, "r") == -1)
+		err(1, "unveil file proc");
+	if (unveil(NULL, NULL) == -1)
+		err(1, "lock unveil");
 
+	if (pledge("stdio rpath", NULL) == -1)
+		err(1, "pledge");
+#endif
 		FILE	       *fp = fopen(load_path, "rb");
 		if (fp == NULL)
 			errx(1, "Unable to open file %s for reading", load_path);
@@ -275,7 +276,7 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		if (unveil(NULL, NULL) == -1)
 			err(1, "lock unveil");
 
-		if (pledge("stdio wpath cpath unveil", NULL) == -1)
+		if (pledge("stdio wpath cpath unveil proc", NULL) == -1)
 			err(1, "pledge");
 #endif
 		int		fd = open(save_path, O_WRONLY | O_TRUNC | O_CREAT, 0600);
@@ -367,7 +368,7 @@ validate_game_file(const char *file)
 		if (unveil(NULL, NULL) == -1)
 			err(1, "lock unveil");
 
-		if (pledge("stdio rpath unveil", NULL) == -1)
+		if (pledge("stdio rpath unveil proc", NULL) == -1)
 			err(1, "pledge");
 #endif
 
