@@ -648,8 +648,6 @@ apply_fluoride_to_fangs(void)
 			 * fetch user's home directory is done in init and
 			 * placed in save_path
 			 */
-			/* so printing the save path */
-			my_printf("Saving game to %s...\n", save_path);
 			/* Save the game state to the specified file */
 			if (default_game_save() == -1) {
 				my_print_err("Failed to save game state.\n");
