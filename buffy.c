@@ -43,10 +43,8 @@
 #endif
 
 extern int  validate_game_file(const char *file);
-extern const char *maxillary_fangs[];
-extern const char *mandibular_fangs[];
 
-extern void	print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right, int using_curses);
+extern void	print_fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses);
 int save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen);
 void
 load_game_state(const char *load_path,game_state_type * gamestate_g, size_t gs_len,
@@ -581,9 +579,9 @@ apply_fluoride_to_fangs(void)
 			 * right fang
 			 */
 			if (i < 2) {
-				print_fang_art(maxillary_fangs, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
+				print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
-				print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
+				print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
 
 			my_printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
@@ -679,8 +677,8 @@ exit_game(void)
 		end_curses();
 	}
 	my_printf("Exiting the game...\n");
-	print_fang_art(maxillary_fangs, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
-	print_fang_art(mandibular_fangs, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health,0);
+	print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health,0);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
 	print_tool_info();

@@ -116,8 +116,15 @@ substitute_marker(char c, int health_level_left, int health_level_right)
 
 
 void
-print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right, int using_curses)
+print_fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses)
 {
+	const char **fangs;
+
+	if(upper_fangs)
+		fangs = maxillary_fangs;
+	else
+		fangs = mandibular_fangs;
+
 	if (using_curses) {
 		/* Clear the screen if using curses */
 		clear();
