@@ -270,7 +270,7 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		close(pipefd[0]);
 
 #ifdef __OpenBSD__
-		if (unveil(save_path, "wc") == -1)
+		if (unveil(save_path, "rwc") == -1)
 			err(1, "unveil");
 		if (unveil(NULL, NULL) == -1)
 			err(1, "lock unveil");
