@@ -43,9 +43,6 @@
 #define __dead
 #endif
 
-extern int  validate_game_file(const char *file);
-
-extern void	print_fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses);
 static int	exit_game(void);
 
 
