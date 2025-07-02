@@ -786,10 +786,14 @@ main(int argc, char *argv[])
 				fprintf(stderr, "Curses colorized mode enabled.\n");
 				game_state.using_curses = 1;
 				game_state.color_mode = 1;
+				set_using_curses(game_state.using_curses);
+				set_color_mode(game_state.color_mode);
 			} else {
 				fprintf(stderr, "Curses mode enabled.\n");
 				game_state.using_curses = 1;
 				game_state.color_mode = 0;
+				set_using_curses(game_state.using_curses);
+				set_color_mode(game_state.color_mode);
 			}
 			break;
 		case 'b':
@@ -831,6 +835,8 @@ main(int argc, char *argv[])
 			creature.name = creature_name;
 			creature.species = creature_species;
 			game_state.character_name = character_name;
+			set_using_curses(game_state.using_curses);
+			set_color_mode(game_state.color_mode);
 
 			break;
 		case 0:

@@ -21,14 +21,26 @@
 #include "playerio.h"
 #include "buffy.h"
 
-extern game_state_type game_state;
+static int using_curses = 0;
+static int color_mode = 0;	/* Global flag to indicate if curses is used */
 
 /* Global flag to switch modes */
 
 void
+set_using_curses(int flag)
+{
+	using_curses = flag;	/* Set the global flag */
+}
+
+void
+set_color_mode(int flag)
+{
+	color_mode = flag;	/* Set the global color mode flag */
+}
+void
 get_input(const char *prompt, char *buffer, size_t size)
 {
-	if (game_state.using_curses) {
+	if (using_curses) {
 		printw("%s", prompt);
 		refresh();
 		getnstr(buffer, size - 1);
@@ -48,7 +60,7 @@ my_print_err(const char *format,...)
 {
 	va_list		args;
 	va_start(args, format);
-	if (game_state.using_curses) {
+	if (using_curses) {
 		/* Use a separate window for error messages */
 		WINDOW	       *err_win = newwin(3, COLS - 2, LINES - 3, 1);
 		wattron(err_win, A_BOLD | COLOR_PAIR(1));	/* Use color pair 1 */
@@ -68,7 +80,7 @@ my_printf(const char *format,...)
 {
 	va_list		args;
 	va_start(args, format);
-	if (game_state.using_curses) {
+	if (using_curses) {
 		vw_printw(stdscr, format, args);
 		refresh();
 	} else {
@@ -82,7 +94,7 @@ mv_printw(int row, int col, const char *format,...)
 {
 	va_list		args;
 	va_start(args, format);
-	if (game_state.using_curses) {
+	if (using_curses) {
 		move(row, col);	/* Move to the desired position */
 		vw_printw(stdscr, format, args);
 		refresh();
@@ -96,7 +108,7 @@ mv_printw(int row, int col, const char *format,...)
 void
 my_putchar(char c)
 {
-	if (game_state.using_curses) {
+	if (using_curses) {
 		wmove(stdscr, 0, 0);	/* move to (0, 0) position */
 		waddch(stdscr, c);	/* add the character at the current
 					 * cursor position */
@@ -111,10 +123,10 @@ void
 initalize_curses(void)
 {
 
-	if (game_state.using_curses) {
+	if (using_curses) {
 		initscr();
 	}
-	if (game_state.using_curses && game_state.color_mode && has_colors()) {
+	if (using_curses && color_mode && has_colors()) {
 		start_color();	/* Initialize color support */
 		init_pair(1, COLOR_RED, COLOR_BLACK);	/* Example color pair */
 		attron(COLOR_PAIR(1));	/* Use the color pair */
@@ -126,7 +138,7 @@ end_curses(void)
 {
 
 
-	if (!game_state.using_curses) {
+	if (!using_curses) {
 		return 0;	/* If not using curses, nothing to exit */
 	}
 	if (has_colors()) {
@@ -135,7 +147,7 @@ end_curses(void)
 		attron(COLOR_PAIR(1));	/* Use the color pair */
 	}
 
-	if (game_state.using_curses) {
+	if (using_curses) {
 		sleep(2);
 		refresh();	/* Ensure everything is drawn */
 		def_prog_mode();	/* Save current terminal state */
@@ -146,6 +158,6 @@ end_curses(void)
 		/* endwin(); */
 		/* Initialize curses mode */
 	}
-	game_state.using_curses = 0;	/* Reset the flag */
+	using_curses = 0;	/* Reset the flag */
 	return 0;
 }
