@@ -24,9 +24,9 @@
 
 
 /* Dirtiest to cleanest: '#', '=', '*', '+', '-', ':', '.' */
-const char	health_markers[] = {'#', '=', '*', '+', '-', ':', '.'};
+static const char	health_markers[] = {'#', '=', '*', '+', '-', ':', '.'};
 /* ASCII art for upper and lower fangs (R/L for upper, r/l for lower) */
-const char     *maxillary_fangs[FANG_ROWS_UPPER] = {
+static const char     *maxillary_fangs[FANG_ROWS_UPPER] = {
 	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
 	"@@@@@@@@@@@.... @@@-....@@@......@@@....:@@@.....@@@@@@@@@@@",
 	"@RRRRRRR@@.......@.......@........@.......@.......@@LLLLLLL@",
@@ -40,7 +40,7 @@ const char     *maxillary_fangs[FANG_ROWS_UPPER] = {
 	"@@@RR-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+LL@@@",
 	"@@@@R@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@L@@@@",
 "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"};
-const char     *mandibular_fangs[FANG_ROWS_LOWER] = {
+static const char     *mandibular_fangs[FANG_ROWS_LOWER] = {
 	"@@@@@@@@@@@@@@@@@r@@@@@@@@@@@@@@@@@@@@@@@l+@@@@@@@@@@@@@@@@@",
 	"@@@@@@@@@@@@@@@@rr@@@@@@@@@@@@@@@@@@@@@@@ll#@@@@@@@@@@@@@@@@",
 	"@@@@@@@@@@@@@@@rrr@@@@@@@@@@@@@@@@@@@@@@@lll@@@@@@@@@@@@@@@@",
