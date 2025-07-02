@@ -368,7 +368,7 @@ validate_game_file(const char *file)
 			err(1, "lock unveil");
 
 		if (pledge("stdio rpath", NULL) == -1)
-			err(1, "pledge: 371");
+			err(1, "pledge:");
 #endif
 
 
