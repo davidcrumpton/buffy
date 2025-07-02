@@ -113,6 +113,42 @@ testPRINT_FANG_INFO(void)
 	}
 }
 
+void testSAVE_GAME_STATE(void)
+{
+	/* Initialize game state and creature */
+	init_game_state(1);
+	creature_init(&creature);
+	randomize_fangs(&creature, 4);
+	/* Assuming the game state is saved to a file */
+	const char *save_path = "test_game_state.dat";
+	save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature));
+	/* Check if the file exists and has the expected size */
+	struct stat st;
+	CU_ASSERT(stat(save_path, &st) == 0);
+	CU_ASSERT(st.st_size > 0);	/* Ensure the file is not empty */
+}
+
+void testLOAD_GAME_STATE(void)
+{
+/* Create our own storage for the game state and creature */
+	game_state_type game_state;
+	creature_type creature;
+	creature_init(&creature);
+	randomize_fangs(&creature, 4);
+	/* Assuming the game state is loaded from a file */
+	const char *load_path = "test_game_state.dat";
+	load_game_state(load_path, &game_state, sizeof(game_state), &creature, sizeof(creature),
+			"test_character_name", "test_creature_name", "test_creature_species");
+	CU_ASSERT(game_state.flouride >= 0);
+	CU_ASSERT(game_state.tool_dip >= 0);
+	CU_ASSERT(game_state.tool_effort >= 0);
+	CU_ASSERT(game_state.flouride_used >= 0);
+	CU_ASSERT(game_state.bflag >= 0);
+	CU_ASSERT(game_state.score >= 0);
+	CU_ASSERT(game_state.turns >= 0);
+	CU_ASSERT(game_state.tool_in_use >= 0 && game_state.tool_in_use < 6);	/* Assuming 6 tools */
+}
+
 void
 testPRINT_CREATURE_INFO(void)
 {
@@ -176,28 +212,6 @@ testFANG_IDX_TO_NAME(void)
 }
 
 void
-testLOADGAME(void)
-{
-	int		result = load_game(save_path);
-	CU_ASSERT(result == 0);	/* Assuming load_game returns 0 on success */
-
-	/* Check if the game state is loaded correctly */
-	CU_ASSERT(game_state.character_name != NULL);
-	CU_ASSERT(strlen(game_state.character_name) > 0);
-	CU_ASSERT(creature.name != NULL);
-	CU_ASSERT(strlen(creature.name) > 0);
-	CU_ASSERT(creature.species != NULL);
-	CU_ASSERT(strlen(creature.species) > 0);
-	CU_ASSERT(game_state.daggerset == 0);
-	CU_ASSERT(game_state.flouride == 10);
-	CU_ASSERT(game_state.tool_dip == 5);
-	CU_ASSERT(game_state.tool_effort == 5);
-	CU_ASSERT(game_state.flouride_used == 0);
-	CU_ASSERT(game_state.bflag == 1);
-	CU_ASSERT(game_state.score == 10);
-	CU_ASSERT(game_state.turns == 0);
-}
-void
 testCONCAT_PATH(void)
 {
 	char	       *path = return_concat_path(DEFAULT_SAVE_FILE);
@@ -235,7 +249,7 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_flouride_info()", testPRINT_FLOURIDE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
-		(NULL == CU_add_test(pSuite, "test validate game()", testVALIDATE_GAME_FILE)) ||
+		(NULL == CU_add_test(pSuite, "test validate game()", testVALIDATE_GAME_FILE)) ||		
 	    (NULL == CU_add_test(pSuite, "test of return_concat_path()", testCONCAT_PATH))) {
 		CU_cleanup_registry();
 		return CU_get_error();

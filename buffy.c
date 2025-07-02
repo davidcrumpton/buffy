@@ -47,11 +47,15 @@ extern const char *mandibular_fangs[];
 
 extern void	print_fang_art(const char **fangs, int rows, int health_level_left, int health_level_right, int using_curses);
 void save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen);
+void
+load_game_state(const char *load_path,game_state_type * gamestate_g, size_t gs_len,
+	creature_type * patient_g, size_t plen, char *character_name_g, char *patient_name_g, char *patient_species_g);
 static int	exit_game(void);
 
 
 char		character_name[LOGIN_NAME_MAX + 1];
 char		creature_name[CREATURE_NAME_MAX_LENGTH + 1];
+char		creature_species[256];
 char		save_path[FILENAME_MAX + 1];
 
 game_state_type	game_state;
@@ -822,7 +826,7 @@ main(int argc, char *argv[])
 			 * If the file is valid, we will load all game data
 			 * from it
 			 */
-			load_game(optarg);
+			load_game_state(optarg, &game_state, sizeof(game_state), &creature, sizeof(creature), character_name, creature_name, creature_species);
 			break;
 		case 0:
 			if (game_state.daggerset)

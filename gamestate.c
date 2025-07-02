@@ -33,8 +33,6 @@
 #include "buffy.h"
 #include "gamestate.h"
 
-extern game_state_type game_state;
-extern creature_type creature;
 
 struct database_info {
 	int		gamecode;
@@ -52,115 +50,202 @@ init_db_info(struct database_info *db_info)
 	db_info->patch = PATCH;
 	db_info->gamecode = GAMECODE;
 }
-
-int
-load_game(const char *file)
+void
+load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_len,
+		creature_type * patient_g, size_t plen, char *character_name_g, char *patient_name_g, char *patient_species_g)
 {
-	/*
-	 * open file for reading using err/errx if failed read database_info
-	 * structure, validate structure looks right or err/errx if not read
-	 * struct game_state, read struct creature read all string pointers
-	 * from structures
-	 */
-	FILE	       *fp = fopen(file, "rb");
-	if (fp == NULL)
-		errx(1, "Unable to open file %s for reading", file);
+	int		pipefd[2];
+	pid_t		pid;
 
-	static struct database_info db_info;
-	if (fread(&db_info, sizeof(db_info), 1, fp) != 1)
-		errx(1, "Failed to read database info from file %s", file);
+#ifdef __OpenBSD__
+	if (unveil(load_path, "r") == -1)
+		err(1, "unveil file");
+	if (unveil(NULL, NULL) == -1)
+		err(1, "lock unveil");
 
-	if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE)
-		errx(1, "Incompatible game file version in %s", file);
+	if (pledge("stdio rpath", NULL) == -1)
+		err(1, "pledge");
+#endif
 
-
-	if (fread(&game_state, sizeof(game_state), 1, fp) != 1)
-		errx(1, "Failed to read game state from file %s", file);
-	if (fread(&creature, sizeof(creature), 1, fp) != 1)
-		errx(1, "Failed to read creature data from file %s", file);
-
-	/*
-	 * Read all string pointers from structures character_name
-	 */
-	if (game_state.character_name != NULL) {
-		size_t		len = 0;
-		int		c;
-		long		pos = ftell(fp);
-		/* Find length of string (including null terminator) */
-		while ((c = fgetc(fp)) != EOF && c != '\0')
-			len++;
-		if (c == EOF)
-			errx(1, "Unexpected EOF while reading character name from %s", file);
-		len++;		/* Include null terminator */
-		fseek(fp, pos, SEEK_SET);
-		game_state.character_name = malloc(len);
-		if (game_state.character_name == NULL)
-			errx(1, "Failed to allocate memory for character name");
-		if (fread(game_state.character_name, len, 1, fp) != 1)
-			errx(1, "Failed to read character name from file %s", file);
+	if (pipe(pipefd) == -1) {
+		perror("pipe");
+		exit(EXIT_FAILURE);
 	}
 
-	/* creature name */
-	if (creature.name != NULL) {
-		size_t		len = 0;
-		int		c;
-		long		pos = ftell(fp);
-		while ((c = fgetc(fp)) != EOF && c != '\0')
-			len++;
-		if (c == EOF)
-			errx(1, "Unexpected EOF while reading creature name from %s", file);
-		len++;
-		fseek(fp, pos, SEEK_SET);
-		creature.name = malloc(len);
-		if (creature.name == NULL)
-			errx(1, "Failed to allocate memory for creature name");
-		if (fread(creature.name, len, 1, fp) != 1)
-			errx(1, "Failed to read creature name from file %s", file);
+	pid = fork();
+
+	if (pid == -1) {
+		perror("fork");
+		exit(EXIT_FAILURE);
 	}
 
-	/* creature.species */
-	if (creature.species != NULL) {
-		size_t		len = 0;
-		int		c;
-		long		pos = ftell(fp);
-		while ((c = fgetc(fp)) != EOF && c != '\0')
-			len++;
-		if (c == EOF)
-			errx(1, "Unexpected EOF while reading creature species from %s", file);
-		len++;
-		fseek(fp, pos, SEEK_SET);
-		creature.species = malloc(len);
-		if (creature.species == NULL)
-			errx(1, "Failed to allocate memory for creature species");
-		if (fread(creature.species, len, 1, fp) != 1)
-			errx(1, "Failed to read creature species from file %s", file);
-	}
+	if (pid == 0) {		/* Child process to read the file and send to
+				 * parent */
+		close(pipefd[0]);	/* close stdin since we are output */
 
-	/* Read fang colors */
-	for (int i = 0; i < 4; i++) {
-		if (creature.fangs[i].color != NULL) {
+		FILE	       *fp = fopen(load_path, "rb");
+		if (fp == NULL)
+			errx(1, "Unable to open file %s for reading", load_path);
+
+		static struct database_info db_info;
+		if (fread(&db_info, sizeof(db_info), 1, fp) != 1)
+			errx(1, "Failed to read database info from file %s", load_path);
+
+		if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE)
+			errx(1, "Incompatible game file version in %s", load_path);
+
+		game_state_type	gamestate;
+		if (fread(&gamestate, sizeof(gamestate), 1, fp) != 1)
+			errx(1, "Failed to read game state from file %s", load_path);
+		else if (write(pipefd[1], &gamestate, sizeof(gamestate)) <= 0)
+			errx(1, "Couldn't write gamestate to parent process");
+
+		creature_type	patient;
+		if (fread(&patient, sizeof(patient), 1, fp) != 1)
+			errx(1, "Failed to read patient data from file %s", load_path);
+		else if (write(pipefd[1], &patient, sizeof(patient)) <= 0)
+			errx(1, "Couldn't write patient to parent process");
+
+
+		if (gamestate.character_name != NULL) {
+			size_t		len = 0;
+			int		c;
+			long		pos = ftell(fp);
+			/* Find length of string (including null terminator) */
+			while ((c = fgetc(fp)) != EOF && c != '\0')
+				len++;
+			if (c == EOF)
+				errx(1, "Unexpected EOF while reading character name from %s", load_path);
+			len++;	/* Include null terminator */
+			fseek(fp, pos, SEEK_SET);
+			gamestate.character_name = malloc(len);
+			if (gamestate.character_name == NULL)
+				errx(1, "Failed to allocate memory for character name");
+			if (fread(gamestate.character_name, len, 1, fp) != 1)
+				errx(1, "Failed to read character name from file %s", load_path);
+			else if (write(pipefd[1], gamestate.character_name, strlen(gamestate.character_name) + 1) != (strlen(gamestate.character_name) + 1))
+				errx(1, "Failed to write patient name to parent");
+		}
+
+		/* patient name */
+		if (patient.name != NULL) {
 			size_t		len = 0;
 			int		c;
 			long		pos = ftell(fp);
 			while ((c = fgetc(fp)) != EOF && c != '\0')
 				len++;
 			if (c == EOF)
-				errx(1, "Unexpected EOF while reading fang color from %s", file);
+				errx(1, "Unexpected EOF while reading patient name from %s", load_path);
 			len++;
 			fseek(fp, pos, SEEK_SET);
-			creature.fangs[i].color = malloc(len);
-			if (creature.fangs[i].color == NULL)
-				errx(1, "Failed to allocate memory for fang color");
-			if (fread(creature.fangs[i].color, len, 1, fp) != 1)
-				errx(1, "Failed to read fang color from file %s", file);
+			patient.name = malloc(len);
+			if (patient.name == NULL)
+				errx(1, "Failed to allocate memory for patient name");
+			if (fread(patient.name, len, 1, fp) != 1)
+				errx(1, "Failed to read patient name from file %s", load_path);
+			else if (write(pipefd[1], patient.name, strlen(patient.name) + 1) != (strlen(patient.name) + 1))
+				errx(1, "Failed to write patient name to parent");
 		}
+		/* patient.species */
+		if (patient.species != NULL) {
+			size_t		len = 0;
+			int		c;
+			long		pos = ftell(fp);
+			while ((c = fgetc(fp)) != EOF && c != '\0')
+				len++;
+			if (c == EOF)
+				errx(1, "Unexpected EOF while reading patient species from %s", load_path);
+			len++;
+			fseek(fp, pos, SEEK_SET);
+			patient.species = malloc(len);
+			if (patient.species == NULL)
+				errx(1, "Failed to allocate memory for patient species");
+			if (fread(patient.species, len, 1, fp) != 1)
+				errx(1, "Failed to read patient species from file %s", load_path);
+			else if (write(pipefd[1], patient.species, strlen(patient.species) + 1) != (strlen(patient.species) + 1))
+				errx(1, "Failed to write patient species to parent");
+
+		}
+		/* Read fang colors */
+		for (int i = 0; i < 4; i++) {
+			if (patient.fangs[i].color != NULL) {
+				size_t		len = 0;
+				int		c;
+				long		pos = ftell(fp);
+				while ((c = fgetc(fp)) != EOF && c != '\0')
+					len++;
+				if (c == EOF)
+					errx(1, "Unexpected EOF while reading fang color from %s", load_path);
+				len++;
+				fseek(fp, pos, SEEK_SET);
+				patient.fangs[i].color = malloc(len);
+				if (patient.fangs[i].color == NULL)
+					errx(1, "Failed to allocate memory for fang color");
+				if (fread(patient.fangs[i].color, len, 1, fp) != 1)
+					errx(1, "Failed to read fang color from file %s", load_path);
+				else if (write(pipefd[1], patient.fangs[i].color, strlen(patient.fangs[i].color) + 1) != (strlen(patient.fangs[i].color) + 1))
+					errx(1, "Failed to write patient fang color to parent");
+			}
+		}
+
+		close(pipefd[1]);	/* Close the write end of the pipe */
+		exit(EXIT_SUCCESS);
+	} else {		/* Parent process */
+		close(pipefd[1]);	/* Close unused write end of the pipe */
+
+		/* Begin parent read from stdin pipe */
+
+		if (read(pipefd[0], gamestate_g, gs_len) != gs_len)
+			errx(1, "Failed to read game state from file %s", load_path);
+		if (read(pipefd[0], patient_g, plen) != plen)
+			errx(1, "Failed to read creature data from file %s", load_path);
+
+		/* Read identify strings */
+		int ch = 0, n = 0;
+		do {
+			if (read(pipefd[0], &ch, 1) != -1)
+				character_name_g[n++] = ch;
+		} while (ch != 0);
+		ch = 0; n = 0;
+		do {
+			if (read(pipefd[0], &ch, 1) != -1)
+				patient_name_g[n++] = ch;
+		} while (ch != 0);
+		ch = 0; n = 0;
+		do {
+			if (read(pipefd[0], &ch, 1) != -1)
+				patient_species_g[n++] = ch;
+		} while (ch != 0);
+
+		patient_g->name = patient_name_g;
+		patient_g->species = patient_species_g;
+		/* Read fang colors */
+		for (int i = 0; i < 4; i++) {
+			char temp[256]; /* Large enough for any reasonable color string */
+			int n = 0, ch = 0;
+			do {
+				if (read(pipefd[0], &ch, 1) != 1)
+					errx(1, "Failed to read fang color %d from file %s", i, load_path);
+				temp[n++] = ch;
+				if (n >= 256)
+					errx(1, "Fang color string too long in file %s", load_path);
+			} while (ch != 0);
+
+			patient_g->fangs[i].color = malloc(n);
+			if (!patient_g->fangs[i].color)
+				errx(1, "Failed to allocate memory for fang color %d", i);
+			memcpy(patient_g->fangs[i].color, temp, n);
+			printf("color %d: %s\n", i, patient_g->fangs[i].color);
+		}
+		close(pipefd[0]);
 	}
 
-	fclose(fp);
-	my_printf("Game loaded successfully from %s\n", file);
-	return 0;
-}
 
+	/*
+	 * PARENT END
+	 */
+	return;
+}
 
 
 
@@ -256,8 +341,8 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 
 
 /*
- * validate_game_file (subprocess) environment creates subprocess
- * which returns 0 if valid and 1 if not
+ * validate_game_file (subprocess) environment creates subprocess which
+ * returns 0 if valid and 1 if not
  */
 int
 validate_game_file(const char *file)
@@ -311,28 +396,29 @@ validate_game_file(const char *file)
 			err(1, "Failed to seek in file %s", optarg);
 			goto end_validation;
 		}
-		static game_state_type game_state;
-		if (read(fd, &game_state, sizeof(game_state)) != sizeof(game_state)) {
+		static game_state_type game_state_v;
+		if (read(fd, &game_state_v, sizeof(game_state_v)) != sizeof(game_state_v)) {
 			err(1, "Failed to read game state from file %s", optarg);
 			goto end_validation;
 		}
-		if (read(fd, &creature, sizeof(creature)) != sizeof(creature)) {
+		static creature_type patient;
+		if (read(fd, &patient, sizeof(patient)) != sizeof(patient)) {
 			err(1, "Failed to read creature data from file %s", optarg);
 			goto end_validation;
 		}
-		if (game_state.flouride < 0 || game_state.tool_dip < 0 || game_state.tool_effort < 0 || game_state.flouride_used < 0 || game_state.bflag < 0 || game_state.daggerset < 0) {
+		if (game_state_v.flouride < 0 || game_state_v.tool_dip < 0 || game_state_v.tool_effort < 0 || game_state_v.flouride_used < 0 || game_state_v.bflag < 0 || game_state_v.daggerset < 0) {
 			err(1, "Invalid game state in %s", optarg);
 			goto end_validation;
 		}
-
 		isvalid = 0;
+		printf("valid file %s", file);
+		return isvalid;
 
 end_validation:
 
 		close(fd);
-
 		return isvalid;	/* child ends */
-	} else {
+	} else {		/* Parent */
 		int		status;
 		if (waitpid(pid, &status, 0) == -1) {
 			warn("waitpid failed");
@@ -347,3 +433,4 @@ end_validation:
 		return 1;
 	}
 }
+
