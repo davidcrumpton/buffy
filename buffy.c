@@ -55,7 +55,9 @@ game_state_type	game_state;
 creature_type	creature;
 
 
-
+#ifndef LOGIN_NAME_MAX
+#define LOGIN_NAME_MAX              64
+#endif /* End Login Name Max*/
 
 fang_info_type	fang_names[] = {
 	{"Maxillary Right Canine", 6},
