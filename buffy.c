@@ -749,7 +749,7 @@ main(int argc, char *argv[])
 			usage();
 		}
 	argc -= optind;
-	argv += optind;
+	/* argv += optind; */
 
 	if (argc != 0)
 		usage();
