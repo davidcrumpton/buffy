@@ -30,8 +30,8 @@
 int		startup = 0;
 int		isclean = 0;
 
-struct game_state game_state;
-struct creature	creature;
+game_state_type game_state;
+creature_type	creature;
 
 /* Pointer to the file used by the tests. */
 
