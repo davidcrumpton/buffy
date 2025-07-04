@@ -29,7 +29,6 @@
 #include <getopt.h>
 #include <string.h>
 #include <unistd.h>
-#include <limits.h>
 #include <stdlib.h>
 #include <err.h>
 
@@ -47,7 +46,9 @@
 static int	exit_game(void);
 
 
-
+#ifndef LOGIN_NAME_MAX
+#define LOGIN_NAME_MAX              64
+#endif /* End Login Name Max*/
 
 
 char		character_name[LOGIN_NAME_MAX + 1];

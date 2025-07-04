@@ -101,9 +101,7 @@ typedef struct fang_info {
 #define DEFAULT_CREATURE_AGE         100
 #define CREATURE_NAME_MAX_LENGTH    25
 
-#ifndef LOGIN_NAME_MAX
-#define LOGIN_NAME_MAX              64
-#endif /* End Login Name Max*/
+
 
 #define DEFAULT_SAVE_FILE ".buffy_save.btfd"
 
