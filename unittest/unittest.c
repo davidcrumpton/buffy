@@ -21,7 +21,7 @@
 #ifdef __UNIT_TEST__
 
 /*
- * CUnit tests for edoas
+ * CUnit tests for Buffy
  *
  */
 
