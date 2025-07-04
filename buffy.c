@@ -73,21 +73,21 @@ fang_info_type	fang_names[] = {
 
 
 tool		tools[] = {
-	{"Buffy's Fingernail", "A sharp fingernail for cleaning teeth", 5, 1, 10, 1, 50, 0},
-	{"Rock", "A rough rock for scraping teeth", 8, 3, 15, 2, 30, 0},
-	{"Shark Tooth", "A sharp shark tooth precisely cleaning teeth", 6, 5, 20, 3, 40, 0},
-	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 5, 100, 0},
-	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 7, 150, 0},
-	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, DEFAULT_DAGGER_DIP, DEFAULT_DAGGER_EFFORT, 10, 200, 0}
+	{"Buffy's Fingernail", "A sharp fingernail for cleaning teeth", 1, 1, 1, 1, 50, 0},
+	{"Small Rock", "A small but rough rock for scraping teeth", 3, 3, 15, 2, 30, 0},
+	{"Shark Tooth", "A sharp shark tooth precisely cleaning teeth", 6, 5, 8, 5, 40, 0},
+	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, 8, 5, 5, 100, 0},
+	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, 9, 5, 7, 150, 0},
+	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, 10, 5, 10, 200, 0}
 };
 
 
 struct creature	creatures[] = {
-	{DEFAULT_CREATURE_AGE, "Dracula", "Vampire", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{DEFAULT_CREATURE_AGE, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{DEFAULT_CREATURE_AGE, "Fenrir", "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{DEFAULT_CREATURE_AGE + 50 /* Serpents are older */ , "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{DEFAULT_CREATURE_AGE + 100 /* Dragons are ancient */ , "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
+	{90, "Dracula", "Vampire", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{110, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{130, "Fenrir", "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{150 /* Serpents are older */ , "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{200 /* Dragons are ancient */ , "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
 													 * fangs */
 };
 
@@ -351,23 +351,15 @@ calculate_fang_health(struct creature_fangs *fang, int tool_dip, int tool_effort
 		fang->health = MAX_HEALTH;
 	else if (fang->health < 0)
 		fang->health = 0;
-
-	/* Set color according to health */
-	if (fang->health >= 9)
-		fang->color = FANG_COLOR_HIGH;
-	else if (fang->health >= 8)
-		fang->color = FANG_COLOR_MEDIUM;
-	else
-		fang->color = FANG_COLOR_LOW;
 }
 
 char	       *
 fang_health_to_color(int health)
 {
 	/* Convert fang health to color string */
-	if (health >= 9)
+	if (health >= 90)
 		return FANG_COLOR_HIGH;	/* White */
-	else if (health >= 8)
+	else if (health >= 80)
 		return FANG_COLOR_MEDIUM;	/* Dull */
 	else
 		return FANG_COLOR_LOW;	/* Yellow */
@@ -402,7 +394,7 @@ print_fang_logo(void)
 
 
 static void
-print_fang_info(int index, struct creature_fangs *fang, int compact_printing)
+print_fang_info(const int index, const struct creature_fangs *fang, const int compact_printing)
 {
 	if (fang == NULL) {
 		my_print_err("Fang is NULL.\n");
@@ -411,18 +403,18 @@ print_fang_info(int index, struct creature_fangs *fang, int compact_printing)
 	if (compact_printing) {
 		my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 		     fang_idx_to_name(index), fang->length, fang->sharpness,
-			  fang->color, fang->health);
+			  fang_health_to_color(fang->health), fang->health);
 		return;
 	} else {
 		my_printf("Fang %s:\n", fang_idx_to_name(index));
 		my_printf("  Length: %d\n", fang->length);
 		my_printf("  Sharpness: %d\n", fang->sharpness);
-		my_printf("  Color: %s\n", fang->color);
+		my_printf("  Color: %s\n", fang_health_to_color(fang[index].health));
 		my_printf("  Health: %d\n", fang->health);
 	}
 }
 static void
-print_creature_info(struct creature *fanged_beast, int compact_printing)
+print_creature_info(const struct creature *fanged_beast, const int compact_printing)
 {
 	if (compact_printing) {
 		my_printf("Creature: %s, Age: %d, Species: %s\n", fanged_beast->name, fanged_beast->age, fanged_beast->species);
@@ -451,7 +443,7 @@ print_flouride_info(void)
 }
 
 static void
-print_game_state(struct game_state *state)
+print_game_state(const struct game_state *state)
 {
 	my_printf("Game State:\n");
 	my_printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
@@ -476,7 +468,7 @@ print_tool_in_use(void)
 	my_printf("Tool effort: %d\n", tools[game_state.tool_in_use].effort);
 }
 static void
-print_creature(struct creature *fanged_beast)
+print_creature(const struct creature *fanged_beast)
 {
 	if (fanged_beast == NULL) {
 		my_print_err("Creature is NULL.\n");
@@ -486,34 +478,7 @@ print_creature(struct creature *fanged_beast)
 	my_printf("Creature Age: %d\n", fanged_beast->age);
 	my_printf("Creature Species: %s\n", fanged_beast->species);
 }
-static void
-print_creature_fangs(struct creature *fanged_beast, int compact_printing)
-{
-	if (fanged_beast == NULL) {
-		my_print_err("Creature is NULL.\n");
-		return;
-	}
-	if (compact_printing) {
-		my_printf("Fangs of %s:\n", fanged_beast->name);
-		for (int i = 0; i < 4; i++) {
-			my_printf("\tFang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
-			 fang_idx_to_name(i), fanged_beast->fangs[i].length,
-				  fanged_beast->fangs[i].sharpness, fanged_beast->fangs[i].color,
-				  fanged_beast->fangs[i].health);
-		}
-		return;
-	} else {
-		my_printf("Fangs of %s:\n", fanged_beast->name);
 
-		for (int i = 0; i < 4; i++) {
-			my_printf("Fang %s:\n", fang_idx_to_name(i));
-			my_printf("  Length: %d\n", fanged_beast->fangs[i].length);
-			my_printf("  Sharpness: %d\n", fanged_beast->fangs[i].sharpness);
-			my_printf("  Color: %s\n", fanged_beast->fangs[i].color);
-			my_printf("  Health: %d\n", fanged_beast->fangs[i].health);
-		}
-	}
-}
 static void
 creature_init(struct creature *fanged_beast)
 {
@@ -573,7 +538,7 @@ apply_fluoride_to_fangs(void)
 			my_printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
 			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			      fang_idx_to_name(i), creature.fangs[i].length,
-			creature.fangs[i].sharpness, creature.fangs[i].color,
+			creature.fangs[i].sharpness, fang_health_to_color(creature.fangs[i].health),
 				  creature.fangs[i].health);
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
@@ -670,7 +635,10 @@ exit_game(void)
 	my_printf("Final Score: %d\n", game_state.score);
 	my_printf("Turns taken: %d\n", game_state.turns);
 	print_creature(&creature);
-	print_creature_fangs(&creature, 0);
+	print_fang_info(0, creature.fangs,0);
+	print_fang_info(1, creature.fangs,0);
+	print_fang_info(2, creature.fangs,0);
+	print_fang_info(3, creature.fangs,0);
 	print_tool_in_use();
 	print_flouride_info();
 
@@ -743,13 +711,11 @@ main(int argc, char *argv[])
 		case 'c':
 			curses++;
 			if (curses > 1) {
-				fprintf(stderr, "Curses colorized mode enabled.\n");
 				game_state.using_curses = 1;
 				game_state.color_mode = 1;
 				set_using_curses(game_state.using_curses);
 				set_color_mode(game_state.color_mode);
 			} else {
-				fprintf(stderr, "Curses mode enabled.\n");
 				game_state.using_curses = 1;
 				game_state.color_mode = 0;
 				set_using_curses(game_state.using_curses);
