@@ -456,29 +456,7 @@ print_game_state(const struct game_state *state)
 	my_printf("  Turns: %d\n", state->turns);
 }
 
-static void
-print_tool_in_use(void)
-{
-	if (game_state.tool_in_use < 0 || game_state.tool_in_use >= sizeof(tools) / sizeof(tools[0])) {
-		my_print_err("Invalid tool index: %d\n", game_state.tool_in_use);
-		return;
-	}
-	my_printf("Current tool in use: %s\n", tools[game_state.tool_in_use].name);
-	my_printf("Tool description: %s\n", tools[game_state.tool_in_use].description);
-	my_printf("Tool dip amount: %d\n", tools[game_state.tool_in_use].dip_amount);
-	my_printf("Tool effort: %d\n", tools[game_state.tool_in_use].effort);
-}
-static void
-print_creature(const struct creature *fanged_beast)
-{
-	if (fanged_beast == NULL) {
-		my_print_err("Creature is NULL.\n");
-		return;
-	}
-	my_printf("Creature Name: %s\n", return_creature_name(game_state.creature_idx));
-	my_printf("Creature Age: %d\n", fanged_beast->age);
-	my_printf("Creature Species: %s\n", return_creature_species (game_state.creature_idx));
-}
+
 
 static void
 creature_init(struct creature *fanged_beast)
@@ -628,16 +606,15 @@ exit_game(void)
 	print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health,0);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
+	print_fang_info(0, creature.fangs,1);
+	print_fang_info(1, creature.fangs,1);
+	print_fang_info(2, creature.fangs,1);
+	print_fang_info(3, creature.fangs,1);
 	print_tool_info();
 	my_printf("Thank you for playing Buffy the Fang Slayer: Fluoride Edition!\n");
 	my_printf("Final Score: %d\n", game_state.score);
 	my_printf("Turns taken: %d\n", game_state.turns);
-	print_creature(&creature);
-	print_fang_info(0, creature.fangs,0);
-	print_fang_info(1, creature.fangs,0);
-	print_fang_info(2, creature.fangs,0);
-	print_fang_info(3, creature.fangs,0);
-	print_tool_in_use();
+
 	print_flouride_info();
 
 	exit(EXIT_SUCCESS);
