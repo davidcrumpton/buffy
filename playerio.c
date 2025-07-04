@@ -18,6 +18,13 @@
  * playerio.c: Provides functions for input/output operations in the Buffy game.
  *
  */
+
+#include <stdio.h>
+#include <ncurses.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdarg.h>
+
 #include "playerio.h"
 #include "buffy.h"
 
