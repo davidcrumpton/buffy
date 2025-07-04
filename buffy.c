@@ -18,7 +18,7 @@
 /*
  * buffy.c: contains the main game loop and initialization code for the Buffy
  * game. It initializes the game state, handles command line arguments, and
- * 
+ *
  */
 #include <sys/stat.h>
 #include <sys/param.h>
@@ -48,7 +48,7 @@ static int	exit_game(void);
 
 #ifndef LOGIN_NAME_MAX
 #define LOGIN_NAME_MAX              64
-#endif /* End Login Name Max*/
+#endif				/* End Login Name Max */
 
 
 char		character_name[LOGIN_NAME_MAX + 1];
@@ -65,7 +65,7 @@ fang_info_type	fang_names[] = {
 	{"Maxillary Left Canine", 11},
 	{"Mandibular Right Canine", 27},
 	{"Mandibular Left Canine", 22},
-	{"Unknown Fang", 0}	
+	{"Unknown Fang", 0}
 };
 
 
@@ -86,7 +86,7 @@ struct creature	creatures[] = {
 	{130, "Fenrir", "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{150 /* Serpents are older */ , "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{200 /* Dragons are ancient */ , "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
-													 * fangs */
+											 * fangs */
 };
 
 extern char    *__progname;
@@ -98,19 +98,19 @@ usage(void)
 	exit(EXIT_FAILURE);
 }
 
-static char *
+static char    *
 return_creature_name(const int idx)
 {
-	return(creatures[idx]).name;
+	return (creatures[idx]).name;
 }
 
-static char *
+static char    *
 return_creature_species(const int idx)
 {
-	return(creatures[idx].species);
+	return (creatures[idx].species);
 }
 
-static char	       *
+static char    *
 return_concat_path(const char *append_str)
 {
 	const char     *home = getenv("HOME");
@@ -132,12 +132,12 @@ return_concat_path(const char *append_str)
 static int
 choose_random_tool(int isdaggerset)
 {
-	
+
 	if (isdaggerset) {
 		return arc4random_uniform(3) + 3;	/* daggers idx 3, 4, or
 							 * 5 */
 	} else {
-		return arc4random_uniform(3);	
+		return arc4random_uniform(3);
 	}
 }
 
@@ -155,7 +155,7 @@ default_game_save(void)
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
 	my_printf("Saving game to: %s\n", save_path);
-	if(save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature)) != 0) {
+	if (save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature)) != 0) {
 		errx(1, "Unable to save game state to %s", save_path);
 	}
 }
@@ -211,7 +211,7 @@ randomize_fangs(struct creature *fanged_beast, int count)
 		else if (r < 90)
 			fanged_beast->fangs[i].health = 71 + arc4random_uniform(10);	/* 71–80 */
 		else
-			fanged_beast->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */			
+			fanged_beast->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */
 	}
 }
 
@@ -308,7 +308,7 @@ calculate_flouride_used(int tool_dip, int tool_effort)
 	game_state.flouride_used = used;
 	if (game_state.flouride_used > game_state.flouride) {
 		my_printf("Fluoride used (%d) exceeds available fluoride (%d).\n",
-		       game_state.flouride_used, game_state.flouride);
+			  game_state.flouride_used, game_state.flouride);
 		my_print_err("Not enough fluoride available.\n");
 		exit_game();
 	}
@@ -354,7 +354,7 @@ calculate_fang_health(struct creature_fangs *fang, int tool_dip, int tool_effort
 		fang->health = 0;
 }
 
-static char	       *
+static char    *
 fang_health_to_color(int health)
 {
 	/* Convert fang health to color string */
@@ -366,7 +366,7 @@ fang_health_to_color(int health)
 		return FANG_COLOR_LOW;	/* Yellow */
 }
 
-static char	       *
+static char    *
 fang_idx_to_name(int fang_index)
 {
 	switch (fang_index) {
@@ -514,7 +514,7 @@ apply_fluoride_to_fangs(void)
 			my_printf("Applying fluoride to %s's fang %s:\n", return_creature_name(game_state.creature_idx), fang_idx_to_name(i));
 			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			      fang_idx_to_name(i), creature.fangs[i].length,
-			creature.fangs[i].sharpness, fang_health_to_color(creature.fangs[i].health),
+				  creature.fangs[i].sharpness, fang_health_to_color(creature.fangs[i].health),
 				  creature.fangs[i].health);
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
@@ -554,12 +554,11 @@ apply_fluoride_to_fangs(void)
 		game_state.score += 5;
 
 		get_input("Apply fluoride to fangs? (y/n/q/s):", answer, sizeof(answer));
-		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) 
-		{
+		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
 			/* All tools use some fluoride */
 			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, return_creature_name(game_state.creature_idx), tools[game_state.tool_in_use].name);
 			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
-			game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);	
+			game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);
 		} else if (answer[0] == 'n' || answer[0] == 'N') {
 			my_printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, return_creature_name(game_state.creature_idx));
 			cleaning = 0;
@@ -603,13 +602,13 @@ exit_game(void)
 	}
 	my_printf("Exiting the game...\n");
 	print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
-	print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health,0);
+	print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
-	print_fang_info(0, creature.fangs,1);
-	print_fang_info(1, creature.fangs,1);
-	print_fang_info(2, creature.fangs,1);
-	print_fang_info(3, creature.fangs,1);
+	print_fang_info(0, creature.fangs, 1);
+	print_fang_info(1, creature.fangs, 1);
+	print_fang_info(2, creature.fangs, 1);
+	print_fang_info(3, creature.fangs, 1);
 	print_tool_info();
 	my_printf("Thank you for playing Buffy the Fang Slayer: Fluoride Edition!\n");
 	my_printf("Final Score: %d\n", game_state.score);
@@ -719,15 +718,15 @@ main(int argc, char *argv[])
 			strlcpy(character_name, login_name, sizeof(game_state.character_name));
 			game_state.character_name = character_name;
 
-			fprintf(stderr,"%s is ready to apply fluoride to fangs.\n", game_state.character_name);
+			fprintf(stderr, "%s is ready to apply fluoride to fangs.\n", game_state.character_name);
 
 			bflag = 1;
 			break;
 		case 'f':
 			fflag = 1;
 
-			if(validate_game_file(optarg) == 1)
-				errx(1,"Game file %s is not a valid file", optarg);
+			if (validate_game_file(optarg) == 1)
+				errx(1, "Game file %s is not a valid file", optarg);
 			/*
 			 * If the file is valid, we will load all game data
 			 * from it
@@ -755,8 +754,8 @@ main(int argc, char *argv[])
 		usage();
 
 	/*
-	 * Initialize game state if fflag is not since we are not
-	 * restoring a saved game
+	 * Initialize game state if fflag is not since we are not restoring a
+	 * saved game
 	 */
 
 	if (!fflag)
@@ -768,11 +767,11 @@ main(int argc, char *argv[])
 			err(1, "unveil");
 			return EXIT_FAILURE;
 
-		if (unveil(NULL, NULL) == -1) {
-			err(1, "unveil lock");
-			return EXIT_FAILURE;
+			if (unveil(NULL, NULL) == -1) {
+				err(1, "unveil lock");
+				return EXIT_FAILURE;
+			}
 		}
-	}
 
 	if (pledge("stdio rpath wpath cpath proc unveil", NULL) == -1)
 		err(1, "pledge");
