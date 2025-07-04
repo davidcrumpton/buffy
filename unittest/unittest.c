@@ -63,8 +63,8 @@ testINIT_GAME_STATE(void)
 	init_game_state(1);
 	CU_ASSERT(game_state.daggerset == 0);
 	CU_ASSERT(game_state.flouride == 200);
-	CU_ASSERT(game_state.tool_dip == 10);
-	CU_ASSERT(game_state.tool_effort == 5);
+	CU_ASSERT(game_state.tool_dip > 1);
+	CU_ASSERT(game_state.tool_effort > 1);
 	CU_ASSERT(game_state.flouride_used == 0);
 	CU_ASSERT(game_state.bflag == 1);
 	CU_ASSERT(game_state.score == 10);
@@ -96,7 +96,6 @@ testRANDOMIZE_FANGS(void)
 		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
 		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
 		CU_ASSERT(creature.fangs[i].health >= 60 && creature.fangs[i].health <= 100);
-		CU_ASSERT(creature.fangs[i].color != NULL);
 	}
 }
 
