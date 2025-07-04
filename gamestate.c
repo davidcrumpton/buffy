@@ -169,27 +169,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				errx(1, "Failed to write patient species to parent");
 
 		}
-		/* process fang colors */
-		for (int i = 0; i < 4; i++) {
-			if (patient.fangs[i].color != NULL) {
-				size_t		len = 0;
-				int		c;
-				long		pos = ftell(fp);
-				while ((c = fgetc(fp)) != EOF && c != '\0')
-					len++;
-				if (c == EOF)
-					errx(1, "Unexpected EOF while reading fang color from %s", load_path);
-				len++;
-				fseek(fp, pos, SEEK_SET);
-				patient.fangs[i].color = malloc(len);
-				if (patient.fangs[i].color == NULL)
-					errx(1, "Failed to allocate memory for fang color");
-				if (fread(patient.fangs[i].color, len, 1, fp) != 1)
-					errx(1, "Failed to read fang color from file %s", load_path);
-				else if (write(pipefd[1], patient.fangs[i].color, strlen(patient.fangs[i].color) + 1) != (strlen(patient.fangs[i].color) + 1))
-					errx(1, "Failed to write patient fang color to parent");
-			}
-		}
+
 
 		close(pipefd[1]);
 		_exit(EXIT_SUCCESS);
@@ -222,23 +202,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 
 		patient_g->name = patient_name_g;
 		patient_g->species = patient_species_g;
-		/* Read fang colors */
-		for (int i = 0; i < 4; i++) {
-			char temp[256]; /* Large enough for any reasonable color string */
-			int n = 0, ch = 0;
-			do {
-				if (read(pipefd[0], &ch, 1) != 1)
-					errx(1, "Failed to read fang color %d from file %s", i, load_path);
-				temp[n++] = ch;
-				if (n >= 256)
-					errx(1, "Fang color string too long in file %s", load_path);
-			} while (ch != 0);
 
-			patient_g->fangs[i].color = malloc(n);
-			if (!patient_g->fangs[i].color)
-				errx(1, "Failed to allocate memory for fang color %d", i);
-			memcpy(patient_g->fangs[i].color, temp, n);
-		}
 		close(pipefd[0]);
 	}
 
@@ -319,13 +283,8 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 			if (write(pipefd[1], patient->species, strlen(patient->species) + 1) != (strlen(patient->species) + 1))
 				errx(1, "Failed to write creature species to file %s", save_path);
 		}
-		for (int i = 0; i < 4; i++) {
-			if (patient->fangs[i].color != NULL) {
-				if (write(pipefd[1], patient->fangs[i].color, strlen(patient->fangs[i].color) + 1) != (strlen(patient->fangs[i].color) + 1))
-					errx(1, "Failed to write fang color to file %s", save_path);
-			}
-		}
 
+		
 
 		close(pipefd[1]);
 

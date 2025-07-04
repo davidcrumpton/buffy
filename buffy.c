@@ -202,15 +202,7 @@ randomize_fangs(struct creature *fanged_beast, int count)
 		else if (r < 90)
 			fanged_beast->fangs[i].health = 71 + arc4random_uniform(10);	/* 71–80 */
 		else
-			fanged_beast->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */
-
-			
-		if (fanged_beast->fangs[i].health >= 90)
-			fanged_beast->fangs[i].color = "white";
-		else if (fanged_beast->fangs[i].health >= 80)
-			fanged_beast->fangs[i].color = "dull";
-		else
-			fanged_beast->fangs[i].color = "yellow";
+			fanged_beast->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */			
 	}
 }
 
@@ -357,9 +349,9 @@ char	       *
 fang_health_to_color(int health)
 {
 	/* Convert fang health to color string */
-	if (health >= 90)
+	if (health >= FANG_HEALTH_HIGH)
 		return FANG_COLOR_HIGH;	/* White */
-	else if (health >= 80)
+	else if (health >= FANG_HEALTH_MEDIUM)
 		return FANG_COLOR_MEDIUM;	/* Dull */
 	else
 		return FANG_COLOR_LOW;	/* Yellow */

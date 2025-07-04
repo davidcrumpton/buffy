@@ -98,6 +98,10 @@ typedef struct fang_info {
 #define FANG_COLOR_MEDIUM        "dull"
 #define FANG_COLOR_LOW           "yellow"
 
+#define FANG_HEALTH_HIGH	90
+#define FANG_HEALTH_MEDIUM  80
+#define FANG_HEALTH_LOW		60
+
 #define DEFAULT_CREATURE_AGE         100
 #define CREATURE_NAME_MAX_LENGTH    25
 
