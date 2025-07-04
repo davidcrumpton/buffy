@@ -276,7 +276,7 @@ validate_game_file(const char *file)
 		int		fd;
 		int		isvalid = 1;
 
-		if ((fd = stat(optarg, &st)) == -1) {
+		if (stat(optarg, &st) == -1) {
 			err(1, "unable to stat %s", optarg);
 			goto validation_err;
 		}
