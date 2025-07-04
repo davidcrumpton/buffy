@@ -18,9 +18,7 @@
 #ifndef FANGS_H
 #define FANGS_H
 
-#include <stdio.h>
-#include <string.h>
-#include "buffy.h"
+
 
 #define FANG_ROWS_UPPER 13
 #define FANG_ROWS_LOWER 14
