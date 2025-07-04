@@ -138,7 +138,7 @@ void testLOAD_GAME_STATE(void)
 	/* Assuming the game state is loaded from a file */
 	const char *load_path = "test_game_state.dat";
 	load_game_state(load_path, &game_state, sizeof(game_state), &creature, sizeof(creature),
-			"test_character_name", "test_creature_name", "test_creature_species");
+			"test_character_name");
 	CU_ASSERT(game_state.flouride >= 0);
 	CU_ASSERT(game_state.tool_dip >= 0);
 	CU_ASSERT(game_state.tool_effort >= 0);
