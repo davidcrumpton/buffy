@@ -36,6 +36,9 @@ buffy: ${SRCS}
 
 clean: 
 	rm -rf -- *.dSYM *.o buffy buffy-unittest *.BAK
+
+strip: buffy
+	strip buffy
 	
 .PHONY: all clean buffy unittest beautify
 all: buffy buffy-unittest
