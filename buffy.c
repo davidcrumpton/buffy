@@ -100,8 +100,19 @@ usage(void)
 	exit(EXIT_FAILURE);
 }
 
+static char *
+return_creature_name(const int idx)
+{
+	return(creatures[idx]).name;
+}
 
-char	       *
+static char *
+return_creature_species(const int idx)
+{
+	return(creatures[idx].species);
+}
+
+static char	       *
 return_concat_path(const char *append_str)
 {
 	const char     *home = getenv("HOME");
@@ -120,7 +131,7 @@ return_concat_path(const char *append_str)
 }
 
 
-int
+static int
 choose_random_tool(int isdaggerset)
 {
 	
@@ -262,7 +273,7 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 }
 
 
-int
+static int
 calculate_flouride_used(int tool_dip, int tool_effort)
 {
 	/*
@@ -281,17 +292,17 @@ calculate_flouride_used(int tool_dip, int tool_effort)
 	int		used = (dip * 2) + (effort * 3);
 
 	/* Adjust fluoride usage based on creature species */
-	if (strcmp(creature.species, "Vampire") == 0) {
+	if (strcmp(return_creature_species(game_state.creature_idx), "Vampire") == 0) {
 		used = (int)(used * 0.8);	/* Vampires need less
 						 * fluoride */
-	} else if (strcmp(creature.species, "Orc") == 0) {
+	} else if (strcmp(return_creature_species(game_state.creature_idx), "Orc") == 0) {
 		used = (int)(used * 1.2);	/* Orcs need more fluoride */
-	} else if (strcmp(creature.species, "Werewolf") == 0) {
+	} else if (strcmp(return_creature_species(game_state.creature_idx), "Werewolf") == 0) {
 		used = (int)(used * 1.1);	/* Werewolves need a bit more */
-	} else if (strcmp(creature.species, "Serpent") == 0) {
+	} else if (strcmp(return_creature_species(game_state.creature_idx), "Serpent") == 0) {
 		used = (int)(used * 0.9);	/* Serpents need slightly
 						 * less */
-	} else if (strcmp(creature.species, "Dragon") == 0) {
+	} else if (strcmp(return_creature_species(game_state.creature_idx), "Dragon") == 0) {
 		used = (int)(used * 1.5);	/* Dragons need much more */
 	}
 
@@ -307,7 +318,7 @@ calculate_flouride_used(int tool_dip, int tool_effort)
 	return game_state.flouride_used;
 }
 
-void
+static void
 calculate_fang_health(struct creature_fangs *fang, int tool_dip, int tool_effort)
 {
 	/*
@@ -323,17 +334,17 @@ calculate_fang_health(struct creature_fangs *fang, int tool_dip, int tool_effort
 	int		health_gain = (tool_dip / 2) + (tool_effort / 3);
 
 	/* Adjust health gain based on creature species */
-	if (strcmp(creature.species, "Vampire") == 0) {
+	if (strcmp(return_creature_species(game_state.creature_idx), "Vampire") == 0) {
 		health_gain += 2;	/* Vampires respond better to
 					 * fluoride */
-	} else if (strcmp(creature.species, "Orc") == 0) {
+	} else if (strcmp(return_creature_species(game_state.creature_idx), "Orc") == 0) {
 		health_gain -= 1;	/* Orcs have tougher fangs */
-	} else if (strcmp(creature.species, "Werewolf") == 0) {
+	} else if (strcmp(return_creature_species(game_state.creature_idx), "Werewolf") == 0) {
 		health_gain += 1;	/* Werewolves heal a bit faster */
-	} else if (strcmp(creature.species, "Serpent") == 0) {
+	} else if (strcmp(return_creature_species(game_state.creature_idx), "Serpent") == 0) {
 		health_gain = (int)(health_gain * 0.8);	/* Serpents are less
 							 * affected */
-	} else if (strcmp(creature.species, "Dragon") == 0) {
+	} else if (strcmp(return_creature_species(game_state.creature_idx), "Dragon") == 0) {
 		health_gain = (int)(health_gain * 0.5);	/* Dragons are very
 							 * resistant */
 	}
@@ -345,7 +356,7 @@ calculate_fang_health(struct creature_fangs *fang, int tool_dip, int tool_effort
 		fang->health = 0;
 }
 
-char	       *
+static char	       *
 fang_health_to_color(int health)
 {
 	/* Convert fang health to color string */
@@ -357,7 +368,7 @@ fang_health_to_color(int health)
 		return FANG_COLOR_LOW;	/* Yellow */
 }
 
-char	       *
+static char	       *
 fang_idx_to_name(int fang_index)
 {
 	switch (fang_index) {
@@ -409,13 +420,13 @@ static void
 print_creature_info(const struct creature *fanged_beast, const int compact_printing)
 {
 	if (compact_printing) {
-		my_printf("Creature: %s, Age: %d, Species: %s\n", fanged_beast->name, fanged_beast->age, fanged_beast->species);
+		my_printf("Creature: %s, Age: %d, Species: %s\n", return_creature_name(game_state.creature_idx), fanged_beast->age, return_creature_species(game_state.creature_idx));
 
 		return;
 	} else {
-		my_printf("Creature Name: %s\n", fanged_beast->name);
+		my_printf("Creature Name: %s\n", return_creature_name(game_state.creature_idx));
 		my_printf("Creature Age: %d\n", fanged_beast->age);
-		my_printf("Creature Species: %s\n", fanged_beast->species);
+		my_printf("Creature Species: %s\n", return_creature_species(game_state.creature_idx));
 	}
 }
 
@@ -466,9 +477,9 @@ print_creature(const struct creature *fanged_beast)
 		my_print_err("Creature is NULL.\n");
 		return;
 	}
-	my_printf("Creature Name: %s\n", fanged_beast->name);
+	my_printf("Creature Name: %s\n", return_creature_name(game_state.creature_idx));
 	my_printf("Creature Age: %d\n", fanged_beast->age);
-	my_printf("Creature Species: %s\n", fanged_beast->species);
+	my_printf("Creature Species: %s\n", return_creature_species (game_state.creature_idx));
 }
 
 static void
@@ -480,16 +491,13 @@ creature_init(struct creature *fanged_beast)
 
 	/* Copy chosen creature's data */
 	fanged_beast->age = chosen->age;
-	strlcpy(creature_name, chosen->name, sizeof(creature_name));
-	fanged_beast->name = creature_name;
-	fanged_beast->species = chosen->species;
-
+	game_state.creature_idx = idx;
 	/* Randomize fangs for this creature */
 	randomize_fangs(fanged_beast, 4);
 }
 
 
-int
+static int
 apply_fluoride_to_fangs(void)
 {
 	int		tool_dip = DEFAULT_TOOL_DIP;
@@ -527,7 +535,7 @@ apply_fluoride_to_fangs(void)
 				print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
 
-			my_printf("Applying fluoride to %s's fang %s:\n", creature.name, fang_idx_to_name(i));
+			my_printf("Applying fluoride to %s's fang %s:\n", return_creature_name(game_state.creature_idx), fang_idx_to_name(i));
 			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			      fang_idx_to_name(i), creature.fangs[i].length,
 			creature.fangs[i].sharpness, fang_health_to_color(creature.fangs[i].health),
@@ -559,8 +567,8 @@ apply_fluoride_to_fangs(void)
 			}
 		}
 		if (all_fangs_healthy) {
-			my_printf("All of %s's fangs are now healthy and shiny!\n", creature.name);
-			my_printf("%s has successfully applied fluoride to %s's fangs.\n", game_state.character_name, creature.name);
+			my_printf("All of %s's fangs are now healthy and shiny!\n", return_creature_name(game_state.creature_idx));
+			my_printf("%s has successfully applied fluoride to %s's fangs.\n", game_state.character_name, return_creature_name(game_state.creature_idx));
 			my_printf("%s is ready to slay more fangs!\n", game_state.character_name);
 			game_state.score += BONUS_ALL_HEALTH;
 			goto success;
@@ -573,11 +581,11 @@ apply_fluoride_to_fangs(void)
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) 
 		{
 			/* All tools use some fluoride */
-			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, creature.name, tools[game_state.tool_in_use].name);
+			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, return_creature_name(game_state.creature_idx), tools[game_state.tool_in_use].name);
 			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
 			game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);	
 		} else if (answer[0] == 'n' || answer[0] == 'N') {
-			my_printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, creature.name);
+			my_printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, return_creature_name(game_state.creature_idx));
 			cleaning = 0;
 			/* Exit the loop */
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
@@ -591,7 +599,7 @@ apply_fluoride_to_fangs(void)
 			goto success;
 		}
 	} while (cleaning);
-	my_printf("%s has finished applying fluoride to %s's fangs.\n", game_state.character_name, creature.name);
+	my_printf("%s has finished applying fluoride to %s's fangs.\n", game_state.character_name, return_creature_name(game_state.creature_idx));
 
 success:
 
@@ -749,9 +757,7 @@ main(int argc, char *argv[])
 			 * If the file is valid, we will load all game data
 			 * from it
 			 */
-			load_game_state(optarg, &game_state, sizeof(game_state), &creature, sizeof(creature), character_name, creature_name, creature_species);
-			creature.name = creature_name;
-			creature.species = creature_species;
+			load_game_state(optarg, &game_state, sizeof(game_state), &creature, sizeof(creature), character_name);
 			game_state.character_name = character_name;
 			set_using_curses(game_state.using_curses);
 			set_color_mode(game_state.color_mode);

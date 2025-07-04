@@ -54,7 +54,7 @@ init_db_info(struct database_info *db_info)
 }
 void
 load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_len,
-		creature_type * patient_g, size_t plen, char *character_name_g, char *patient_name_g, char *patient_species_g)
+		creature_type * patient_g, size_t plen, char *character_name_g)
 {
 	int		pipefd[2];
 	pid_t		pid;
@@ -131,45 +131,6 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 		}
 
 
-		if (patient.name != NULL) {
-			size_t		len = 0;
-			int		c;
-			long		pos = ftell(fp);
-			while ((c = fgetc(fp)) != EOF && c != '\0')
-				len++;
-			if (c == EOF)
-				errx(1, "Unexpected EOF while reading patient name from %s", load_path);
-			len++;
-			fseek(fp, pos, SEEK_SET);
-			patient.name = malloc(len);
-			if (patient.name == NULL)
-				errx(1, "Failed to allocate memory for patient name");
-			if (fread(patient.name, len, 1, fp) != 1)
-				errx(1, "Failed to read patient name from file %s", load_path);
-			else if (write(pipefd[1], patient.name, strlen(patient.name) + 1) != (strlen(patient.name) + 1))
-				errx(1, "Failed to write patient name to parent");
-		}
-
-		if (patient.species != NULL) {
-			size_t		len = 0;
-			int		c;
-			long		pos = ftell(fp);
-			while ((c = fgetc(fp)) != EOF && c != '\0')
-				len++;
-			if (c == EOF)
-				errx(1, "Unexpected EOF while reading patient species from %s", load_path);
-			len++;
-			fseek(fp, pos, SEEK_SET);
-			patient.species = malloc(len);
-			if (patient.species == NULL)
-				errx(1, "Failed to allocate memory for patient species");
-			if (fread(patient.species, len, 1, fp) != 1)
-				errx(1, "Failed to read patient species from file %s", load_path);
-			else if (write(pipefd[1], patient.species, strlen(patient.species) + 1) != (strlen(patient.species) + 1))
-				errx(1, "Failed to write patient species to parent");
-
-		}
-
 
 		close(pipefd[1]);
 		_exit(EXIT_SUCCESS);
@@ -189,19 +150,6 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 			if (read(pipefd[0], &ch, 1) != -1)
 				character_name_g[n++] = ch;
 		} while (ch != 0);
-		ch = 0; n = 0;
-		do {
-			if (read(pipefd[0], &ch, 1) != -1)
-				patient_name_g[n++] = ch;
-		} while (ch != 0);
-		ch = 0; n = 0;
-		do {
-			if (read(pipefd[0], &ch, 1) != -1)
-				patient_species_g[n++] = ch;
-		} while (ch != 0);
-
-		patient_g->name = patient_name_g;
-		patient_g->species = patient_species_g;
 
 		close(pipefd[0]);
 	}
@@ -275,16 +223,7 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 			if (write(pipefd[1], gamestate->character_name, strlen(gamestate->character_name) + 1) != (strlen(gamestate->character_name) + 1))
 				errx(1, "Failed to write character name to file %s", save_path);
 		}
-		if (patient->name != NULL) {
-			if (write(pipefd[1], patient->name, strlen(patient->name) + 1) != (strlen(patient->name) + 1))
-				errx(1, "Failed to write creature name to file %s", save_path);
-		}
-		if (patient->species != NULL) {
-			if (write(pipefd[1], patient->species, strlen(patient->species) + 1) != (strlen(patient->species) + 1))
-				errx(1, "Failed to write creature species to file %s", save_path);
-		}
 
-		
 
 		close(pipefd[1]);
 
