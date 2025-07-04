@@ -52,8 +52,6 @@ static int	exit_game(void);
 
 
 char		character_name[LOGIN_NAME_MAX + 1];
-char		creature_name[CREATURE_NAME_MAX_LENGTH + 1];
-char		creature_species[256];
 char		save_path[FILENAME_MAX + 1];
 
 game_state_type	game_state;
