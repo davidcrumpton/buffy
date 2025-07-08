@@ -143,13 +143,15 @@ print_fang_art(const int upper_fangs, int rows, int health_level_left, int healt
 	else {
 		static char	buffer[FANG_ROWS_LOWER * 62];
 		buffer[0] = '\0';
+		size_t idx = 0;
 		for (int i = 0; i < rows; ++i) {
 			for (int j = 0; fangs[i][j] != '\0'; ++j) {
-				char		c = substitute_marker(fangs[i][j], health_level_left, health_level_right);
-				strncat(buffer, &c, 1);	
+				buffer[idx++] = substitute_marker(fangs[i][j], health_level_left, health_level_right);
 			}
-			strncat(buffer, "\n", 1);
+			buffer[idx++] = '\n';
 		}
+		buffer[idx] = '\0';
+
 		my_printf("%s", buffer);
 	}
 }
