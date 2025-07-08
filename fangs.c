@@ -141,7 +141,8 @@ print_fang_art(const int upper_fangs, int rows, int health_level_left, int healt
 			my_putchar('\n');
 		}
 	else {
-		static char	buffer[1024];	/* Adjust size as needed */
+		int bsize = sizeof(*maxillary_fangs); /* big enough for largest fang storage */
+		char	buffer[bsize];
 		buffer[0] = '\0';
 		for (int i = 0; i < rows; ++i) {
 			for (int j = 0; fangs[i][j] != '\0'; ++j) {
