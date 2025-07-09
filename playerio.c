@@ -183,7 +183,7 @@ initalize_curses(void)
 	if (using_curses) {
 		initscr();
 		if(LINES < 24 || COLS < 80)
-			errx(1, "please resize your windown from %d/%d to 80x24", COLS, LINES);
+			errx(1, "please resize your window from %d/%d to 80x24", COLS, LINES);
 	}
 
 	if (using_curses && color_mode && has_colors()) {
