@@ -29,5 +29,8 @@
 #define	MANDIBULAR_RIGHT_CANINE 2
 #define	MANDIBULAR_LEFT_CANINE 3
 
+#define UPPER_FANGS     1
+#define LOWER_FANGS     0
+
 void	print_fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses);
 #endif				/* FANGS_H */

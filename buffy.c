@@ -486,7 +486,7 @@ apply_fluoride_to_fangs(void)
 	 * current fang
 	 */
 	print_fang_logo();
-	my_printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
+	my_printf("Welcome to Buffy the Fluoride Dispenser: Fang Edition!\n");
 	print_creature_info(&creature, 1);
 	print_fluoride_info();
 	if (game_state.using_curses) {
@@ -513,9 +513,9 @@ apply_fluoride_to_fangs(void)
 				update_stats_display(game_state.flouride, game_state.score, game_state.turns);
 			my_werase();
 			if (i < 2) {
-				print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
+				print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
-				print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
+				print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
 
 			my_printf("Applying fluoride to %s's fang %s:\n", return_creature_name(game_state.creature_idx), fang_idx_to_name(i));
@@ -602,8 +602,8 @@ exit_game(void)
 
 	end_curses();
 	my_printf("Exiting the game...\n");
-	print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
-	print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
+	print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
 
@@ -612,7 +612,7 @@ exit_game(void)
 	print_fang_info(2, &creature.fangs[2], 1);
 	print_fang_info(3, &creature.fangs[3], 1);
 	print_tool_info();
-	my_printf("Thank you for playing Buffy the Fluoride Dispensor: Fang Edition!\n");
+	my_printf("Thank you for playing Buffy the Fluoride Dispenser: Fang Edition!\n");
 	my_printf("Final Score: %d\n", game_state.score);
 	my_printf("Turns taken: %d\n", game_state.turns);
 

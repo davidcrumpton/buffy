@@ -161,7 +161,7 @@ void
 update_stats_display(int fluoride_level, int score, int turns)
 {
     if (!using_curses || !stats_win) { 
-        printf("Fluoride: %d, Score: %d, Turns: %d\n", fluoride_level, score, turns);
+        printf("Fluoride: %d, Score: %d, Turn: %d\n", fluoride_level, score, turns);
         return;
     }
 
@@ -169,7 +169,7 @@ update_stats_display(int fluoride_level, int score, int turns)
 
     mvwprintw(stats_win, 0, 1, "Fluoride: %d", fluoride_level);
     mvwprintw(stats_win, 0, COLS / 3, "Score: %d", score);
-    mvwprintw(stats_win, 0, (COLS * 2) / 3, "turns: %d", turns);
+    mvwprintw(stats_win, 0, (COLS * 2) / 3, "Turn: %d", turns);
 
     wrefresh(stats_win);
 }
@@ -182,17 +182,19 @@ initalize_curses(void)
         return;
 	if (using_curses) {
 		initscr();
+		if(LINES < 24 || COLS < 80)
+			errx(1, "please resize your windown from %d/%d to 80x24", COLS, LINES);
 	}
+
 	if (using_curses && color_mode && has_colors()) {
 		start_color();	
-		init_pair(1, COLOR_RED, COLOR_BLACK);	/* red and black is a friend
+		init_pair(PATTERN_GAME_COLOR, COLOR_RED, COLOR_BLACK);	/* red and black is a friend
 			of Jack */
-		init_pair(2, COLOR_BLUE, COLOR_BLACK); /* status */
-		init_pair(3, COLOR_YELLOW, COLOR_BLACK); /* error */
-		init_pair(4, COLOR_WHITE, COLOR_BLACK); /* error */
+		init_pair(PATTERN_STATUS_COLOR, COLOR_BLUE, COLOR_BLACK); /* status */
+		init_pair(PATTERN_ERROR_COLOR, COLOR_YELLOW, COLOR_BLACK); /* error */
+		init_pair(PATTERN_PROMPT_COLOR, COLOR_WHITE, COLOR_BLACK); /* prompt_color */
 	}
-	if(LINES < 24 || COLS < 80)
-		errx(1, "window moderequires minimum 80x24 window");
+
     int game_win_height = LINES - 1; 
     int game_win_width = COLS;
 
@@ -201,10 +203,10 @@ initalize_curses(void)
     err_win = newwin(5,COLS, LINES -5, 0);
 	inp_win = newwin(1,COLS, LINES -2, 0);
     if(color_mode) {
-		wattron(game_win, COLOR_PAIR(1));
-    	wattron(stats_win, A_BOLD | COLOR_PAIR(2));
-		wattron(err_win, COLOR_PAIR(3));
-		wattron(inp_win, COLOR_PAIR(4));
+		wattron(game_win, COLOR_PAIR(PATTERN_GAME_COLOR));
+    	wattron(stats_win, A_BOLD | COLOR_PAIR(PATTERN_STATUS_COLOR));
+		wattron(err_win, COLOR_PAIR(PATTERN_ERROR_COLOR));
+		wattron(inp_win, COLOR_PAIR(PATTERN_PROMPT_COLOR));
     }
     wrefresh(game_win);
     wrefresh(stats_win);
