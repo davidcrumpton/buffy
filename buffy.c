@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <err.h>
-
 #include <time.h>
 
 #include "buffy.h"
@@ -391,6 +390,7 @@ print_fang_logo(void)
 	my_printf("     | |\n");
 	my_printf("    /   \\\n");
 	my_printf("   V     V\n");
+
 }
 
 
@@ -438,7 +438,7 @@ print_tool_info(void)
 	my_printf("Tool Durability: %d\n", tools[game_state.tool_in_use].durability);
 }
 static void
-print_flouride_info(void)
+print_fluoride_info(void)
 {
 	my_printf("Remaining fluoride: %d\n", game_state.flouride);
 }
@@ -484,11 +484,14 @@ apply_fluoride_to_fangs(void)
 	 * dip the tool in the flouride and how much effort to apply to the
 	 * current fang
 	 */
-
+	print_fang_logo();
+	my_printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
 	print_creature_info(&creature, 1);
-	print_flouride_info();
-	if (game_state.using_curses)
+	print_fluoride_info();
+	if (game_state.using_curses) {
+		my_refresh();
 		sleep(4);
+	}
 	int		cleaning = 1;
 	do {
 		char		answer[4];
@@ -505,17 +508,21 @@ apply_fluoride_to_fangs(void)
 			 * print_fang_art() passing in values for left and
 			 * right fang
 			 */
+			if(game_state.using_curses)
+				update_stats_display(game_state.flouride, game_state.score, game_state.turns);
+			my_werase();
 			if (i < 2) {
 				print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
 				print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
-
+			my_refresh();
 			my_printf("Applying fluoride to %s's fang %s:\n", return_creature_name(game_state.creature_idx), fang_idx_to_name(i));
 			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			      fang_idx_to_name(i), creature.fangs[i].length,
 				  creature.fangs[i].sharpness, fang_health_to_color(creature.fangs[i].health),
 				  creature.fangs[i].health);
+
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
 			game_state.last_tool_effort = tool_effort;
@@ -529,6 +536,8 @@ apply_fluoride_to_fangs(void)
 			calculate_flouride_used(tool_dip, tool_effort);
 
 			print_fang_info(i, &creature.fangs[i], 1);
+			update_stats_display(game_state.flouride, game_state.score, game_state.turns);
+			my_refresh();
 		}
 		/*
 		 * the game should check all teeth to see if health is 10. if
@@ -614,7 +623,7 @@ exit_game(void)
 	my_printf("Final Score: %d\n", game_state.score);
 	my_printf("Turns taken: %d\n", game_state.turns);
 
-	print_flouride_info();
+	print_fluoride_info();
 
 	exit(EXIT_SUCCESS);
 }
@@ -644,8 +653,7 @@ main_program(int reloadflag)
 	if (game_state.using_curses) {
 		initalize_curses();
 	}
-	print_fang_logo();;
-	my_printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
+
 	return apply_fluoride_to_fangs();
 }
 

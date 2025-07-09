@@ -18,9 +18,10 @@
 #ifndef PLAYERIO_H
 #define PLAYERIO_H
 
-
-
-
+void        my_werase();
+void        my_clear();
+void        update_stats_display(int fluoride_level, int score, int turns);
+void        my_refresh();
 void		get_input(const char *prompt, char *buffer, size_t size);
 void		my_printf(const char *format,...);
 void		mv_printw(int row, int col, const char *format,...);

@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -130,9 +129,6 @@ print_fang_art(const int upper_fangs, int rows, int health_level_left, int healt
 	else
 		fangs = mandibular_fangs;
 
-	if (using_curses) {
-		clear();
-	}
 	if (!using_curses)
 		for (int i = 0; i < rows; ++i) {
 			for (int j = 0; fangs[i][j] != '\0'; ++j) {
