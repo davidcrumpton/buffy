@@ -561,18 +561,15 @@ apply_fluoride_to_fangs(void)
 
 		game_state.score += 5;
 
-		get_input("Apply fluoride to fangs? (y/n/q/s):", answer, sizeof(answer));
+		get_input("Apply fluoride to fangs? (y/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
 			/* All tools use some fluoride */
 			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, return_creature_name(game_state.creature_idx), tools[game_state.tool_in_use].name);
 			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
 			game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);
-		} else if (answer[0] == 'n' || answer[0] == 'N') {
-			my_printf("%s decides not to apply fluoride to %s's fangs.\n", game_state.character_name, return_creature_name(game_state.creature_idx));
-			cleaning = 0;
-			/* Exit the loop */
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
 			my_printf("%s quits the game.\n", game_state.character_name);
+			cleaning = 0;
 			goto success;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
 			default_game_save();
