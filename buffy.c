@@ -509,7 +509,7 @@ apply_fluoride_to_fangs(void)
 			 * print_fang_art() passing in values for left and
 			 * right fang
 			 */
-			if(game_state.using_curses)
+			if (game_state.using_curses)
 				update_stats_display(game_state.flouride, game_state.score, game_state.turns);
 			my_werase();
 			if (i < 2) {

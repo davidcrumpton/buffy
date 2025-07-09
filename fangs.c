@@ -28,9 +28,9 @@
 
 
 /* Dirtiest to cleanest: '#', '=', '*', '+', ':', '-', '.' */
-static const char	health_markers[] = {'#', '=', '*', '+', ':', '-', '.'};
+static const char health_markers[] = {'#', '=', '*', '+', ':', '-', '.'};
 /* ASCII art for upper and lower fangs (R/L for upper, r/l for lower) */
-static const char     *maxillary_fangs[FANG_ROWS_UPPER] = {
+static const char *maxillary_fangs[FANG_ROWS_UPPER] = {
 	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
 	"@@@@@@@@@@@.... @@@-....@@@......@@@....:@@@.....@@@@@@@@@@@",
 	"@RRRRRRR@@.......@.......@........@.......@.......@@LLLLLLL@",
@@ -44,7 +44,7 @@ static const char     *maxillary_fangs[FANG_ROWS_UPPER] = {
 	"@@@RR-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+LL@@@",
 	"@@@@R@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@L@@@@",
 "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"};
-static const char     *mandibular_fangs[FANG_ROWS_LOWER] = {
+static const char *mandibular_fangs[FANG_ROWS_LOWER] = {
 	"@@@@@@@@@@@@@@@@@r@@@@@@@@@@@@@@@@@@@@@@@l+@@@@@@@@@@@@@@@@@",
 	"@@@@@@@@@@@@@@@@rr@@@@@@@@@@@@@@@@@@@@@@@ll#@@@@@@@@@@@@@@@@",
 	"@@@@@@@@@@@@@@@rrr@@@@@@@@@@@@@@@@@@@@@@@lll@@@@@@@@@@@@@@@@",
@@ -122,9 +122,9 @@ substitute_marker(char c, int health_level_left, int health_level_right)
 void
 print_fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses)
 {
-	const char **fangs;
+	const char    **fangs;
 
-	if(upper_fangs)
+	if (upper_fangs)
 		fangs = maxillary_fangs;
 	else
 		fangs = mandibular_fangs;
@@ -139,7 +139,7 @@ print_fang_art(const int upper_fangs, int rows, int health_level_left, int healt
 	else {
 		static char	buffer[FANG_ROWS_LOWER * 62];
 		buffer[0] = '\0';
-		size_t idx = 0;
+		size_t		idx = 0;
 		for (int i = 0; i < rows; ++i) {
 			for (int j = 0; fangs[i][j] != '\0'; ++j) {
 				buffer[idx++] = substitute_marker(fangs[i][j], health_level_left, health_level_right);

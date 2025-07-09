@@ -34,18 +34,18 @@ typedef struct game_state {
 	int		score;
 	int		turns;
 	int		using_curses;
-	int		color_mode;	
+	int		color_mode;
 	int		last_tool_dip;
 	int		last_tool_effort;
 	int		tool_in_use;
 	int		creature_idx;
-	char	       *character_name;	
+	char	       *character_name;
 }		game_state_type;
 
 typedef struct creature {
 	int		age;
-	char 	*name;
-	char	*species;
+	char	       *name;
+	char	       *species;
 	struct creature_fangs {
 		int		length;
 		int		sharpness;
@@ -58,7 +58,7 @@ typedef struct tool {
 	char	       *name;
 	char	       *description;
 	int		length;
-	int		dip_amount;	
+	int		dip_amount;
 	int		effort;
 
 	int		effectiveness;

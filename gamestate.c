@@ -16,8 +16,8 @@
  */
 
 /*
- * gamestate.c: saves the game structures to file specified by filename
- * save, loads, and verify use privsep to read and write the game
+ * gamestate.c: saves the game structures to file specified by filename save,
+ * loads, and verify use privsep to read and write the game
  *
  */
 #include <sys/stat.h>
@@ -54,7 +54,7 @@ init_db_info(struct database_info *db_info)
 }
 void
 load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_len,
-		creature_type * patient_g, size_t plen, char *character_name_g)
+	     creature_type * patient_g, size_t plen, char *character_name_g)
 {
 	int		pipefd[2];
 	pid_t		pid;
@@ -78,13 +78,13 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 				 * parent */
 		close(pipefd[0]);	/* close stdin since we are output */
 #ifdef __OpenBSD__
-	if (unveil(load_path, "r") == -1)
-		err(1, "unveil");
-	if (unveil(NULL, NULL) == -1)
-		err(1, "lock unveil");
+		if (unveil(load_path, "r") == -1)
+			err(1, "unveil");
+		if (unveil(NULL, NULL) == -1)
+			err(1, "lock unveil");
 
-	if (pledge("stdio rpath", NULL) == -1)
-		err(1, "pledge:");
+		if (pledge("stdio rpath", NULL) == -1)
+			err(1, "pledge:");
 #endif
 		FILE	       *fp = fopen(load_path, "rb");
 		if (fp == NULL)
@@ -145,7 +145,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 			errx(1, "Failed to read creature data from file %s", load_path);
 
 		/* Read strings */
-		int ch = 0, n = 0;
+		int		ch = 0, n = 0;
 		do {
 			if (read(pipefd[0], &ch, 1) != -1)
 				character_name_g[n++] = ch;
@@ -175,7 +175,7 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 		err(1, "fork");
 	} else if (pid == 0) {
 		/* Writer subprocess (Child) */
-		close(pipefd[1]);	/* Close stdout*/
+		close(pipefd[1]);	/* Close stdout */
 
 		if (dup2(pipefd[0], STDIN_FILENO) == -1)
 			err(1, "dup2");
@@ -233,8 +233,8 @@ save_game_state(const char *save_path, const game_state_type * gamestate, size_t
 				continue;
 			warn("waitpid failed");
 
-   		return 1;	
- 		}
+			return 1;
+		}
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
 		else if (WIFSIGNALED(status))
@@ -332,9 +332,9 @@ validation_err:
 		while (waitpid(pid, &status, 0) == -1) {
 			if (errno == EINTR)
 				continue;
-		warn("waitpid failed");
-		return 1;
-}
+			warn("waitpid failed");
+			return 1;
+		}
 
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
@@ -344,4 +344,3 @@ validation_err:
 		return 1;
 	}
 }
-
