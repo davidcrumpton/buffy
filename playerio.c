@@ -192,7 +192,7 @@ initalize_curses(void)
 		init_pair(4, COLOR_WHITE, COLOR_BLACK); /* error */
 	}
 	if(LINES < 24 || COLS < 80)
-		errx(1, "curses requires minimum 80x24 window");
+		errx(1, "window moderequires minimum 80x24 window");
     int game_win_height = LINES - 1; 
     int game_win_width = COLS;
 
