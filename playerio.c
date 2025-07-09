@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdarg.h>
+#include <err.h>
 
 #include "playerio.h"
 #include "buffy.h"
@@ -190,6 +191,8 @@ initalize_curses(void)
 		init_pair(3, COLOR_YELLOW, COLOR_BLACK); /* error */
 		init_pair(4, COLOR_WHITE, COLOR_BLACK); /* error */
 	}
+	if(LINES < 24 || COLS < 80)
+		errx(1, "curses requires minimum 80x24 window");
     int game_win_height = LINES - 1; 
     int game_win_width = COLS;
 

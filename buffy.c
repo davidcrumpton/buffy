@@ -403,7 +403,7 @@ print_fang_info(const int index, const struct creature_fangs *fang, const int co
 		return;
 	}
 	if (compact_printing) {
-		my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
+		my_printf("  %s: Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 		     fang_idx_to_name(index), fang->length, fang->sharpness,
 			  fang_health_to_color(fang->health), fang->health);
 		return;
