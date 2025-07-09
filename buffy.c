@@ -411,7 +411,7 @@ print_fang_info(const int index, const struct creature_fangs *fang, const int co
 		my_printf("Fang %s:\n", fang_idx_to_name(index));
 		my_printf("  Length: %d\n", fang->length);
 		my_printf("  Sharpness: %d\n", fang->sharpness);
-		my_printf("  Color: %s\n", fang_health_to_color(fang[index].health));
+		my_printf("  Color: %s\n", fang_health_to_color(fang->health));
 		my_printf("  Health: %d\n", fang->health);
 	}
 }
@@ -519,10 +519,8 @@ apply_fluoride_to_fangs(void)
 			}
 
 			my_printf("Applying fluoride to %s's fang %s:\n", return_creature_name(game_state.creature_idx), fang_idx_to_name(i));
-			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
-			      fang_idx_to_name(i), creature.fangs[i].length,
-				  creature.fangs[i].sharpness, fang_health_to_color(creature.fangs[i].health),
-				  creature.fangs[i].health);
+
+			print_fang_info(i, &creature.fangs[i], 1);
 			my_refresh();
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
@@ -536,7 +534,7 @@ apply_fluoride_to_fangs(void)
 
 			calculate_flouride_used(tool_dip, tool_effort);
 
-			print_fang_info(i, &creature.fangs[i], 1);
+
 			update_stats_display(game_state.flouride, game_state.score, game_state.turns);
 			my_refresh();
 		}
@@ -590,11 +588,6 @@ success:
 
 
 
-	end_curses();
-	my_printf("Remaining fluoride: %d\n", game_state.flouride);
-	print_creature_info(&creature, 1);
-	print_tool_info();
-	print_game_state(&game_state);
 	return EXIT_SUCCESS;
 }
 
@@ -613,12 +606,13 @@ exit_game(void)
 	print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
-	print_fang_info(0, creature.fangs, 1);
-	print_fang_info(1, creature.fangs, 1);
-	print_fang_info(2, creature.fangs, 1);
-	print_fang_info(3, creature.fangs, 1);
+
+	print_fang_info(0, &creature.fangs[0], 1);
+	print_fang_info(1, &creature.fangs[1], 1);
+	print_fang_info(2, &creature.fangs[2], 1);
+	print_fang_info(3, &creature.fangs[3], 1);
 	print_tool_info();
-	my_printf("Thank you for playing Buffy the Fang Slayer: Fluoride Edition!\n");
+	my_printf("Thank you for playing Buffy the Fluoride Dispensor: Fang Edition!\n");
 	my_printf("Final Score: %d\n", game_state.score);
 	my_printf("Turns taken: %d\n", game_state.turns);
 
