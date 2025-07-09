@@ -517,13 +517,13 @@ apply_fluoride_to_fangs(void)
 			} else {
 				print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
-			my_refresh();
+
 			my_printf("Applying fluoride to %s's fang %s:\n", return_creature_name(game_state.creature_idx), fang_idx_to_name(i));
 			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 			      fang_idx_to_name(i), creature.fangs[i].length,
 				  creature.fangs[i].sharpness, fang_health_to_color(creature.fangs[i].health),
 				  creature.fangs[i].health);
-
+			my_refresh();
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
 			game_state.last_tool_effort = tool_effort;
