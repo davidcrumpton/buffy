@@ -226,10 +226,11 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 
 	/* Prompt for tool dip */
 	while (!valid) {
+		prompt[0] = 0;
 		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_tool_dip);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && game_state.using_curses < 1) {
-			my_printf("Input error. Please try again.\n");
+			my_print_err("Input error. Please try again.\n");
 			continue;
 		}
 		/* If user just presses enter, use last value */
@@ -240,7 +241,7 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 		}
 		*tool_dip = (int)strtol(input, &endptr, 10);
 		if (endptr == input || *tool_dip < 0) {
-			my_printf("Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			my_print_err("Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
 			continue;
 		}
 		valid = 1;
@@ -252,7 +253,7 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 		snprintf(prompt, sizeof(prompt), "How much effort to apply to the fang [%d]? ", last_tool_effort);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && game_state.using_curses < 1) {
-			my_printf("Input error. Please try again.\n");
+			my_print_err("Input error. Please try again.\n");
 			continue;
 		}
 		if (input[0] == '\n' || strlen(input) == 0) {
@@ -262,7 +263,7 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 		}
 		*tool_effort = (int)strtol(input, &endptr, 10);
 		if (endptr == input || *tool_effort < 0) {
-			my_printf("Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			my_print_err("Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
 			continue;
 		}
 		valid = 1;
@@ -588,9 +589,8 @@ apply_fluoride_to_fangs(void)
 success:
 
 
-	if (game_state.using_curses) {
-		end_curses();
-	}
+
+	end_curses();
 	my_printf("Remaining fluoride: %d\n", game_state.flouride);
 	print_creature_info(&creature, 1);
 	print_tool_info();
@@ -606,9 +606,8 @@ success:
 static int	__dead
 exit_game(void)
 {
-	if (game_state.using_curses) {
-		end_curses();
-	}
+
+	end_curses();
 	my_printf("Exiting the game...\n");
 	print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
 	print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
@@ -650,9 +649,7 @@ main_program(int reloadflag)
 		game_state.tool_effort = DEFAULT_DAGGER_EFFORT;
 	}
 
-	if (game_state.using_curses) {
-		initalize_curses();
-	}
+	initalize_curses();
 
 	return apply_fluoride_to_fangs();
 }

@@ -95,11 +95,13 @@ my_print_err(const char *format,...)
 	va_list		args;
 	va_start(args, format);
 	if (using_curses) {
-		wattron(err_win, A_BOLD | COLOR_PAIR(1));	
-		mvwprintw(err_win, 1, 1, format, args);
-		wattroff(err_win, A_BOLD | COLOR_PAIR(1));
-		wrefresh(err_win);
-		delwin(err_win);
+        werase(err_win);
+		
+        wattron(err_win, A_BOLD | COLOR_PAIR(3));
+		vw_printw(err_win, format, args);
+
+        wattroff(err_win, A_BOLD | COLOR_PAIR(3));
+        wrefresh(err_win);
 	} else {
 		vfprintf(stderr, format, args);
 		fflush(stderr);
@@ -180,14 +182,14 @@ initalize_curses(void)
 		init_pair(1, COLOR_RED, COLOR_BLACK);	/* red and black is a friend
 			of Jack */
 	       	init_pair(2, COLOR_BLUE, COLOR_BLACK); /* status */
-	       	init_pair(3, COLOR_WHITE, COLOR_BLACK); /* status */
+	       	init_pair(3, COLOR_WHITE, COLOR_BLACK); /* error */
 	}
     int game_win_height = LINES - 1; 
     int game_win_width = COLS;
 
     game_win = newwin(game_win_height, game_win_width, 0, 0);
     stats_win = newwin(1, COLS, LINES - 1, 0);
-    err_win = newwin(1,COLS, LINES -3, 0);
+    err_win = newwin(5,COLS, LINES -5, 0);
     if(color_mode) {
 		wattron(game_win, COLOR_PAIR(1));
     		wattron(stats_win, A_BOLD | COLOR_PAIR(2));
@@ -199,18 +201,29 @@ initalize_curses(void)
 int
 end_curses(void)
 {
+    if (!using_curses) {
+        return 0;
+    }
 
+    if (game_win) {
+        delwin(game_win);
+        game_win = NULL;
+    }
+    if (stats_win) {
+        delwin(stats_win);
+        stats_win = NULL;
+    }
+    
+    if (err_win) {
+        delwin(err_win);
+        err_win = NULL;
+    }
+    
 
-	if (!using_curses) {
-		return 0;
-	}
-	if (using_curses) {
-		sleep(2);
-		refresh();
-		def_prog_mode();
-		endwin();
-		reset_shell_mode();
-	}
-	using_curses = 0;	/* Reset the flag */
-	return 0;
+    sleep(2); 
+    refresh();
+    endwin();
+
+    using_curses = 0;
+    return 0;
 }
