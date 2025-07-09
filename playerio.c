@@ -186,8 +186,8 @@ initalize_curses(void)
 		start_color();	
 		init_pair(1, COLOR_RED, COLOR_BLACK);	/* red and black is a friend
 			of Jack */
-	       	init_pair(2, COLOR_BLUE, COLOR_BLACK); /* status */
-	       	init_pair(3, COLOR_WHITE, COLOR_BLACK); /* error */
+		init_pair(2, COLOR_BLUE, COLOR_BLACK); /* status */
+		init_pair(3, COLOR_YELLOW, COLOR_BLACK); /* error */
 	}
     int game_win_height = LINES - 1; 
     int game_win_width = COLS;
@@ -197,7 +197,8 @@ initalize_curses(void)
     err_win = newwin(5,COLS, LINES -5, 0);
     if(color_mode) {
 		wattron(game_win, COLOR_PAIR(1));
-    		wattron(stats_win, A_BOLD | COLOR_PAIR(2));
+    	wattron(stats_win, A_BOLD | COLOR_PAIR(2));
+		wattron(err_win, COLOR_PAIR(3));
     }
     wrefresh(game_win);
     wrefresh(stats_win);
