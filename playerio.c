@@ -34,6 +34,7 @@ static int color_mode = 0;
 static WINDOW *game_win = NULL;
 static WINDOW *stats_win = NULL;
 static WINDOW *err_win = NULL; 
+static WINDOW *inp_win = NULL;
 
 void my_werase()
 {
@@ -72,19 +73,18 @@ void
 get_input(const char *prompt, char *buffer, size_t size)
 {
     if (using_curses) {
-        int prompt_row = LINES - 2; 
+        int prompt_row = 0;
 
-        mvwprintw(game_win, prompt_row, 0, "%*s", COLS, " "); 
-        mvwprintw(game_win, prompt_row, 0, "%s", prompt);
-        wrefresh(game_win); 
+		vw_printw(inp_win, prompt, NULL);
+        wrefresh(inp_win); 
 
-        wmove(game_win, prompt_row, strlen(prompt));
+        wmove(inp_win, prompt_row, strlen(prompt));
         curs_set(1); 
-        wgetnstr(game_win, buffer, size - 1); 
+        wgetnstr(inp_win, buffer, size - 1); 
 
         curs_set(0); 
-        mvwprintw(game_win, prompt_row, 0, "%*s", COLS, " ");
-        wrefresh(game_win); 
+        werase(inp_win);
+        wrefresh(inp_win); 
     } else {
         printf("%s", prompt);
         fflush(stdout);
@@ -188,6 +188,7 @@ initalize_curses(void)
 			of Jack */
 		init_pair(2, COLOR_BLUE, COLOR_BLACK); /* status */
 		init_pair(3, COLOR_YELLOW, COLOR_BLACK); /* error */
+		init_pair(4, COLOR_WHITE, COLOR_BLACK); /* error */
 	}
     int game_win_height = LINES - 1; 
     int game_win_width = COLS;
@@ -195,10 +196,12 @@ initalize_curses(void)
     game_win = newwin(game_win_height, game_win_width, 0, 0);
     stats_win = newwin(1, COLS, LINES - 1, 0);
     err_win = newwin(5,COLS, LINES -5, 0);
+	inp_win = newwin(1,COLS, LINES -2, 0);
     if(color_mode) {
 		wattron(game_win, COLOR_PAIR(1));
     	wattron(stats_win, A_BOLD | COLOR_PAIR(2));
 		wattron(err_win, COLOR_PAIR(3));
+		wattron(inp_win, COLOR_PAIR(4));
     }
     wrefresh(game_win);
     wrefresh(stats_win);
@@ -225,6 +228,10 @@ end_curses(void)
         err_win = NULL;
     }
     
+	if (inp_win) {
+		delwin(inp_win);
+		inp_win = NULL;
+	}
 
     sleep(2); 
     refresh();
