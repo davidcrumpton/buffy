@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <err.h>
-
 #include <time.h>
 
 #include "buffy.h"
@@ -227,10 +226,11 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 
 	/* Prompt for tool dip */
 	while (!valid) {
+		prompt[0] = 0;
 		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_tool_dip);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && game_state.using_curses < 1) {
-			my_printf("Input error. Please try again.\n");
+			my_print_err("Input error. Please try again.\n");
 			continue;
 		}
 		/* If user just presses enter, use last value */
@@ -241,7 +241,7 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 		}
 		*tool_dip = (int)strtol(input, &endptr, 10);
 		if (endptr == input || *tool_dip < 0) {
-			my_printf("Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			my_print_err("Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
 			continue;
 		}
 		valid = 1;
@@ -253,7 +253,7 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 		snprintf(prompt, sizeof(prompt), "How much effort to apply to the fang [%d]? ", last_tool_effort);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && game_state.using_curses < 1) {
-			my_printf("Input error. Please try again.\n");
+			my_print_err("Input error. Please try again.\n");
 			continue;
 		}
 		if (input[0] == '\n' || strlen(input) == 0) {
@@ -263,7 +263,7 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 		}
 		*tool_effort = (int)strtol(input, &endptr, 10);
 		if (endptr == input || *tool_effort < 0) {
-			my_printf("Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			my_print_err("Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
 			continue;
 		}
 		valid = 1;
@@ -391,6 +391,7 @@ print_fang_logo(void)
 	my_printf("     | |\n");
 	my_printf("    /   \\\n");
 	my_printf("   V     V\n");
+
 }
 
 
@@ -402,7 +403,7 @@ print_fang_info(const int index, const struct creature_fangs *fang, const int co
 		return;
 	}
 	if (compact_printing) {
-		my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
+		my_printf("  %s: Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 		     fang_idx_to_name(index), fang->length, fang->sharpness,
 			  fang_health_to_color(fang->health), fang->health);
 		return;
@@ -410,7 +411,7 @@ print_fang_info(const int index, const struct creature_fangs *fang, const int co
 		my_printf("Fang %s:\n", fang_idx_to_name(index));
 		my_printf("  Length: %d\n", fang->length);
 		my_printf("  Sharpness: %d\n", fang->sharpness);
-		my_printf("  Color: %s\n", fang_health_to_color(fang[index].health));
+		my_printf("  Color: %s\n", fang_health_to_color(fang->health));
 		my_printf("  Health: %d\n", fang->health);
 	}
 }
@@ -438,7 +439,7 @@ print_tool_info(void)
 	my_printf("Tool Durability: %d\n", tools[game_state.tool_in_use].durability);
 }
 static void
-print_flouride_info(void)
+print_fluoride_info(void)
 {
 	my_printf("Remaining fluoride: %d\n", game_state.flouride);
 }
@@ -484,11 +485,14 @@ apply_fluoride_to_fangs(void)
 	 * dip the tool in the flouride and how much effort to apply to the
 	 * current fang
 	 */
-
+	print_fang_logo();
+	my_printf("Welcome to Buffy the Fluoride Dispenser: Fang Edition!\n");
 	print_creature_info(&creature, 1);
-	print_flouride_info();
-	if (game_state.using_curses)
+	print_fluoride_info();
+	if (game_state.using_curses) {
+		my_refresh();
 		sleep(4);
+	}
 	int		cleaning = 1;
 	do {
 		char		answer[4];
@@ -505,17 +509,19 @@ apply_fluoride_to_fangs(void)
 			 * print_fang_art() passing in values for left and
 			 * right fang
 			 */
+			if(game_state.using_curses)
+				update_stats_display(game_state.flouride, game_state.score, game_state.turns);
+			my_werase();
 			if (i < 2) {
-				print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
+				print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
-				print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
+				print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
 
 			my_printf("Applying fluoride to %s's fang %s:\n", return_creature_name(game_state.creature_idx), fang_idx_to_name(i));
-			my_printf("Fang %s - Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
-			      fang_idx_to_name(i), creature.fangs[i].length,
-				  creature.fangs[i].sharpness, fang_health_to_color(creature.fangs[i].health),
-				  creature.fangs[i].health);
+
+			print_fang_info(i, &creature.fangs[i], 1);
+			my_refresh();
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
 			game_state.last_tool_effort = tool_effort;
@@ -528,7 +534,9 @@ apply_fluoride_to_fangs(void)
 
 			calculate_flouride_used(tool_dip, tool_effort);
 
-			print_fang_info(i, &creature.fangs[i], 1);
+
+			update_stats_display(game_state.flouride, game_state.score, game_state.turns);
+			my_refresh();
 		}
 		/*
 		 * the game should check all teeth to see if health is 10. if
@@ -579,13 +587,7 @@ apply_fluoride_to_fangs(void)
 success:
 
 
-	if (game_state.using_curses) {
-		end_curses();
-	}
-	my_printf("Remaining fluoride: %d\n", game_state.flouride);
-	print_creature_info(&creature, 1);
-	print_tool_info();
-	print_game_state(&game_state);
+
 	return EXIT_SUCCESS;
 }
 
@@ -597,24 +599,24 @@ success:
 static int	__dead
 exit_game(void)
 {
-	if (game_state.using_curses) {
-		end_curses();
-	}
+
+	end_curses();
 	my_printf("Exiting the game...\n");
-	print_fang_art(1, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
-	print_fang_art(0, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
+	print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
 	print_game_state(&game_state);
 	print_creature_info(&creature, 0);
-	print_fang_info(0, creature.fangs, 1);
-	print_fang_info(1, creature.fangs, 1);
-	print_fang_info(2, creature.fangs, 1);
-	print_fang_info(3, creature.fangs, 1);
+
+	print_fang_info(0, &creature.fangs[0], 1);
+	print_fang_info(1, &creature.fangs[1], 1);
+	print_fang_info(2, &creature.fangs[2], 1);
+	print_fang_info(3, &creature.fangs[3], 1);
 	print_tool_info();
-	my_printf("Thank you for playing Buffy the Fang Slayer: Fluoride Edition!\n");
+	my_printf("Thank you for playing Buffy the Fluoride Dispenser: Fang Edition!\n");
 	my_printf("Final Score: %d\n", game_state.score);
 	my_printf("Turns taken: %d\n", game_state.turns);
 
-	print_flouride_info();
+	print_fluoride_info();
 
 	exit(EXIT_SUCCESS);
 }
@@ -641,11 +643,8 @@ main_program(int reloadflag)
 		game_state.tool_effort = DEFAULT_DAGGER_EFFORT;
 	}
 
-	if (game_state.using_curses) {
-		initalize_curses();
-	}
-	print_fang_logo();;
-	my_printf("Welcome to Buffy the Fang Slayer: Fluoride Edition!\n");
+	initalize_curses();
+
 	return apply_fluoride_to_fangs();
 }
 

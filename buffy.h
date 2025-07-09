@@ -87,7 +87,7 @@ typedef struct fang_info {
 #define DEFAULT_DAGGER_EFFORT  5
 #define DEFAULT_FLOURIDE_USED    0
 #define DEFAULT_SCORE           10
-#define DEFAULT_TURNS           0
+#define DEFAULT_TURNS           1
 
 #define MAX_HEALTH              100
 

@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdarg.h>
+#include <err.h>
 
 #include "playerio.h"
 #include "buffy.h"
@@ -31,6 +32,33 @@
 static int using_curses = 0;
 static int color_mode = 0;	
 
+static WINDOW *game_win = NULL;
+static WINDOW *stats_win = NULL;
+static WINDOW *err_win = NULL; 
+static WINDOW *inp_win = NULL;
+
+void my_werase()
+{
+	if(using_curses)
+		werase(game_win);
+	else
+		putchar('\n');
+}
+void my_clear()
+{
+    if(using_curses)
+        wclear(game_win);
+	else
+		putchar('\n');
+}
+void
+my_refresh()
+{
+    if(using_curses)
+        wrefresh(game_win);
+	else
+		putchar('\n');
+}
 void
 set_using_curses(int flag)
 {
@@ -45,17 +73,26 @@ set_color_mode(int flag)
 void
 get_input(const char *prompt, char *buffer, size_t size)
 {
-	if (using_curses) {
-		printw("%s", prompt);
-		refresh();
-		getnstr(buffer, size - 1);
-		/* Safe input in curses mode */
-	} else {
-		printf("%s", prompt);
-		fflush(stdout);
-		fgets(buffer, size, stdin);
-	}
+    if (using_curses) {
+        int prompt_row = 0;
+
+		vw_printw(inp_win, prompt, NULL);
+        wrefresh(inp_win); 
+
+        wmove(inp_win, prompt_row, strlen(prompt));
+        curs_set(1); 
+        wgetnstr(inp_win, buffer, size - 1); 
+
+        curs_set(0); 
+        werase(inp_win);
+        wrefresh(inp_win); 
+    } else {
+        printf("%s", prompt);
+        fflush(stdout);
+        fgets(buffer, size, stdin);
+    }
 }
+
 
 
 void
@@ -64,13 +101,13 @@ my_print_err(const char *format,...)
 	va_list		args;
 	va_start(args, format);
 	if (using_curses) {
-		/* Uses a separate window for error messages */
-		WINDOW	       *err_win = newwin(3, COLS - 2, LINES - 3, 1);
-		wattron(err_win, A_BOLD | COLOR_PAIR(1));	
-		mvwprintw(err_win, 1, 1, format, args);
-		wattroff(err_win, A_BOLD | COLOR_PAIR(1));
-		wrefresh(err_win);
-		delwin(err_win);
+        werase(err_win);
+		
+        wattron(err_win, A_BOLD | COLOR_PAIR(3));
+		vw_printw(err_win, format, args);
+
+        wattroff(err_win, A_BOLD | COLOR_PAIR(3));
+        wrefresh(err_win);
 	} else {
 		vfprintf(stderr, format, args);
 		fflush(stderr);
@@ -84,8 +121,7 @@ my_printf(const char *format,...)
 	va_list		args;
 	va_start(args, format);
 	if (using_curses) {
-		vw_printw(stdscr, format, args);
-		refresh();
+		vw_printw(game_win, format, args);
 	} else {
 		vprintf(format, args);
 	}
@@ -99,8 +135,7 @@ mv_printw(int row, int col, const char *format,...)
 	va_start(args, format);
 	if (using_curses) {
 		move(row, col);	
-		vw_printw(stdscr, format, args);
-		refresh();
+		vw_printw(game_win, format, args);
 	} else {
 		vprintf(format, args);
 	}
@@ -112,10 +147,10 @@ void
 my_putchar(char c)
 {
 	if (using_curses) {
-		wmove(stdscr, 0, 0);	/* top left */
-		waddch(stdscr, c);	/* add the character at the current
+		wmove(game_win, 0, 0);	/* top left */
+		waddch(game_win, c);	/* add the character at the current
 					 * cursor position */
-		wrefresh(stdscr);
+		wrefresh(game_win);
 	} else {
 		putchar(c);	
 		fflush(stdout);	
@@ -123,35 +158,90 @@ my_putchar(char c)
 }
 
 void
+update_stats_display(int fluoride_level, int score, int turns)
+{
+    if (!using_curses || !stats_win) { 
+        printf("Fluoride: %d, Score: %d, Turn: %d\n", fluoride_level, score, turns);
+        return;
+    }
+
+    werase(stats_win); 
+
+    mvwprintw(stats_win, 0, 1, "Fluoride: %d", fluoride_level);
+    mvwprintw(stats_win, 0, COLS / 3, "Score: %d", score);
+    mvwprintw(stats_win, 0, (COLS * 2) / 3, "Turn: %d", turns);
+
+    wrefresh(stats_win);
+}
+
+
+void
 initalize_curses(void)
 {
-
+    if(!using_curses)
+        return;
 	if (using_curses) {
 		initscr();
+		if(LINES < 24 || COLS < 80)
+			errx(1, "please resize your windown from %d/%d to 80x24", COLS, LINES);
 	}
+
 	if (using_curses && color_mode && has_colors()) {
 		start_color();	
-		init_pair(1, COLOR_RED, COLOR_BLACK);	/* red and black is a friend
-				of Jack */
-		attron(COLOR_PAIR(1));
+		init_pair(PATTERN_GAME_COLOR, COLOR_RED, COLOR_BLACK);	/* red and black is a friend
+			of Jack */
+		init_pair(PATTERN_STATUS_COLOR, COLOR_BLUE, COLOR_BLACK); /* status */
+		init_pair(PATTERN_ERROR_COLOR, COLOR_YELLOW, COLOR_BLACK); /* error */
+		init_pair(PATTERN_PROMPT_COLOR, COLOR_WHITE, COLOR_BLACK); /* prompt_color */
 	}
+
+    int game_win_height = LINES - 1; 
+    int game_win_width = COLS;
+
+    game_win = newwin(game_win_height, game_win_width, 0, 0);
+    stats_win = newwin(1, COLS, LINES - 1, 0);
+    err_win = newwin(5,COLS, LINES -5, 0);
+	inp_win = newwin(1,COLS, LINES -2, 0);
+    if(color_mode) {
+		wattron(game_win, COLOR_PAIR(PATTERN_GAME_COLOR));
+    	wattron(stats_win, A_BOLD | COLOR_PAIR(PATTERN_STATUS_COLOR));
+		wattron(err_win, COLOR_PAIR(PATTERN_ERROR_COLOR));
+		wattron(inp_win, COLOR_PAIR(PATTERN_PROMPT_COLOR));
+    }
+    wrefresh(game_win);
+    wrefresh(stats_win);
 }
 
 int
 end_curses(void)
 {
+    if (!using_curses) {
+        return 0;
+    }
 
+    if (game_win) {
+        delwin(game_win);
+        game_win = NULL;
+    }
+    if (stats_win) {
+        delwin(stats_win);
+        stats_win = NULL;
+    }
+    
+    if (err_win) {
+        delwin(err_win);
+        err_win = NULL;
+    }
+    
+	if (inp_win) {
+		delwin(inp_win);
+		inp_win = NULL;
+	}
 
-	if (!using_curses) {
-		return 0;
-	}
-	if (using_curses) {
-		sleep(2);
-		refresh();
-		def_prog_mode();
-		endwin();
-		reset_shell_mode();
-	}
-	using_curses = 0;	/* Reset the flag */
-	return 0;
+    sleep(2); 
+    refresh();
+    endwin();
+
+    using_curses = 0;
+    return 0;
 }
