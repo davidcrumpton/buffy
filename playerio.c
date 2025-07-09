@@ -73,19 +73,47 @@ set_color_mode(int flag)
 {
 	color_mode = flag;
 }
+
+void redraw_game_screen() {
+    clear(); // Clear the entire screen
+    // Get current dimensions
+    // int max_y, max_x;
+    // getmaxyx(stdscr, max_y, max_x);
+
+    // If you have specific windows, you'll need to resize and reposition them
+    // For example, if you had a 'game_window' and a 'score_window':
+    wresize(game_win, 16, 80);
+    mvwin(game_win, 0, 0); // Reposition if needed
+    wclear(game_win);
+    wclear(stats_win);
+	wclear(err_win);
+	wclear(inp_win);
+
+    // redraw_game_elements(game_window);
+    wrefresh(game_win);
+    wrefresh(stats_win);
+	wrefresh(err_win);
+	wrefresh(inp_win);	
+
+    refresh(); // Refresh the standard screen (stdscr)
+}
 void
 get_input(const char *prompt, char *buffer, size_t size)
 {
 	if (using_curses) {
 		int		prompt_row = 0;
-
+		int 	ch = -1;
 		vw_printw(inp_win, prompt, NULL);
-		wrefresh(inp_win);
 
-		wmove(inp_win, prompt_row, strlen(prompt));
-		curs_set(1);
-		wgetnstr(inp_win, buffer, size - 1);
-
+		do {
+			wrefresh(inp_win);
+			curs_set(1);
+			wmove(inp_win, prompt_row, strlen(prompt));
+			ch = wgetnstr(inp_win, buffer, size - 1);
+			if(ch == KEY_RESIZE)
+				my_print_err("I see a resize!\n");
+				redraw_game_screen();
+		} while(ch == -1);
 		curs_set(0);
 		werase(inp_win);
 		wrefresh(inp_win);
@@ -185,6 +213,7 @@ initalize_curses(void)
 		return;
 	if (using_curses) {
 		initscr();
+		keypad(stdscr, TRUE);
 		if (LINES < 24 || COLS < 80) {
 			end_curses();
 			errx(1, "please resize your window from %d/%d to 80x24", COLS, LINES);
