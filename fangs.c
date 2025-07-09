@@ -27,8 +27,8 @@
 
 
 
-/* Dirtiest to cleanest: '#', '=', '*', '+', '-', ':', '.' */
-static const char	health_markers[] = {'#', '=', '*', '+', '-', ':', '.'};
+/* Dirtiest to cleanest: '#', '=', '*', '+', ':', '-', '.' */
+static const char	health_markers[] = {'#', '=', '*', '+', ':', '-', '.'};
 /* ASCII art for upper and lower fangs (R/L for upper, r/l for lower) */
 static const char     *maxillary_fangs[FANG_ROWS_UPPER] = {
 	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
@@ -71,7 +71,7 @@ static const char     *mandibular_fangs[FANG_ROWS_LOWER] = {
  * health level of the left fang. If the character is not one of these, it
  * returns the character unchanged.  With a scale of 60 to 100, and 6
  * characters, we can map   the health levels as follows: 60-64 -> '#', 65-69
- * -> '=', 70-74 -> '*', 75-79 -> '+', 80-84 -> '-', 85-95 -> ':', 96-100 ->
+ * -> '=', 70-74 -> '*', 75-79 -> '+', 80-84 -> ':', 85-95 -> '-', 96-100 ->
  * '.'.   The range is special on the high end, where 96-100 maps to the
  * cleanest marker '.'.
  *
