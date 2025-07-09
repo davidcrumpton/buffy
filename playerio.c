@@ -39,18 +39,23 @@ void my_werase()
 {
 	if(using_curses)
 		werase(game_win);
+	else
+		putchar('\n');
 }
 void my_clear()
 {
     if(using_curses)
         wclear(game_win);
-
+	else
+		putchar('\n');
 }
 void
 my_refresh()
 {
     if(using_curses)
         wrefresh(game_win);
+	else
+		putchar('\n');
 }
 void
 set_using_curses(int flag)
