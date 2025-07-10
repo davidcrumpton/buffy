@@ -26,6 +26,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <err.h>
+#include <signal.h>
 
 #include "playerio.h"
 #include "buffy.h"
@@ -218,6 +219,29 @@ update_stats_display(int fluoride_level, int score, int turns)
 	wrefresh(stats_win);
 }
 
+void
+handle_exit_signal(int signo)
+{
+	end_curses();
+
+	_exit(1);
+}
+
+void
+setup_signal_handlers(void)
+{
+	struct sigaction sa;
+	sa.sa_handler = handle_exit_signal;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGTERM, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGHUP, &sa, NULL);
+
+}
+
 
 void
 initalize_curses(void)
@@ -230,6 +254,7 @@ initalize_curses(void)
 			end_curses();
 			errx(1, "please resize your window from %d/%d to 80x24", COLS, LINES);
 		}
+		setup_signal_handlers();
 	}
 
 	if (using_curses && color_mode && has_colors()) {
