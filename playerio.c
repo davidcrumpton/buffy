@@ -125,9 +125,10 @@ get_input(const char *prompt, char *buffer, size_t size)
 				wmove(inp_win, prompt_row, strlen(prompt));
 				curs_set(1);
 				ch = wgetnstr(inp_win, buffer, size - 1);
-				if (ch == KEY_RESIZE) {
+				if (ch == KEY_RESIZE)
 					redraw_game_screen();
-				}
+				if (ch == ERR) 
+					break;
 		} while(ch != OK);
 
 		curs_set(0);
