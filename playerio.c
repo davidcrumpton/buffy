@@ -73,19 +73,58 @@ set_color_mode(int flag)
 {
 	color_mode = flag;
 }
+
+void redraw_game_screen() {
+    clear(); 
+ 
+    int max_y, max_x;
+    getmaxyx(stdscr, max_y, max_x);
+
+    mvprintw(0, 0, "Current terminal size: %dx%d", max_x, max_y);
+    mvprintw(2, 0, "This game is designed for 80x24.");
+    if (max_x < 80 || max_y < 24) {
+        mvprintw(4, 0, "Warning: Window is smaller than 80x24. Display may be truncated.");
+    } else if (max_x > 80 || max_y > 24) {
+        mvprintw(4, 0, "Note: Window is larger than 80x24. Extra space available.");
+    }
+    mvprintw(6, 0, "To continue the game, enter your response as prompted.");
+
+    wresize(game_win, 16, max_x);
+    mvwin(stats_win, max_y - 1, 0); 
+    wclear(game_win);
+    wclear(stats_win);
+	mvwin(stats_win, max_y - 1, 0);
+	wclear(err_win);
+	mvwin(inp_win, max_y -2, 0);
+	wclear(inp_win);
+
+    wrefresh(game_win);
+    wrefresh(stats_win);
+	mvwin(err_win, max_y - 1, 0);
+	wrefresh(err_win);
+
+    refresh(); 
+}
+
+
 void
 get_input(const char *prompt, char *buffer, size_t size)
 {
 	if (using_curses) {
 		int		prompt_row = 0;
+		int		ch = -1;
 
+prompt:
 		vw_printw(inp_win, prompt, NULL);
 		wrefresh(inp_win);
 
 		wmove(inp_win, prompt_row, strlen(prompt));
 		curs_set(1);
-		wgetnstr(inp_win, buffer, size - 1);
-
+		ch = wgetnstr(inp_win, buffer, size - 1);
+		if (ch == KEY_RESIZE) {
+			redraw_game_screen();
+			goto prompt;
+		}
 		curs_set(0);
 		werase(inp_win);
 		wrefresh(inp_win);
