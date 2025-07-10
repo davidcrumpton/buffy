@@ -117,17 +117,19 @@ get_input(const char *prompt, char *buffer, size_t size)
 		int		prompt_row = 0;
 		int		ch = -1;
 
-prompt:
-		vw_printw(inp_win, prompt, NULL);
-		wrefresh(inp_win);
 
-		wmove(inp_win, prompt_row, strlen(prompt));
-		curs_set(1);
-		ch = wgetnstr(inp_win, buffer, size - 1);
-		if (ch == KEY_RESIZE) {
-			redraw_game_screen();
-			goto prompt;
-		}
+		do {
+				vw_printw(inp_win, prompt, NULL);
+				wrefresh(inp_win);
+
+				wmove(inp_win, prompt_row, strlen(prompt));
+				curs_set(1);
+				ch = wgetnstr(inp_win, buffer, size - 1);
+				if (ch == KEY_RESIZE) {
+					redraw_game_screen();
+				}
+		} while(ch != OK);
+
 		curs_set(0);
 		werase(inp_win);
 		wrefresh(inp_win);
