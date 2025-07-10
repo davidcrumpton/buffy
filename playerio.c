@@ -102,7 +102,7 @@ redraw_game_screen()
 
 	wrefresh(game_win);
 	wrefresh(stats_win);
-	mvwin(err_win, max_y - 1, 0);
+	mvwin(err_win, max_y - 5, 0);
 	wrefresh(err_win);
 
 	refresh();
