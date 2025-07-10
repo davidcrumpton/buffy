@@ -73,37 +73,37 @@ set_color_mode(int flag)
 {
 	color_mode = flag;
 }
-// Function to redraw your game's elements based on current screen size
+
 void redraw_game_screen() {
-    clear(); // Clear the entire screen
-    // Get current dimensions
+    clear(); 
+ 
     int max_y, max_x;
     getmaxyx(stdscr, max_y, max_x);
 
-    // mvprintw(0, 0, "Current terminal size: %dx%d", max_x, max_y);
-    // mvprintw(2, 0, "This game is designed for 80x24.");
-    // if (max_x < 80 || max_y < 24) {
-    //     mvprintw(4, 0, "Warning: Window is smaller than 80x24. Display may be truncated.");
-    // } else if (max_x > 80 || max_y > 24) {
-    //     mvprintw(4, 0, "Note: Window is larger than 80x24. Extra space available.");
-    // }
-    // mvprintw(6, 0, "Press 'q' to quit. Try resizing the window!");
+    mvprintw(0, 0, "Current terminal size: %dx%d", max_x, max_y);
+    mvprintw(2, 0, "This game is designed for 80x24.");
+    if (max_x < 80 || max_y < 24) {
+        mvprintw(4, 0, "Warning: Window is smaller than 80x24. Display may be truncated.");
+    } else if (max_x > 80 || max_y > 24) {
+        mvprintw(4, 0, "Note: Window is larger than 80x24. Extra space available.");
+    }
+    mvprintw(6, 0, "To continue the game, enter your response as prompted.");
 
-    // If you have specific windows, you'll need to resize and reposition them
-    // For example, if you had a 'game_window' and a 'score_window':
     wresize(game_win, 16, max_x);
-    mvwin(stats_win, max_y - 1, 0); // Reposition if needed
+    mvwin(stats_win, max_y - 1, 0); 
     wclear(game_win);
     wclear(stats_win);
+	mvwin(stats_win, max_y - 1, 0);
 	wclear(err_win);
+	mvwin(inp_win, max_y -2, 0);
 	wclear(inp_win);
-    // redraw_borders(game_window); // Assuming you have a function to draw borders
-    // redraw_game_elements(game_window);
+
     wrefresh(game_win);
     wrefresh(stats_win);
+	mvwin(err_win, max_y - 1, 0);
 	wrefresh(err_win);
 
-    refresh(); // Refresh the standard screen (stdscr)
+    refresh(); 
 }
 
 
