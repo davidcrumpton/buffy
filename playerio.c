@@ -115,7 +115,7 @@ get_input(const char *prompt, char *buffer, size_t size)
 {
 	if (using_curses) {
 		int		prompt_row = 0;
-		int		ch = -1;
+		int		ch = ERR;
 
 
 		do {
