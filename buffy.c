@@ -54,7 +54,7 @@ char		character_name[LOGIN_NAME_MAX + 1];
 char		save_path[FILENAME_MAX + 1];
 
 game_state_type	game_state;
-creature_type	creature;
+patient_type	patient;
 
 
 
@@ -79,7 +79,7 @@ tool		tools[] = {
 };
 
 
-struct creature	creatures[] = {
+struct patient	patients[] = {
 	{90, "Dracula", "Vampire", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{110, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{130, "Fenrir", "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
@@ -98,15 +98,15 @@ usage(void)
 }
 
 static char    *
-return_creature_name(const int idx)
+return_patient_name(const int idx)
 {
-	return (creatures[idx]).name;
+	return (patients[idx]).name;
 }
 
 static char    *
-return_creature_species(const int idx)
+return_patient_species(const int idx)
 {
-	return (creatures[idx].species);
+	return (patients[idx].species);
 }
 
 static char    *
@@ -154,7 +154,7 @@ default_game_save(void)
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
 	my_printf("Saving game to: %s\n", save_path);
-	if (save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature)) != 0) {
+	if (save_game_state(save_path, &game_state, sizeof(game_state), &patient, sizeof(patient)) != 0) {
 		errx(1, "Unable to save game state to %s", save_path);
 	}
 }
@@ -197,7 +197,7 @@ init_game_state(int bflag)
 	game_state.last_tool_effort = DEFAULT_TOOL_EFFORT;
 }
 static void
-randomize_fangs(struct creature *fanged_beast, int count)
+randomize_fangs(struct patient *fanged_beast, int count)
 {
 	for (int i = 0; i < count; i++) {
 		fanged_beast->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
@@ -276,7 +276,7 @@ calculate_flouride_used(int tool_dip, int tool_effort)
 {
 	/*
 	 * Calculate the amount of fluoride used based on the selected tool,
-	 * dip, effort, and creature species
+	 * dip, effort, and patient species
 	 */
 	if (tool_dip < 0 || tool_effort < 0) {
 		my_print_err("Negative value for tool dip or effort detected. Using default values instead.\n");
@@ -289,18 +289,18 @@ calculate_flouride_used(int tool_dip, int tool_effort)
 
 	int		used = (dip * 2) + (effort * 3);
 
-	/* Adjust fluoride usage based on creature species */
-	if (strcmp(return_creature_species(game_state.creature_idx), "Vampire") == 0) {
+	/* Adjust fluoride usage based on patient species */
+	if (strcmp(return_patient_species(game_state.patient_idx), "Vampire") == 0) {
 		used = (int)(used * 0.8);	/* Vampires need less
 						 * fluoride */
-	} else if (strcmp(return_creature_species(game_state.creature_idx), "Orc") == 0) {
+	} else if (strcmp(return_patient_species(game_state.patient_idx), "Orc") == 0) {
 		used = (int)(used * 1.2);	/* Orcs need more fluoride */
-	} else if (strcmp(return_creature_species(game_state.creature_idx), "Werewolf") == 0) {
+	} else if (strcmp(return_patient_species(game_state.patient_idx), "Werewolf") == 0) {
 		used = (int)(used * 1.1);	/* Werewolves need a bit more */
-	} else if (strcmp(return_creature_species(game_state.creature_idx), "Serpent") == 0) {
+	} else if (strcmp(return_patient_species(game_state.patient_idx), "Serpent") == 0) {
 		used = (int)(used * 0.9);	/* Serpents need slightly
 						 * less */
-	} else if (strcmp(return_creature_species(game_state.creature_idx), "Dragon") == 0) {
+	} else if (strcmp(return_patient_species(game_state.patient_idx), "Dragon") == 0) {
 		used = (int)(used * 1.5);	/* Dragons need much more */
 	}
 
@@ -317,10 +317,10 @@ calculate_flouride_used(int tool_dip, int tool_effort)
 }
 
 static void
-calculate_fang_health(struct creature_fangs *fang, int tool_dip, int tool_effort)
+calculate_fang_health(struct patient_fangs *fang, int tool_dip, int tool_effort)
 {
 	/*
-	 * Calculate health based on tool dip and effort, with creature
+	 * Calculate health based on tool dip and effort, with patient
 	 * species adjustment
 	 */
 	if (tool_dip < 0 || tool_effort < 0) {
@@ -331,18 +331,18 @@ calculate_fang_health(struct creature_fangs *fang, int tool_dip, int tool_effort
 
 	int		health_gain = (tool_dip / 2) + (tool_effort / 3);
 
-	/* Adjust health gain based on creature species */
-	if (strcmp(return_creature_species(game_state.creature_idx), "Vampire") == 0) {
+	/* Adjust health gain based on patient species */
+	if (strcmp(return_patient_species(game_state.patient_idx), "Vampire") == 0) {
 		health_gain += 2;	/* Vampires respond better to
 					 * fluoride */
-	} else if (strcmp(return_creature_species(game_state.creature_idx), "Orc") == 0) {
+	} else if (strcmp(return_patient_species(game_state.patient_idx), "Orc") == 0) {
 		health_gain -= 1;	/* Orcs have tougher fangs */
-	} else if (strcmp(return_creature_species(game_state.creature_idx), "Werewolf") == 0) {
+	} else if (strcmp(return_patient_species(game_state.patient_idx), "Werewolf") == 0) {
 		health_gain += 1;	/* Werewolves heal a bit faster */
-	} else if (strcmp(return_creature_species(game_state.creature_idx), "Serpent") == 0) {
+	} else if (strcmp(return_patient_species(game_state.patient_idx), "Serpent") == 0) {
 		health_gain = (int)(health_gain * 0.8);	/* Serpents are less
 							 * affected */
-	} else if (strcmp(return_creature_species(game_state.creature_idx), "Dragon") == 0) {
+	} else if (strcmp(return_patient_species(game_state.patient_idx), "Dragon") == 0) {
 		health_gain = (int)(health_gain * 0.5);	/* Dragons are very
 							 * resistant */
 	}
@@ -396,7 +396,7 @@ print_fang_logo(void)
 
 
 static void
-print_fang_info(const int index, const struct creature_fangs *fang, const int compact_printing)
+print_fang_info(const int index, const struct patient_fangs *fang, const int compact_printing)
 {
 	if (fang == NULL) {
 		my_print_err("Fang is NULL.\n");
@@ -416,16 +416,16 @@ print_fang_info(const int index, const struct creature_fangs *fang, const int co
 	}
 }
 static void
-print_creature_info(const struct creature *fanged_beast, const int compact_printing)
+print_patient_info(const struct patient *fanged_beast, const int compact_printing)
 {
 	if (compact_printing) {
-		my_printf("Creature: %s, Age: %d, Species: %s\n", return_creature_name(game_state.creature_idx), fanged_beast->age, return_creature_species(game_state.creature_idx));
+		my_printf("Creature: %s, Age: %d, Species: %s\n", return_patient_name(game_state.patient_idx), fanged_beast->age, return_patient_species(game_state.patient_idx));
 
 		return;
 	} else {
-		my_printf("Creature Name: %s\n", return_creature_name(game_state.creature_idx));
+		my_printf("Creature Name: %s\n", return_patient_name(game_state.patient_idx));
 		my_printf("Creature Age: %d\n", fanged_beast->age);
-		my_printf("Creature Species: %s\n", return_creature_species(game_state.creature_idx));
+		my_printf("Creature Species: %s\n", return_patient_species(game_state.patient_idx));
 	}
 }
 
@@ -460,16 +460,16 @@ print_game_state(const struct game_state *state)
 
 
 static void
-creature_init(struct creature *fanged_beast)
+patient_init(struct patient *fanged_beast)
 {
-	/* Choose a random creature from the creatures array */
-	int		idx = arc4random_uniform(sizeof(creatures) / sizeof(creatures[0]));
-	struct creature *chosen = &creatures[idx];
+	/* Choose a random patient from the patients array */
+	int		idx = arc4random_uniform(sizeof(patients) / sizeof(patients[0]));
+	struct patient *chosen = &patients[idx];
 
-	/* Copy chosen creature's data */
+	/* Copy chosen patient's data */
 	fanged_beast->age = chosen->age;
-	game_state.creature_idx = idx;
-	/* Randomize fangs for this creature */
+	game_state.patient_idx = idx;
+	/* Randomize fangs for this patient */
 	randomize_fangs(fanged_beast, 4);
 }
 
@@ -487,7 +487,7 @@ apply_fluoride_to_fangs(void)
 	 */
 	print_fang_logo();
 	my_printf("Welcome to Buffy the Fluoride Dispenser: Fang Edition!\n");
-	print_creature_info(&creature, 1);
+	print_patient_info(&patient, 1);
 	print_fluoride_info();
 	if (game_state.using_curses) {
 		my_refresh();
@@ -500,7 +500,7 @@ apply_fluoride_to_fangs(void)
 
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
-			if (creature.fangs[i].health >= MAX_HEALTH) {
+			if (patient.fangs[i].health >= MAX_HEALTH) {
 				my_printf("Fang %s is already healthy and shiny!\n", fang_idx_to_name(i));
 				continue;
 			}
@@ -513,23 +513,23 @@ apply_fluoride_to_fangs(void)
 				update_stats_display(game_state.flouride, game_state.score, game_state.turns);
 			my_werase();
 			if (i < 2) {
-				print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
+				print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
-				print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
+				print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
 
-			my_printf("Applying fluoride to %s's fang %s:\n", return_creature_name(game_state.creature_idx), fang_idx_to_name(i));
+			my_printf("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
 
-			print_fang_info(i, &creature.fangs[i], 1);
+			print_fang_info(i, &patient.fangs[i], 1);
 			my_refresh();
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
 			game_state.last_tool_effort = tool_effort;
-			calculate_fang_health(&creature.fangs[i], tool_dip, tool_effort);
+			calculate_fang_health(&patient.fangs[i], tool_dip, tool_effort);
 
 			game_state.score += BONUS_FANG_CLEANED;
 
-			if (creature.fangs[i].health >= MAX_HEALTH)
+			if (patient.fangs[i].health >= MAX_HEALTH)
 				game_state.score += BONUS_FANG_HEALTH;
 
 			calculate_flouride_used(tool_dip, tool_effort);
@@ -545,14 +545,14 @@ apply_fluoride_to_fangs(void)
 		 */
 		int		all_fangs_healthy = 1;
 		for (int i = 0; i < 4; i++) {
-			if (creature.fangs[i].health < MAX_HEALTH) {
+			if (patient.fangs[i].health < MAX_HEALTH) {
 				all_fangs_healthy = 0;
 				break;
 			}
 		}
 		if (all_fangs_healthy) {
-			my_printf("All of %s's fangs are now healthy and shiny!\n", return_creature_name(game_state.creature_idx));
-			my_printf("%s has successfully applied fluoride to %s's fangs.\n", game_state.character_name, return_creature_name(game_state.creature_idx));
+			my_printf("All of %s's fangs are now healthy and shiny!\n", return_patient_name(game_state.patient_idx));
+			my_printf("%s has successfully applied fluoride to %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
 			my_printf("%s is ready to slay more fangs!\n", game_state.character_name);
 			game_state.score += BONUS_ALL_HEALTH;
 			goto success;
@@ -564,7 +564,7 @@ apply_fluoride_to_fangs(void)
 		get_input("Apply fluoride to fangs? (y/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
 			/* All tools use some fluoride */
-			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, return_creature_name(game_state.creature_idx), tools[game_state.tool_in_use].name);
+			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, return_patient_name(game_state.patient_idx), tools[game_state.tool_in_use].name);
 			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
 			game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
@@ -579,7 +579,7 @@ apply_fluoride_to_fangs(void)
 			goto success;
 		}
 	} while (cleaning);
-	my_printf("%s has finished applying fluoride to %s's fangs.\n", game_state.character_name, return_creature_name(game_state.creature_idx));
+	my_printf("%s has finished applying fluoride to %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
 
 success:
 
@@ -590,7 +590,7 @@ success:
 
 /*
  * We want to do certain things on game end, like printing the game state and
- * the creature information, so we define a function to do that
+ * the patient information, so we define a function to do that
  */
 
 static int	__dead
@@ -599,15 +599,15 @@ exit_game(void)
 
 	end_curses();
 	my_printf("Exiting the game...\n");
-	print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, creature.fangs[MAXILLARY_LEFT_CANINE].health, creature.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
-	print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, creature.fangs[MANDIBULAR_LEFT_CANINE].health, creature.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
+	print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
 	print_game_state(&game_state);
-	print_creature_info(&creature, 0);
+	print_patient_info(&patient, 0);
 
-	print_fang_info(0, &creature.fangs[0], 1);
-	print_fang_info(1, &creature.fangs[1], 1);
-	print_fang_info(2, &creature.fangs[2], 1);
-	print_fang_info(3, &creature.fangs[3], 1);
+	print_fang_info(0, &patient.fangs[0], 1);
+	print_fang_info(1, &patient.fangs[1], 1);
+	print_fang_info(2, &patient.fangs[2], 1);
+	print_fang_info(3, &patient.fangs[3], 1);
 	print_tool_info();
 	my_printf("Thank you for playing Buffy the Fluoride Dispenser: Fang Edition!\n");
 	my_printf("Final Score: %d\n", game_state.score);
@@ -628,7 +628,7 @@ main_program(int reloadflag)
 	 */
 	if (!reloadflag) {
 		init_game_state(game_state.bflag);
-		creature_init(&creature);
+		patient_init(&patient);
 	}
 
 	/* Use dagger only with --daggerset option */
@@ -727,7 +727,7 @@ main(int argc, char *argv[])
 			 * If the file is valid, we will load all game data
 			 * from it
 			 */
-			load_game_state(optarg, &game_state, sizeof(game_state), &creature, sizeof(creature), character_name);
+			load_game_state(optarg, &game_state, sizeof(game_state), &patient, sizeof(patient), character_name);
 			game_state.character_name = character_name;
 			set_using_curses(game_state.using_curses);
 			set_color_mode(game_state.color_mode);

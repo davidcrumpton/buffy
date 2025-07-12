@@ -31,7 +31,7 @@ int		startup = 0;
 int		isclean = 0;
 
 game_state_type game_state;
-creature_type	creature;
+patient_type	patient;
 
 /* Pointer to the file used by the tests. */
 
@@ -90,37 +90,37 @@ testCHOOSE_RANDOM_TOOL_NON_DAGGER(void)
 void
 testRANDOMIZE_FANGS(void)
 {
-	creature_init(&creature);
-	randomize_fangs(&creature, 4);
+	patient_init(&patient);
+	randomize_fangs(&patient, 4);
 	for (int i = 0; i < 4; i++) {
-		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
-		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
-		CU_ASSERT(creature.fangs[i].health >= 60 && creature.fangs[i].health <= 100);
+		CU_ASSERT(patient.fangs[i].length >= 4 && patient.fangs[i].length <= 6);
+		CU_ASSERT(patient.fangs[i].sharpness >= 5 && patient.fangs[i].sharpness <= 8);
+		CU_ASSERT(patient.fangs[i].health >= 60 && patient.fangs[i].health <= 100);
 	}
 }
 
 void
 testPRINT_FANG_INFO(void)
 {
-	creature_init(&creature);
-	randomize_fangs(&creature, 4);
+	patient_init(&patient);
+	randomize_fangs(&patient, 4);
 	for (int i = 0; i < 4; i++) {
-		print_fang_info(i, &creature.fangs[i], 0);
-		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
-		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
-		CU_ASSERT(creature.fangs[i].health >= 60 && creature.fangs[i].health <= 100);
+		print_fang_info(i, &patient.fangs[i], 0);
+		CU_ASSERT(patient.fangs[i].length >= 4 && patient.fangs[i].length <= 6);
+		CU_ASSERT(patient.fangs[i].sharpness >= 5 && patient.fangs[i].sharpness <= 8);
+		CU_ASSERT(patient.fangs[i].health >= 60 && patient.fangs[i].health <= 100);
 	}
 }
 
 void testSAVE_GAME_STATE(void)
 {
-	/* Initialize game state and creature */
+	/* Initialize game state and patient */
 	init_game_state(1);
-	creature_init(&creature);
-	randomize_fangs(&creature, 4);
+	patient_init(&patient);
+	randomize_fangs(&patient, 4);
 	/* Assuming the game state is saved to a file */
 	const char *save_path = "test_game_state.dat";
-	save_game_state(save_path, &game_state, sizeof(game_state), &creature, sizeof(creature));
+	save_game_state(save_path, &game_state, sizeof(game_state), &patient, sizeof(patient));
 	/* Check if the file exists and has the expected size */
 	struct stat st;
 	CU_ASSERT(stat(save_path, &st) == 0);
@@ -129,14 +129,14 @@ void testSAVE_GAME_STATE(void)
 
 void testLOAD_GAME_STATE(void)
 {
-/* Create our own storage for the game state and creature */
+/* Create our own storage for the game state and patient */
 	game_state_type game_state;
-	creature_type creature;
-	creature_init(&creature);
-	randomize_fangs(&creature, 4);
+	patient_type patient;
+	patient_init(&patient);
+	randomize_fangs(&patient, 4);
 	/* Assuming the game state is loaded from a file */
 	const char *load_path = "test_game_state.dat";
-	load_game_state(load_path, &game_state, sizeof(game_state), &creature, sizeof(creature),
+	load_game_state(load_path, &game_state, sizeof(game_state), &patient, sizeof(patient),
 			"test_character_name");
 	CU_ASSERT(game_state.flouride >= 0);
 	CU_ASSERT(game_state.tool_dip >= 0);
@@ -151,19 +151,19 @@ void testLOAD_GAME_STATE(void)
 void
 testPRINT_CREATURE_INFO(void)
 {
-	creature_init(&creature);
-	randomize_fangs(&creature, 4);
-	print_creature_info(&creature, 0);
+	patient_init(&patient);
+	randomize_fangs(&patient, 4);
+	print_patient_info(&patient, 0);
 	/*
-	 * The creature is randomly chosen so DEFAULTs can not be tested with
+	 * The patient is randomly chosen so DEFAULTs can not be tested with
 	 * assertions here.
 	 */
-	CU_ASSERT(creature.age >= 90);	/* Assuming age is set to 100 or more */
-	CU_ASSERT(creature.fangs != NULL);
+	CU_ASSERT(patient.age >= 90);	/* Assuming age is set to 100 or more */
+	CU_ASSERT(patient.fangs != NULL);
 	for (int i = 0; i < 4; i++) {
-		CU_ASSERT(creature.fangs[i].length >= 4 && creature.fangs[i].length <= 6);
-		CU_ASSERT(creature.fangs[i].sharpness >= 5 && creature.fangs[i].sharpness <= 8);
-		CU_ASSERT(creature.fangs[i].health >= 60 && creature.fangs[i].health <= 100);
+		CU_ASSERT(patient.fangs[i].length >= 4 && patient.fangs[i].length <= 6);
+		CU_ASSERT(patient.fangs[i].sharpness >= 5 && patient.fangs[i].sharpness <= 8);
+		CU_ASSERT(patient.fangs[i].health >= 60 && patient.fangs[i].health <= 100);
 	}
 }
 
@@ -240,7 +240,7 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of choose_random_tool_non_dagger)", testCHOOSE_RANDOM_TOOL_NON_DAGGER)) ||
 	    (NULL == CU_add_test(pSuite, "test of randomize_fangs()", testRANDOMIZE_FANGS)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_fang_info()", testPRINT_FANG_INFO)) ||
-	    (NULL == CU_add_test(pSuite, "test of print_creature_info()", testPRINT_CREATURE_INFO)) ||
+	    (NULL == CU_add_test(pSuite, "test of print_patient_info()", testPRINT_CREATURE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_fluoride_info()", testPRINT_FLUORIDE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||

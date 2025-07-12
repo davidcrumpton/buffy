@@ -54,7 +54,7 @@ init_db_info(struct database_info *db_info)
 }
 void
 load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_len,
-	     creature_type * patient_g, size_t plen, char *character_name_g)
+	     patient_type * patient_g, size_t plen, char *character_name_g)
 {
 	int		pipefd[2];
 	pid_t		pid;
@@ -103,7 +103,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 		else if (write(pipefd[1], &gamestate, sizeof(gamestate)) <= 0)
 			errx(1, "Couldn't write gamestate to parent process");
 
-		creature_type	patient;
+		patient_type	patient;
 		if (fread(&patient, sizeof(patient), 1, fp) != 1)
 			errx(1, "Failed to read patient data from file %s", load_path);
 		else if (write(pipefd[1], &patient, sizeof(patient)) <= 0)
@@ -142,7 +142,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 		if (read(pipefd[0], gamestate_g, gs_len) != gs_len)
 			errx(1, "Failed to read game state from file %s", load_path);
 		if (read(pipefd[0], patient_g, plen) != plen)
-			errx(1, "Failed to read creature data from file %s", load_path);
+			errx(1, "Failed to read patient data from file %s", load_path);
 
 		/* Read strings */
 		int		ch = 0, n = 0;
@@ -164,7 +164,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 
 
 int
-save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const creature_type * patient, size_t plen)
+save_game_state(const char *save_path, const game_state_type * gamestate, size_t gs_len, const patient_type * patient, size_t plen)
 {
 	int		pipefd[2];
 	if (pipe(pipefd) == -1)
@@ -288,7 +288,7 @@ validate_game_file(const char *file)
 			err(1, "unable to open %s", optarg);
 			goto validation_err;
 		}
-		if (st.st_size < sizeof(struct database_info) + sizeof(game_state_type) + sizeof(creature_type)) {
+		if (st.st_size < sizeof(struct database_info) + sizeof(game_state_type) + sizeof(patient_type)) {
 			err(1, "%s is too small to be a valid game file", optarg);
 			goto validation_err;
 		}
@@ -310,9 +310,9 @@ validate_game_file(const char *file)
 			err(1, "Failed to read game state from file %s", optarg);
 			goto validation_err;
 		}
-		static creature_type patient;
+		static patient_type patient;
 		if (read(fd, &patient, sizeof(patient)) != sizeof(patient)) {
-			err(1, "Failed to read creature data from file %s", optarg);
+			err(1, "Failed to read patient data from file %s", optarg);
 			goto validation_err;
 		}
 		if (game_state_v.flouride < 0 || game_state_v.tool_dip < 0 || game_state_v.tool_effort < 0 || game_state_v.flouride_used < 0 || game_state_v.bflag < 0 || game_state_v.daggerset < 0) {
