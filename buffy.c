@@ -197,20 +197,20 @@ init_game_state(int bflag)
 	game_state.last_tool_effort = DEFAULT_TOOL_EFFORT;
 }
 static void
-randomize_fangs(struct patient *fanged_beast, int count)
+randomize_fangs(struct patient *patient_ptr, int count)
 {
 	for (int i = 0; i < count; i++) {
-		fanged_beast->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
-		fanged_beast->fangs[i].sharpness = 5 + arc4random_uniform(4);	/* 5–8 */
+		patient_ptr->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
+		patient_ptr->fangs[i].sharpness = 5 + arc4random_uniform(4);	/* 5–8 */
 
 		/* Bias health toward lower values (dirty teeth) */
 		int		r = arc4random_uniform(MAX_HEALTH);
 		if (r < 60)
-			fanged_beast->fangs[i].health = 60 + arc4random_uniform(11);	/* 60–70 */
+			patient_ptr->fangs[i].health = 60 + arc4random_uniform(11);	/* 60–70 */
 		else if (r < 90)
-			fanged_beast->fangs[i].health = 71 + arc4random_uniform(10);	/* 71–80 */
+			patient_ptr->fangs[i].health = 71 + arc4random_uniform(10);	/* 71–80 */
 		else
-			fanged_beast->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */
+			patient_ptr->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */
 	}
 }
 
@@ -416,15 +416,15 @@ print_fang_info(const int index, const struct patient_fangs *fang, const int com
 	}
 }
 static void
-print_patient_info(const struct patient *fanged_beast, const int compact_printing)
+print_patient_info(const struct patient *patient_ptr, const int compact_printing)
 {
 	if (compact_printing) {
-		my_printf("Creature: %s, Age: %d, Species: %s\n", return_patient_name(game_state.patient_idx), fanged_beast->age, return_patient_species(game_state.patient_idx));
+		my_printf("Creature: %s, Age: %d, Species: %s\n", return_patient_name(game_state.patient_idx), patient_ptr->age, return_patient_species(game_state.patient_idx));
 
 		return;
 	} else {
 		my_printf("Creature Name: %s\n", return_patient_name(game_state.patient_idx));
-		my_printf("Creature Age: %d\n", fanged_beast->age);
+		my_printf("Creature Age: %d\n", patient_ptr->age);
 		my_printf("Creature Species: %s\n", return_patient_species(game_state.patient_idx));
 	}
 }
@@ -460,17 +460,17 @@ print_game_state(const struct game_state *state)
 
 
 static void
-patient_init(struct patient *fanged_beast)
+patient_init(struct patient *patient_ptr)
 {
 	/* Choose a random patient from the patients array */
 	int		idx = arc4random_uniform(sizeof(patients) / sizeof(patients[0]));
 	struct patient *chosen = &patients[idx];
 
 	/* Copy chosen patient's data */
-	fanged_beast->age = chosen->age;
+	patient_ptr->age = chosen->age;
 	game_state.patient_idx = idx;
 	/* Randomize fangs for this patient */
-	randomize_fangs(fanged_beast, 4);
+	randomize_fangs(patient_ptr, 4);
 }
 
 
