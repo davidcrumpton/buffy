@@ -261,7 +261,6 @@ print_stats_display(int fluoride_level, int score, int turns)
 	mvwprintw(stats_win, 0, 1, "Fluoride: %d", fluoride_level);
 	mvwprintw(stats_win, 0, COLS / 3, "Score: %d", score);
 	mvwprintw(stats_win, 0, (COLS * 2) / 3, "Turn: %d", turns);
-	//wrefresh(stats_win);
 }
 
 void
@@ -270,9 +269,7 @@ print_info_display(const char *format,...)
 	va_list		args;
 	va_start(args, format);
 	if (using_curses) {
-		// werase(info_win);
 		vw_printw(info_win, format, args);
-		// wrefresh(info_win);
 	} else {
 		vprintf(format, args);
 	}

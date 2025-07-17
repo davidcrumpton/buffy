@@ -511,8 +511,7 @@ apply_fluoride_to_fangs(void)
 			 */
 
 			my_werase();
-			if (game_state.using_curses)
-			 	print_stats_display(game_state.flouride, game_state.score, game_state.turns);
+
 			if (i < 2) {
 				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
@@ -523,6 +522,7 @@ apply_fluoride_to_fangs(void)
 			print_info_display("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
 
 			print_fang_info(i, &patient.fangs[i], 1);
+			print_stats_display(game_state.flouride, game_state.score, game_state.turns);
 			my_refresh();
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
@@ -536,8 +536,8 @@ apply_fluoride_to_fangs(void)
 
 			calculate_flouride_used(tool_dip, tool_effort);
 
-
-			print_stats_display(game_state.flouride, game_state.score, game_state.turns);
+			if(game_state.using_curses)
+				print_stats_display(game_state.flouride, game_state.score, game_state.turns);
 			my_refresh();
 		}
 		/*
