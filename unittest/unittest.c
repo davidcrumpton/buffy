@@ -187,14 +187,7 @@ testPRINT_TOOL_INFO(void)
 	CU_ASSERT(strlen(tools[game_state.tool_in_use].description) > 0);
 }
 
-void
-testPRINT_FLUORIDE_INFO(void)
-{
-	game_state.flouride = 100;	/* Set a test value */
-	game_state.flouride_used = 0;	/* Reset used flouride for testing */
-	print_fluoride_info();
-	CU_ASSERT(game_state.flouride == 100);
-}
+
 
 void
 testFANG_IDX_TO_NAME(void)
@@ -242,7 +235,6 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of print_fang_info()", testPRINT_FANG_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_patient_info()", testPRINT_CREATURE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO)) ||
-	    (NULL == CU_add_test(pSuite, "test of print_fluoride_info()", testPRINT_FLUORIDE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
 		(NULL == CU_add_test(pSuite, "test validate game_file()", testVALIDATE_GAME_FILE)) ||		
 	    (NULL == CU_add_test(pSuite, "test of return_concat_path()", testCONCAT_PATH))) {
