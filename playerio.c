@@ -34,7 +34,8 @@
 static int	using_curses = 0;
 static int	color_mode = 0;
 
-static WINDOW * game_win = NULL;
+static WINDOW * info_win = NULL;
+static WINDOW * fang_win = NULL;
 static WINDOW * stats_win = NULL;
 static WINDOW * err_win = NULL;
 static WINDOW * inp_win = NULL;
@@ -42,25 +43,28 @@ static WINDOW * inp_win = NULL;
 void
 my_werase()
 {
-	if (using_curses)
-		werase(game_win);
-	else
+	if (using_curses) {
+		werase(fang_win);
+		werase(info_win);
+	} else
 		putchar('\n');
 }
 void
 my_clear()
 {
-	if (using_curses)
-		wclear(game_win);
-	else
+	if (using_curses) {
+		wclear(fang_win);
+		wclear(info_win);
+	} else
 		putchar('\n');
 }
 void
 my_refresh()
 {
-	if (using_curses)
-		wrefresh(game_win);
-	else
+	if (using_curses) {
+		wrefresh(fang_win);
+		wrefresh(info_win);
+	} else
 		putchar('\n');
 }
 void
@@ -92,17 +96,24 @@ redraw_game_screen()
 	}
 	mvprintw(6, 0, "To continue the game, enter your response as prompted.");
 
-	wresize(game_win, 16, max_x);
-	mvwin(stats_win, max_y - 1, 0);
-	wclear(game_win);
-	wclear(stats_win);
-	mvwin(stats_win, max_y - 1, 0);
-	wclear(err_win);
+	wresize(fang_win, 16, max_x);
+	wclear(fang_win);
+	wrefresh(fang_win);
+	
 	mvwin(inp_win, max_y - 2, 0);
 	wclear(inp_win);
 
-	wrefresh(game_win);
+	mvwin(info_win, max_y - 9, 0);
+	wclear(info_win);
+	mvwin(info_win, max_y - 9, 0);
+	wrefresh(info_win);
+
+	mvwin(stats_win, max_y - 1, 0);
+	wclear(stats_win);
+	mvwin(stats_win, max_y - 1, 0);
 	wrefresh(stats_win);
+
+	wclear(err_win);
 	mvwin(err_win, max_y - 5, 0);
 	wrefresh(err_win);
 
@@ -169,7 +180,7 @@ my_printf(const char *format,...)
 	va_list		args;
 	va_start(args, format);
 	if (using_curses) {
-		vw_printw(game_win, format, args);
+		vw_printw(fang_win, format, args);
 	} else {
 		vprintf(format, args);
 	}
@@ -183,7 +194,7 @@ mv_printw(int row, int col, const char *format,...)
 	va_start(args, format);
 	if (using_curses) {
 		move(row, col);
-		vw_printw(game_win, format, args);
+		vw_printw(fang_win, format, args);
 	} else {
 		vprintf(format, args);
 	}
@@ -195,10 +206,10 @@ void
 my_putchar(char c)
 {
 	if (using_curses) {
-		wmove(game_win, 0, 0);	/* top left */
-		waddch(game_win, c);	/* add the character at the current
+		wmove(fang_win, 0, 0);	/* top left */
+		waddch(fang_win, c);	/* add the character at the current
 					 * cursor position */
-		wrefresh(game_win);
+		wrefresh(fang_win);
 	} else {
 		putchar(c);
 		fflush(stdout);
@@ -234,6 +245,22 @@ update_stats_display(int fluoride_level, int score, int turns)
 	mvwprintw(stats_win, 0, (COLS * 2) / 3, "Turn: %d", turns);
 
 	wrefresh(stats_win);
+}
+
+
+void
+print_info_display(const char *format,...)
+{
+	va_list		args;
+	va_start(args, format);
+	if (using_curses) {
+		// werase(info_win);
+		vw_printw(info_win, format, args);
+		// wrefresh(info_win);
+	} else {
+		vprintf(format, args);
+	}
+	va_end(args);
 }
 
 void
@@ -281,22 +308,26 @@ initalize_curses(void)
 		init_pair(PATTERN_STATUS_COLOR, COLOR_BLUE, COLOR_BLACK);	/* status */
 		init_pair(PATTERN_ERROR_COLOR, COLOR_YELLOW, COLOR_BLACK);	/* error */
 		init_pair(PATTERN_PROMPT_COLOR, COLOR_WHITE, COLOR_BLACK);	/* prompt_color */
+		init_pair(PATTERN_INFO_COLOR, COLOR_CYAN, COLOR_BLACK);
 	}
 
-	int		game_win_height = LINES - 1;
-	int		game_win_width = COLS;
+	int		fang_win_height = LINES - 1;
+	int		fang_win_width = COLS;
 
-	game_win = newwin(game_win_height, game_win_width, 0, 0);
+	info_win = newwin(2, COLS, LINES - 9, 0);
+	fang_win = newwin(fang_win_height, fang_win_width, 0, 0);
 	stats_win = newwin(1, COLS, LINES - 1, 0);
 	err_win = newwin(5, COLS, LINES - 5, 0);
 	inp_win = newwin(1, COLS, LINES - 2, 0);
+	
 	if (color_mode) {
-		wattron(game_win, COLOR_PAIR(PATTERN_GAME_COLOR));
+		wattron(fang_win, COLOR_PAIR(PATTERN_GAME_COLOR));
 		wattron(stats_win, A_BOLD | COLOR_PAIR(PATTERN_STATUS_COLOR));
 		wattron(err_win, COLOR_PAIR(PATTERN_ERROR_COLOR));
 		wattron(inp_win, COLOR_PAIR(PATTERN_PROMPT_COLOR));
+		wattron(info_win, COLOR_PAIR(PATTERN_INFO_COLOR));
 	}
-	wrefresh(game_win);
+	wrefresh(fang_win);
 	wrefresh(stats_win);
 }
 
@@ -306,10 +337,13 @@ end_curses(void)
 	if (!using_curses) {
 		return 0;
 	}
-
-	if (game_win) {
-		delwin(game_win);
-		game_win = NULL;
+	if(info_win) {
+		delwin(info_win);
+		info_win = NULL;
+	}
+	if (fang_win) {
+		delwin(fang_win);
+		fang_win = NULL;
 	}
 	if (stats_win) {
 		delwin(stats_win);

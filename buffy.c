@@ -403,16 +403,16 @@ print_fang_info(const int index, const struct patient_fangs *fang, const int com
 		return;
 	}
 	if (compact_printing) {
-		my_printf("  %s: Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
+		print_info_display("  %s: Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 		     fang_idx_to_name(index), fang->length, fang->sharpness,
 			  fang_health_to_color(fang->health), fang->health);
 		return;
 	} else {
-		my_printf("Fang %s:\n", fang_idx_to_name(index));
-		my_printf("  Length: %d\n", fang->length);
-		my_printf("  Sharpness: %d\n", fang->sharpness);
-		my_printf("  Color: %s\n", fang_health_to_color(fang->health));
-		my_printf("  Health: %d\n", fang->health);
+		print_info_display("Fang %s:\n", fang_idx_to_name(index));
+		print_info_display("  Length: %d\n", fang->length);
+		print_info_display("  Sharpness: %d\n", fang->sharpness);
+		print_info_display("  Color: %s\n", fang_health_to_color(fang->health));
+		print_info_display("  Health: %d\n", fang->health);
 	}
 }
 static void
@@ -519,7 +519,7 @@ apply_fluoride_to_fangs(void)
 			}
 
 			my_printf("%s", fangs_formatted);
-			my_printf("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
+			print_info_display("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
 
 			print_fang_info(i, &patient.fangs[i], 1);
 			my_refresh();

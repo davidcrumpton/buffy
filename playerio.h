@@ -22,6 +22,7 @@
 #define PATTERN_STATUS_COLOR	2
 #define PATTERN_ERROR_COLOR		3
 #define PATTERN_PROMPT_COLOR	4
+#define PATTERN_INFO_COLOR      5
 
 void		my_werase();
 void		my_clear();
@@ -32,7 +33,8 @@ void		my_printf(const char *format,...);
 void		mv_printw(int row, int col, const char *format,...);
 void		my_putchar(char c);
 void		initalize_curses(void);
-int		end_curses(void);
+void        print_info_display(const char *format,...);
+int		    end_curses(void);
 void		my_print_err(const char *format,...);
 void		set_using_curses(int flag);
 void		set_color_mode(int flag);
