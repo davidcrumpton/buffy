@@ -62,7 +62,7 @@ testINIT_GAME_STATE(void)
 {
 	init_game_state(1);
 	CU_ASSERT(game_state.daggerset == 0);
-	CU_ASSERT(game_state.flouride == 200);
+	CU_ASSERT(game_state.flouride == 3000);
 	CU_ASSERT(game_state.tool_dip > 1);
 	CU_ASSERT(game_state.tool_effort > 1);
 	CU_ASSERT(game_state.flouride_used == 0);

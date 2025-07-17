@@ -80,7 +80,7 @@ typedef struct fang_info {
 #define DEFAULT_CHARACTER_NAME "Buffy"
 
 #define DEFAULT_DAGGERSET       0
-#define DEFAULT_FLOURIDE        200
+#define DEFAULT_FLOURIDE        3000
 #define DEFAULT_TOOL_DIP      5
 #define DEFAULT_TOOL_EFFORT    2
 #define DEFAULT_DAGGER_DIP     10

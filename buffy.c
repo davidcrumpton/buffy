@@ -83,8 +83,8 @@ struct patient	patients[] = {
 	{90, "Dracula", "Vampire", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{110, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{130, "Fenrir", "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{150 /* Serpents are older */ , "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{200 /* Dragons are ancient */ , "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
+	{150, "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{200 , "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
 											 * fangs */
 };
 
