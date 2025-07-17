@@ -561,9 +561,9 @@ apply_fluoride_to_fangs(void)
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
 			my_printf("%s quits the game.\n", game_state.character_name);
 			cleaning = 0;
-			goto success;
+			goto quit_game;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
-			goto saved_game;
+			goto save_game;
 		} else {
 			my_print_err("Thanks for playing.\n");
 			goto success;
@@ -579,12 +579,18 @@ success:
 	game_state.score += BONUS_ALL_HEALTH;
 	return EXIT_SUCCESS;
 
-saved_game:
+save_game:
 	end_curses();
 	default_game_save();
 	print_game_state(&game_state);
-
 	return EXIT_SUCCESS;
+
+quit_game:
+	end_curses();
+	my_printf("%s chooses to quit!\n", game_state.character_name);
+	print_game_state(&game_state);
+	return EXIT_SUCCESS;
+
 }
 
 /*
