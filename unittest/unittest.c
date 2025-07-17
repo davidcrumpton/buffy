@@ -68,7 +68,7 @@ testINIT_GAME_STATE(void)
 	CU_ASSERT(game_state.flouride_used == 0);
 	CU_ASSERT(game_state.bflag == 1);
 	CU_ASSERT(game_state.score == 10);
-	CU_ASSERT(game_state.turns == 0);
+	CU_ASSERT(game_state.turns == 1);
 }
 
 void
