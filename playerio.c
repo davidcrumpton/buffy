@@ -27,6 +27,7 @@
 #include <stdarg.h>
 #include <err.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #include "playerio.h"
 #include "buffy.h"
@@ -268,7 +269,7 @@ handle_exit_signal(int signo)
 {
 	end_curses();
 
-	_exit(1);
+	exit(ERR);
 }
 
 void
