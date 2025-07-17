@@ -321,6 +321,7 @@ validate_game_file(const char *file)
 		}
 		isvalid = 0;
 		printf("valid file %s", file);
+		close(fd);
 		_exit(isvalid);
 
 validation_err:
