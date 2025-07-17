@@ -233,22 +233,7 @@ void print_highlighted(WINDOW *win, const char *line, const char *word, const in
     wprintw(win, "%s", p + strlen(word)); /* Print after word */
 }
 
-void
-update_stats_display(int fluoride_level, int score, int turns)
-{
-	if (!using_curses || !stats_win) {
-		printf("Fluoride: %d, Score: %d, Turn: %d\n", fluoride_level, score, turns);
-		return;
-	}
 
-	werase(stats_win);
-
-	mvwprintw(stats_win, 0, 1, "Fluoride: %d", fluoride_level);
-	mvwprintw(stats_win, 0, COLS / 3, "Score: %d", score);
-	mvwprintw(stats_win, 0, (COLS * 2) / 3, "Turn: %d", turns);
-
-	wrefresh(stats_win);
-}
 
 void
 print_stats_display(int fluoride_level, int score, int turns)
