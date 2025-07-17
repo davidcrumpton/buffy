@@ -315,7 +315,7 @@ validate_game_file(const char *file)
 			err(1, "Failed to read patient data from file %s", file);
 			goto validation_err;
 		}
-		if (game_state_v.flouride < 0 || game_state_v.tool_dip < 0 || game_state_v.tool_effort < 0 || game_state_v.flouride_used < 0 || game_state_v.bflag < 0 || game_state_v.daggerset < 0) {
+		if (game_state_v.fluoride < 0 || game_state_v.tool_dip < 0 || game_state_v.tool_effort < 0 || game_state_v.fluoride_used < 0 || game_state_v.bflag < 0 || game_state_v.daggerset < 0) {
 			err(1, "Invalid game state in %s", file);
 			goto validation_err;
 		}

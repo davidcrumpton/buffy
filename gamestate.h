@@ -21,7 +21,7 @@
 #define MINOR 0
 #define PATCH 0
 
-#define GAMECODE 0x62746664	/* buffy the flouride dispenser */
+#define GAMECODE 0x62746664	/* buffy the fluoride dispenser */
 
 void
 load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_len,

@@ -164,10 +164,10 @@ static void
 init_game_state(int bflag)
 {
 
-	game_state.flouride = DEFAULT_FLOURIDE;
+	game_state.fluoride = DEFAULT_FLUORIDE;
 	game_state.tool_dip = DEFAULT_TOOL_DIP;
 	game_state.tool_effort = DEFAULT_TOOL_EFFORT;
-	game_state.flouride_used = DEFAULT_FLOURIDE_USED;
+	game_state.fluoride_used = DEFAULT_FLUORIDE_USED;
 	game_state.bflag = bflag;
 	game_state.score = DEFAULT_SCORE;
 	game_state.turns = DEFAULT_TURNS;
@@ -272,7 +272,7 @@ ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_eff
 
 
 static int
-calculate_flouride_used(int tool_dip, int tool_effort)
+calculate_fluoride_used(int tool_dip, int tool_effort)
 {
 	/*
 	 * Calculate the amount of fluoride used based on the selected tool,
@@ -305,15 +305,15 @@ calculate_flouride_used(int tool_dip, int tool_effort)
 	}
 
 
-	game_state.flouride_used = used;
-	if (game_state.flouride_used > game_state.flouride) {
+	game_state.fluoride_used = used;
+	if (game_state.fluoride_used > game_state.fluoride) {
 		my_printf("Fluoride used (%d) exceeds available fluoride (%d).\n",
-			  game_state.flouride_used, game_state.flouride);
+			  game_state.fluoride_used, game_state.fluoride);
 		my_print_err("Not enough fluoride available.\n");
 		exit_game();
 	}
-	game_state.flouride -= game_state.flouride_used;
-	return game_state.flouride_used;
+	game_state.fluoride -= game_state.fluoride_used;
+	return game_state.fluoride_used;
 }
 
 static void
@@ -445,7 +445,7 @@ print_game_state(const struct game_state *state)
 {
 	my_printf("Game State:\n");
 	my_printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
-	my_printf("  Fluoride remaining: %d\n", state->flouride);
+	my_printf("  Fluoride remaining: %d\n", state->fluoride);
 	my_printf("  Score: %d\n", state->score);
 	my_printf("  Turns: %d\n", state->turns);
 }
@@ -475,7 +475,7 @@ apply_fluoride_to_fangs(void)
 
 	/*
 	 * Next we will loop through the fangs asking the user how much to
-	 * dip the tool in the flouride and how much effort to apply to the
+	 * dip the tool in the fluoride and how much effort to apply to the
 	 * current fang
 	 */
 	print_fang_logo();
@@ -515,7 +515,7 @@ apply_fluoride_to_fangs(void)
 			print_working_info("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
 
 			print_fang_info(i, &patient.fangs[i], 1);
-			print_stats_info(game_state.flouride, game_state.score, game_state.turns);
+			print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
 			my_refresh();
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
@@ -527,10 +527,10 @@ apply_fluoride_to_fangs(void)
 			if (patient.fangs[i].health >= MAX_HEALTH)
 				game_state.score += BONUS_FANG_HEALTH;
 
-			calculate_flouride_used(tool_dip, tool_effort);
+			calculate_fluoride_used(tool_dip, tool_effort);
 
 			if (game_state.using_curses)
-				print_stats_info(game_state.flouride, game_state.score, game_state.turns);
+				print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
 			my_refresh();
 		}
 		/*
@@ -557,7 +557,7 @@ apply_fluoride_to_fangs(void)
 			/* All tools use some fluoride */
 			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, return_patient_name(game_state.patient_idx), tools[game_state.tool_in_use].name);
 			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
-			game_state.flouride_used += calculate_flouride_used(tool_dip, tool_effort);
+			game_state.fluoride_used += calculate_fluoride_used(tool_dip, tool_effort);
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
 			my_printf("%s quits the game.\n", game_state.character_name);
 			cleaning = 0;

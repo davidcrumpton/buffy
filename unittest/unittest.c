@@ -62,10 +62,10 @@ testINIT_GAME_STATE(void)
 {
 	init_game_state(1);
 	CU_ASSERT(game_state.daggerset == 0);
-	CU_ASSERT(game_state.flouride == 3000);
+	CU_ASSERT(game_state.fluoride == 3000);
 	CU_ASSERT(game_state.tool_dip > 1);
 	CU_ASSERT(game_state.tool_effort > 1);
-	CU_ASSERT(game_state.flouride_used == 0);
+	CU_ASSERT(game_state.fluoride_used == 0);
 	CU_ASSERT(game_state.bflag == 1);
 	CU_ASSERT(game_state.score == 10);
 	CU_ASSERT(game_state.turns == 1);
@@ -140,10 +140,10 @@ testLOAD_GAME_STATE(void)
 	const char     *load_path = "test_game_state.dat";
 	load_game_state(load_path, &game_state, sizeof(game_state), &patient, sizeof(patient),
 			"test_character_name");
-	CU_ASSERT(game_state.flouride >= 0);
+	CU_ASSERT(game_state.fluoride >= 0);
 	CU_ASSERT(game_state.tool_dip >= 0);
 	CU_ASSERT(game_state.tool_effort >= 0);
-	CU_ASSERT(game_state.flouride_used >= 0);
+	CU_ASSERT(game_state.fluoride_used >= 0);
 	CU_ASSERT(game_state.bflag >= 0);
 	CU_ASSERT(game_state.score >= 0);
 	CU_ASSERT(game_state.turns >= 0);

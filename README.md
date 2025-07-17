@@ -1,6 +1,6 @@
-# Buffy the flouride dispensor
+# Buffy the fluoride dispensor
 
-Is a game where you try to reach the highest score possible before running out of flouride.
+Is a game where you try to reach the highest score possible before running out of fluoride.
 
 ## License
 

@@ -26,10 +26,10 @@
 
 typedef struct game_state {
 	int		daggerset;
-	int		flouride;
+	int		fluoride;
 	int		tool_dip;
 	int		tool_effort;
-	int		flouride_used;
+	int		fluoride_used;
 	int		bflag;
 	int		score;
 	int		turns;
@@ -80,12 +80,12 @@ typedef struct fang_info {
 #define DEFAULT_CHARACTER_NAME "Buffy"
 
 #define DEFAULT_DAGGERSET       0
-#define DEFAULT_FLOURIDE        3000
+#define DEFAULT_FLUORIDE        3000
 #define DEFAULT_TOOL_DIP      5
 #define DEFAULT_TOOL_EFFORT    2
 #define DEFAULT_DAGGER_DIP     10
 #define DEFAULT_DAGGER_EFFORT  5
-#define DEFAULT_FLOURIDE_USED    0
+#define DEFAULT_FLUORIDE_USED    0
 #define DEFAULT_SCORE           10
 #define DEFAULT_TURNS           1
 
