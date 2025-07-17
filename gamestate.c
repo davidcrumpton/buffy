@@ -276,47 +276,47 @@ validate_game_file(const char *file)
 		int		fd;
 		int		isvalid = 1;
 
-		if (stat(optarg, &st) == -1) {
-			err(1, "unable to stat %s", optarg);
+		if (stat(file, &st) == -1) {
+			err(1, "unable to stat %s", file);
 			goto validation_err;
 		}
 		if (!S_ISREG(st.st_mode)) {
-			err(1, "%s is not a regular file", optarg);
+			err(1, "%s is not a regular file", file);
 			goto validation_err;
 		}
-		if ((fd = open(optarg, O_RDONLY)) == -1) {
-			err(1, "unable to open %s", optarg);
+		if ((fd = open(file, O_RDONLY)) == -1) {
+			err(1, "unable to open %s", file);
 			goto validation_err;
 		}
 		if (st.st_size < sizeof(struct database_info) + sizeof(game_state_type) + sizeof(patient_type)) {
-			err(1, "%s is too small to be a valid game file", optarg);
+			err(1, "%s is too small to be a valid game file", file);
 			goto validation_err;
 		}
 		struct database_info db_info;
 		if (read(fd, &db_info, sizeof(db_info)) != sizeof(db_info)) {
-			err(1, "Failed to read database info from file %s", optarg);
+			err(1, "Failed to read database info from file %s", file);
 			goto validation_err;
 		}
 		if (db_info.major != MAJOR || db_info.minor != MINOR || db_info.patch != PATCH || db_info.gamecode != GAMECODE) {
-			err(1, "Incompatible game file version in %s", optarg);
+			err(1, "Incompatible game file version in %s", file);
 			goto validation_err;
 		}
 		if (lseek(fd, sizeof(db_info), SEEK_SET) == -1) {
-			err(1, "Failed to seek in file %s", optarg);
+			err(1, "Failed to seek in file %s", file);
 			goto validation_err;
 		}
 		static game_state_type game_state_v;
 		if (read(fd, &game_state_v, sizeof(game_state_v)) != sizeof(game_state_v)) {
-			err(1, "Failed to read game state from file %s", optarg);
+			err(1, "Failed to read game state from file %s", file);
 			goto validation_err;
 		}
 		static patient_type patient;
 		if (read(fd, &patient, sizeof(patient)) != sizeof(patient)) {
-			err(1, "Failed to read patient data from file %s", optarg);
+			err(1, "Failed to read patient data from file %s", file);
 			goto validation_err;
 		}
 		if (game_state_v.flouride < 0 || game_state_v.tool_dip < 0 || game_state_v.tool_effort < 0 || game_state_v.flouride_used < 0 || game_state_v.bflag < 0 || game_state_v.daggerset < 0) {
-			err(1, "Invalid game state in %s", optarg);
+			err(1, "Invalid game state in %s", file);
 			goto validation_err;
 		}
 		isvalid = 0;
