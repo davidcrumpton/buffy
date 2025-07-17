@@ -321,13 +321,11 @@ validate_game_file(const char *file)
 		}
 		isvalid = 0;
 		close(fd);
-		printf("isvalid = %d\n", isvalid);
 		_exit(isvalid);
 
 validation_err:
 
 		close(fd);
-		printf("isvalid = %d\n", isvalid);
 		_exit(isvalid);	/* child ends */
 	} else {		/* Parent */
 		int		status;
