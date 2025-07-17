@@ -236,7 +236,7 @@ void print_highlighted(WINDOW *win, const char *line, const char *word, const in
 
 
 void
-print_stats_display(int fluoride_level, int score, int turns)
+print_stats_info(int fluoride_level, int score, int turns)
 {
 	if (!using_curses) {
 		my_printf("Fluoride: %d, Score: %d, Turn: %d\n", fluoride_level, score, turns);
@@ -249,7 +249,7 @@ print_stats_display(int fluoride_level, int score, int turns)
 }
 
 void
-print_info_display(const char *format,...)
+print_working_info(const char *format,...)
 {
 	va_list		args;
 	va_start(args, format);

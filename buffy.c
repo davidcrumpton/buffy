@@ -403,16 +403,16 @@ print_fang_info(const int index, const struct patient_fangs *fang, const int com
 		return;
 	}
 	if (compact_printing) {
-		print_info_display("  %s: Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
+		print_working_info("  %s: Length: %d, Sharpness: %d, Color: %s, Health: %d\n",
 		     fang_idx_to_name(index), fang->length, fang->sharpness,
 			  fang_health_to_color(fang->health), fang->health);
 		return;
 	} else {
-		print_info_display("Fang %s:\n", fang_idx_to_name(index));
-		print_info_display("  Length: %d\n", fang->length);
-		print_info_display("  Sharpness: %d\n", fang->sharpness);
-		print_info_display("  Color: %s\n", fang_health_to_color(fang->health));
-		print_info_display("  Health: %d\n", fang->health);
+		print_working_info("Fang %s:\n", fang_idx_to_name(index));
+		print_working_info("  Length: %d\n", fang->length);
+		print_working_info("  Sharpness: %d\n", fang->sharpness);
+		print_working_info("  Color: %s\n", fang_health_to_color(fang->health));
+		print_working_info("  Health: %d\n", fang->health);
 	}
 }
 static void
@@ -519,10 +519,10 @@ apply_fluoride_to_fangs(void)
 			}
 
 			my_printf("%s", fangs_formatted);
-			print_info_display("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
+			print_working_info("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
 
 			print_fang_info(i, &patient.fangs[i], 1);
-			print_stats_display(game_state.flouride, game_state.score, game_state.turns);
+			print_stats_info(game_state.flouride, game_state.score, game_state.turns);
 			my_refresh();
 			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
@@ -537,7 +537,7 @@ apply_fluoride_to_fangs(void)
 			calculate_flouride_used(tool_dip, tool_effort);
 
 			if(game_state.using_curses)
-				print_stats_display(game_state.flouride, game_state.score, game_state.turns);
+				print_stats_info(game_state.flouride, game_state.score, game_state.turns);
 			my_refresh();
 		}
 		/*
