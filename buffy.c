@@ -153,7 +153,7 @@ default_game_save(void)
 		errx(1, "Unable to determine save path.\n");
 	}
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
-	my_printf("Saving game to: %s\n", save_path);
+	my_print_err("Saving game to: %s\n", save_path);
 	if (save_game_state(save_path, &game_state, sizeof(game_state), &patient, sizeof(patient)) != 0) {
 		errx(1, "Unable to save game state to %s", save_path);
 	}
@@ -577,7 +577,7 @@ success:
 	end_curses();
 	my_printf("All of %s's fangs are now healthy and shiny!\n", return_patient_name(game_state.patient_idx));
 	my_printf("%s has successfully cleaned %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
-	
+
 	game_state.score += BONUS_ALL_HEALTH;
 	print_game_state(&game_state);
 
