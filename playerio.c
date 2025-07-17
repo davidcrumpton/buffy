@@ -205,6 +205,20 @@ my_putchar(char c)
 	}
 }
 
+void print_highlighted(WINDOW *win, const char *line, const char *word, const int *color_pair) {
+    const char *p = strstr(line, word);
+    if (!p) {
+        wprintw(win, "%s", line);
+        return;
+    }
+
+    wprintw(win, "%.*s", (int)(p - line), line); /*Print before word */
+    wattron(win, COLOR_PAIR(*color_pair));
+    wprintw(win, "%s", word);
+    wattroff(win, COLOR_PAIR(*color_pair));
+    wprintw(win, "%s", p + strlen(word)); /* Print after word */
+}
+
 void
 update_stats_display(int fluoride_level, int score, int turns)
 {

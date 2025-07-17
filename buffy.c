@@ -496,7 +496,7 @@ apply_fluoride_to_fangs(void)
 	int		cleaning = 1;
 	do {
 		char		answer[4];
-
+		char*		fangs_formatted;
 
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
@@ -506,18 +506,19 @@ apply_fluoride_to_fangs(void)
 			}
 			/*
 			 * determine if upper or lower fang and call
-			 * print_fang_art() passing in values for left and
+			 * fang_art() passing in values for left and
 			 * right fang
 			 */
 			if (game_state.using_curses)
 				update_stats_display(game_state.flouride, game_state.score, game_state.turns);
 			my_werase();
 			if (i < 2) {
-				print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
+				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
-				print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
+				fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
 			}
 
+			my_printf("%s", fangs_formatted);
 			my_printf("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
 
 			print_fang_info(i, &patient.fangs[i], 1);
@@ -596,11 +597,14 @@ success:
 static int	__dead
 exit_game(void)
 {
+	char*		fangs_formatted;
 
 	end_curses();
 	my_printf("Exiting the game...\n");
-	print_fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
-	print_fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
+	fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	my_printf("%s", fangs_formatted);
+	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
+	my_printf("%s", fangs_formatted);
 	print_game_state(&game_state);
 	print_patient_info(&patient, 0);
 
