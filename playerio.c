@@ -46,6 +46,7 @@ my_werase()
 	if (using_curses) {
 		werase(fang_win);
 		werase(info_win);
+		werase(stats_win);
 	} else
 		putchar('\n');
 }
@@ -55,6 +56,7 @@ my_clear()
 	if (using_curses) {
 		wclear(fang_win);
 		wclear(info_win);
+		wclear(stats_win);
 	} else
 		putchar('\n');
 }
@@ -64,6 +66,7 @@ my_refresh()
 	if (using_curses) {
 		wrefresh(fang_win);
 		wrefresh(info_win);
+		wrefresh(stats_win);
 	} else
 		putchar('\n');
 }
@@ -247,6 +250,19 @@ update_stats_display(int fluoride_level, int score, int turns)
 	wrefresh(stats_win);
 }
 
+void
+print_stats_display(int fluoride_level, int score, int turns)
+{
+	if (!using_curses) {
+		my_printf("Fluoride: %d, Score: %d, Turn: %d\n", fluoride_level, score, turns);
+		return;
+	}
+
+	mvwprintw(stats_win, 0, 1, "Fluoride: %d", fluoride_level);
+	mvwprintw(stats_win, 0, COLS / 3, "Score: %d", score);
+	mvwprintw(stats_win, 0, (COLS * 2) / 3, "Turn: %d", turns);
+	//wrefresh(stats_win);
+}
 
 void
 print_info_display(const char *format,...)
