@@ -216,8 +216,8 @@ testCONCAT_PATH(void)
 
 void testVALIDATE_GAME_FILE(void) 
 {
-	char *failed_path = "/dev/null";
-	CU_ASSERT(validate_game_file(failed_path) == 1);
+	/* check for failure value */
+	CU_ASSERT(validate_game_file("/dev/null") == 1);
 }
 int
 main()
