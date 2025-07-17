@@ -578,7 +578,7 @@ apply_fluoride_to_fangs(void)
 
 success:
 
-
+	print_game_state(&game_state);
 
 	return EXIT_SUCCESS;
 }
