@@ -489,7 +489,7 @@ apply_fluoride_to_fangs(void)
 	int		cleaning = 1;
 	do {
 		char		answer[4];
-		char*		fangs_formatted;
+		char	       *fangs_formatted;
 
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
@@ -499,8 +499,8 @@ apply_fluoride_to_fangs(void)
 			}
 			/*
 			 * determine if upper or lower fang and call
-			 * fang_art() passing in values for left and
-			 * right fang
+			 * fang_art() passing in values for left and right
+			 * fang
 			 */
 
 			my_werase();
@@ -529,7 +529,7 @@ apply_fluoride_to_fangs(void)
 
 			calculate_flouride_used(tool_dip, tool_effort);
 
-			if(game_state.using_curses)
+			if (game_state.using_curses)
 				print_stats_info(game_state.flouride, game_state.score, game_state.turns);
 			my_refresh();
 		}
@@ -591,7 +591,7 @@ success:
 static int	__dead
 exit_game(void)
 {
-	char*		fangs_formatted;
+	char	       *fangs_formatted;
 
 	end_curses();
 	my_printf("Exiting the game...\n");
@@ -599,8 +599,8 @@ exit_game(void)
 	my_printf("%s", fangs_formatted);
 	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
 	my_printf("%s", fangs_formatted);
-	if(game_state.using_curses == 0)
-		sleep(4);
+
+	sleep(4);
 	print_game_state(&game_state);
 	print_patient_info(&patient, 0);
 
@@ -735,8 +735,11 @@ main(int argc, char *argv[])
 			if (game_state.daggerset)
 				fprintf(stderr, "Player will use a dagger to "
 					"apply fluoride to fangs\n");
-			if (game_state.color_mode)
+			if (game_state.color_mode == 1) {
 				game_state.using_curses = 1;
+				set_using_curses(game_state.using_curses);
+				set_color_mode(game_state.color_mode);
+			}
 			break;
 		default:
 			usage();

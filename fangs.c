@@ -118,25 +118,26 @@ substitute_marker(char c, int health_level_left, int health_level_right)
 
 
 
-char *
+char	       *
 fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses)
 {
-		const char    **fangs;
+	const char    **fangs;
 
-		if (upper_fangs)
-			fangs = maxillary_fangs;
-		else
-			fangs = mandibular_fangs;
-		
-		static char	buffer[FANG_ROWS_LOWER * 62];
-		buffer[0] = '\0';
-		size_t		idx = 0;
-		for (int i = 0; i < rows; ++i) {
-			for (int j = 0; fangs[i][j] != '\0'; ++j) {
-				buffer[idx++] = substitute_marker(fangs[i][j], health_level_left, health_level_right);
-			}
-			buffer[idx++] = '\n';
+	if (upper_fangs)
+		fangs = maxillary_fangs;
+	else
+		fangs = mandibular_fangs;
+
+	static char	buffer[FANG_ROWS_LOWER * 62];
+	buffer[0] = '\0';
+	size_t		idx = 0;
+	for (int i = 0; i < rows; ++i) {
+		for (int j = 0; fangs[i][j] != '\0'; ++j) {
+			buffer[idx++] = substitute_marker(fangs[i][j], health_level_left, health_level_right);
 		}
-		buffer[idx] = '\0';
-		return buffer;
+		buffer[idx++] = '\n';
+	}
+	buffer[idx] = '\0';
+	return buffer;
 }
+

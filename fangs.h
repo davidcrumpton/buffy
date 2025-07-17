@@ -33,5 +33,5 @@
 #define LOWER_FANGS     0
 
 
-char *      fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses);
+char	       *fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses);
 #endif				/* FANGS_H */

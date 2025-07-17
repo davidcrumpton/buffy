@@ -30,7 +30,7 @@
 int		startup = 0;
 int		isclean = 0;
 
-game_state_type game_state;
+game_state_type	game_state;
 patient_type	patient;
 
 /* Pointer to the file used by the tests. */
@@ -112,30 +112,32 @@ testPRINT_FANG_INFO(void)
 	}
 }
 
-void testSAVE_GAME_STATE(void)
+void
+testSAVE_GAME_STATE(void)
 {
 	/* Initialize game state and patient */
 	init_game_state(1);
 	patient_init(&patient);
 	randomize_fangs(&patient, 4);
 	/* Assuming the game state is saved to a file */
-	const char *save_path = "test_game_state.dat";
+	const char     *save_path = "test_game_state.dat";
 	save_game_state(save_path, &game_state, sizeof(game_state), &patient, sizeof(patient));
 	/* Check if the file exists and has the expected size */
-	struct stat st;
+	struct stat	st;
 	CU_ASSERT(stat(save_path, &st) == 0);
 	CU_ASSERT(st.st_size > 0);	/* Ensure the file is not empty */
 }
 
-void testLOAD_GAME_STATE(void)
+void
+testLOAD_GAME_STATE(void)
 {
-/* Create our own storage for the game state and patient */
-	game_state_type game_state;
-	patient_type patient;
+	/* Create our own storage for the game state and patient */
+	game_state_type	game_state;
+	patient_type	patient;
 	patient_init(&patient);
 	randomize_fangs(&patient, 4);
 	/* Assuming the game state is loaded from a file */
-	const char *load_path = "test_game_state.dat";
+	const char     *load_path = "test_game_state.dat";
 	load_game_state(load_path, &game_state, sizeof(game_state), &patient, sizeof(patient),
 			"test_character_name");
 	CU_ASSERT(game_state.flouride >= 0);
@@ -207,7 +209,8 @@ testCONCAT_PATH(void)
 	CU_ASSERT(strlen(path) > 0);
 }
 
-void testVALIDATE_GAME_FILE(void) 
+void
+testVALIDATE_GAME_FILE(void)
 {
 	/* check for failure value */
 	CU_ASSERT(validate_game_file("/dev/null") == 1);
@@ -236,7 +239,7 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of print_patient_info()", testPRINT_CREATURE_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
-		(NULL == CU_add_test(pSuite, "test validate game_file()", testVALIDATE_GAME_FILE)) ||		
+	    (NULL == CU_add_test(pSuite, "test validate game_file()", testVALIDATE_GAME_FILE)) ||
 	    (NULL == CU_add_test(pSuite, "test of return_concat_path()", testCONCAT_PATH))) {
 		CU_cleanup_registry();
 		return CU_get_error();

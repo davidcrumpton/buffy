@@ -54,7 +54,7 @@ init_db_info(struct database_info *db_info)
 }
 void
 load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_len,
-	     patient_type * patient_g, size_t plen, char *character_name_g)
+	      patient_type * patient_g, size_t plen, char *character_name_g)
 {
 	int		pipefd[2];
 	pid_t		pid;

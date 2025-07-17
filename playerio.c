@@ -102,7 +102,7 @@ redraw_game_screen()
 	wresize(fang_win, 16, max_x);
 	wclear(fang_win);
 	wrefresh(fang_win);
-	
+
 	mvwin(inp_win, max_y - 2, 0);
 	wclear(inp_win);
 
@@ -133,17 +133,17 @@ get_input(const char *prompt, char *buffer, size_t size)
 
 
 		do {
-				vw_printw(inp_win, prompt, NULL);
-				wrefresh(inp_win);
+			vw_printw(inp_win, prompt, NULL);
+			wrefresh(inp_win);
 
-				wmove(inp_win, prompt_row, strlen(prompt));
-				curs_set(1);
-				ch = wgetnstr(inp_win, buffer, size - 1);
-				if (ch == ERR) 
-					break;
-				if (ch == KEY_RESIZE)
-					redraw_game_screen();
-		} while(ch != OK);
+			wmove(inp_win, prompt_row, strlen(prompt));
+			curs_set(1);
+			ch = wgetnstr(inp_win, buffer, size - 1);
+			if (ch == ERR)
+				break;
+			if (ch == KEY_RESIZE)
+				redraw_game_screen();
+		} while (ch != OK);
 
 		curs_set(0);
 		werase(inp_win);
@@ -219,18 +219,20 @@ my_putchar(char c)
 	}
 }
 
-void print_highlighted(WINDOW *win, const char *line, const char *word, const int *color_pair) {
-    const char *p = strstr(line, word);
-    if (!p) {
-        wprintw(win, "%s", line);
-        return;
-    }
+void
+print_highlighted(WINDOW * win, const char *line, const char *word, const int *color_pair)
+{
+	const char     *p = strstr(line, word);
+	if (!p) {
+		wprintw(win, "%s", line);
+		return;
+	}
 
-    wprintw(win, "%.*s", (int)(p - line), line); /*Print before word */
-    wattron(win, COLOR_PAIR(*color_pair));
-    wprintw(win, "%s", word);
-    wattroff(win, COLOR_PAIR(*color_pair));
-    wprintw(win, "%s", p + strlen(word)); /* Print after word */
+	wprintw(win, "%.*s", (int)(p - line), line);	/* Print before word */
+	wattron(win, COLOR_PAIR(*color_pair));
+	wprintw(win, "%s", word);
+	wattroff(win, COLOR_PAIR(*color_pair));
+	wprintw(win, "%s", p + strlen(word));	/* Print after word */
 }
 
 
@@ -317,7 +319,7 @@ initalize_curses(void)
 	stats_win = newwin(1, COLS, LINES - 1, 0);
 	err_win = newwin(5, COLS, LINES - 5, 0);
 	inp_win = newwin(1, COLS, LINES - 2, 0);
-	
+
 	if (color_mode) {
 		wattron(fang_win, COLOR_PAIR(PATTERN_GAME_COLOR));
 		wattron(stats_win, A_BOLD | COLOR_PAIR(PATTERN_STATUS_COLOR));
@@ -335,7 +337,7 @@ end_curses(void)
 	if (!using_curses) {
 		return 0;
 	}
-	if(info_win) {
+	if (info_win) {
 		delwin(info_win);
 		info_win = NULL;
 	}
