@@ -438,11 +438,7 @@ print_tool_info(void)
 	my_printf("Tool Effort: %d\n", tools[game_state.tool_in_use].effort);
 	my_printf("Tool Durability: %d\n", tools[game_state.tool_in_use].durability);
 }
-static void
-print_fluoride_info(void)
-{
-	my_printf("Remaining fluoride: %d\n", game_state.flouride);
-}
+
 
 static void
 print_game_state(const struct game_state *state)
@@ -450,9 +446,6 @@ print_game_state(const struct game_state *state)
 	my_printf("Game State:\n");
 	my_printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
 	my_printf("  Fluoride remaining: %d\n", state->flouride);
-	my_printf("  Final %s Dip: %d\n", tools[game_state.tool_in_use].name, state->tool_dip);
-	my_printf("  Final %s Effort: %d\n", tools[game_state.tool_in_use].name, state->tool_effort);
-	my_printf("  Fluoride Used: %d\n", state->flouride_used);
 	my_printf("  Score: %d\n", state->score);
 	my_printf("  Turns: %d\n", state->turns);
 }
@@ -488,11 +481,11 @@ apply_fluoride_to_fangs(void)
 	print_fang_logo();
 	my_printf("Welcome to Buffy the Fluoride Dispenser: Fang Edition!\n");
 	print_patient_info(&patient, 1);
-	print_fluoride_info();
-	if (game_state.using_curses) {
-		my_refresh();
-		sleep(4);
-	}
+
+
+	my_refresh();
+	sleep(4);
+
 	int		cleaning = 1;
 	do {
 		char		answer[4];
@@ -606,6 +599,8 @@ exit_game(void)
 	my_printf("%s", fangs_formatted);
 	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
 	my_printf("%s", fangs_formatted);
+	if(game_state.using_curses == 0)
+		sleep(4);
 	print_game_state(&game_state);
 	print_patient_info(&patient, 0);
 
@@ -615,10 +610,8 @@ exit_game(void)
 	print_fang_info(3, &patient.fangs[3], 1);
 	print_tool_info();
 	my_printf("Thank you for playing Buffy the Fluoride Dispenser: Fang Edition!\n");
-	my_printf("Final Score: %d\n", game_state.score);
-	my_printf("Turns taken: %d\n", game_state.turns);
 
-	print_fluoride_info();
+
 
 	exit(EXIT_SUCCESS);
 }
