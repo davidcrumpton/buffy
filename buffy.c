@@ -81,8 +81,8 @@ struct patient	patients[] = {
 	{110, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{130, "Fenrir", "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
 	{150, "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{200 , "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
-											 * fangs */
+	{200, "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
+							 * fangs */
 };
 
 extern char    *__progname;
@@ -130,7 +130,8 @@ choose_random_tool(int isdaggerset)
 {
 
 	if (isdaggerset) {
-		return arc4random_uniform(3) + 3;	/* daggers idx 3, 4, or 5 */
+		return arc4random_uniform(3) + 3;	/* daggers idx 3, 4, or
+							 * 5 */
 	} else {
 		return arc4random_uniform(3);
 	}
@@ -304,7 +305,7 @@ calculate_fluoride_used(int tool_dip, int tool_effort)
 	game_state.fluoride_used = used;
 	if (game_state.fluoride_used > game_state.fluoride) {
 		my_print_err("Fluoride used (%d) exceeds available fluoride (%d).\n",
-		game_state.fluoride_used, game_state.fluoride);
+			     game_state.fluoride_used, game_state.fluoride);
 		return -1;
 	}
 	game_state.fluoride -= game_state.fluoride_used;
@@ -550,7 +551,7 @@ apply_fluoride_to_fangs(void)
 			if (patient.fangs[i].health >= MAX_HEALTH)
 				game_state.score += BONUS_FANG_HEALTH;
 
-			if(calculate_fluoride_used(tool_dip, tool_effort) == -1)
+			if (calculate_fluoride_used(tool_dip, tool_effort) == -1)
 				goto continuation_fail;
 
 			if (game_state.using_curses)
