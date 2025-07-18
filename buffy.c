@@ -538,7 +538,7 @@ apply_fluoride_to_fangs(void)
 	int		cleaning = 1;
 	do {
 		char		answer[4];
-		char	       *fangs_formatted;
+		char	    *fangs_formatted;
 
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
