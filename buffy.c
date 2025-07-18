@@ -585,7 +585,7 @@ apply_fluoride_to_fangs(void)
 
 
 
-		get_input("Apply fluoride to fangs? (y/q/s):", answer, sizeof(answer));
+		get_input("Continue applying fluoride to fangs? (y/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
 			/* All tools use some fluoride */
 			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, return_patient_name(game_state.patient_idx), tools[game_state.tool_in_use].name);
