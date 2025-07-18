@@ -116,7 +116,7 @@ return_patient_species(const int idx)
 }
 
 static char    *
-return_concat_path(const char *append_str)
+return_concat_homedir(const char *append_str)
 {
 	const char     *home = getenv("HOME");
 	if (!home) {
@@ -149,12 +149,12 @@ choose_random_tool(int isdaggerset)
 /*
  * The game when running only saves the game in the default path so we will
  * need a default_game_save wrapper to set the path returns 0 on success and
- * -1 on failure calls return_concat_path to build out path
+ * -1 on failure calls return_concat_homedir to build out path
  */
 static void
 default_game_save(void)
 {
-	char	       *saved_pathname = return_concat_path(DEFAULT_SAVE_FILE);
+	char	       *saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
 	if (saved_pathname == NULL) {
 		errx(1, "Unable to determine save path.\n");
 	}
@@ -190,10 +190,10 @@ init_game_state(int bflag)
 	game_state.character_name = character_name;
 	game_state.tool_in_use = choose_random_tool(game_state.daggerset);
 	/*
-	 * Initialize save path with return_concat_path with default save
+	 * Initialize save path with return_concat_homedir with default save
 	 * game path and store it in save_path
 	 */
-	char	       *saved_pathname = return_concat_path(DEFAULT_SAVE_FILE);
+	char	       *saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
 	if (saved_pathname == NULL) {
 		fprintf(stderr, "Unable to determine save path.\n");
 		exit(EXIT_FAILURE);
