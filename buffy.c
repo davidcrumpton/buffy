@@ -340,7 +340,7 @@ calculate_fang_health(struct patient_fangs *fang, int tool_dip, int tool_effort)
 	int		health_gain = (tool_dip / 2) + (tool_effort / 3);
 
 	/* Adjust health gain based on patient species */
-	if (game_state.7patient_idx == VAMPIRE ) {
+	if (game_state.patient_idx == VAMPIRE ) {
 		health_gain += 2;	/* Vampires respond better to
 					 * fluoride */
 	} else if (game_state.patient_idx == ORC ) {
