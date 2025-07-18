@@ -46,6 +46,7 @@
 #define LOGIN_NAME_MAX              64
 #endif				/* End Login Name Max */
 
+#define IS_UPPER_FANG	(i < 2)
 
 char		character_name[LOGIN_NAME_MAX + 1];
 char		save_path[FILENAME_MAX + 1];
@@ -214,7 +215,7 @@ randomize_fangs(struct patient *patient_ptr, int count)
 
 
 static void
-ask_slayer(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_effort)
+get_provider_input(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_effort)
 {
 	int		valid = 0;
 	char		input[32];
@@ -493,15 +494,15 @@ continuation_err(void)
 static int inline 
 all_fangs_healthy(const patient_type *patient)
 {
-		int four_fangs_healthy = 0;
+		int four_healthy_fangs = 0;
 
 		for (int i = 0; i < 4; i++) {
 			if (patient->fangs[i].health < MAX_HEALTH) {
-				four_fangs_healthy = -1 ;
+				four_healthy_fangs = -1 ;
 				break;
 			}
 		}
-		return four_fangs_healthy;
+		return four_healthy_fangs;
 }
 
 static int
@@ -542,7 +543,7 @@ apply_fluoride_to_fangs(void)
 
 			my_werase();
 
-			if (i < 2) {
+			if (IS_UPPER_FANG) {
 				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
 			} else {
 				fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
@@ -554,7 +555,7 @@ apply_fluoride_to_fangs(void)
 			print_fang_info(i, &patient.fangs[i], 1);
 			print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
 			my_refresh();
-			ask_slayer(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
+			get_provider_input(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
 			game_state.last_tool_dip = tool_dip;
 			game_state.last_tool_effort = tool_effort;
 			calculate_fang_health(&patient.fangs[i], tool_dip, tool_effort);
