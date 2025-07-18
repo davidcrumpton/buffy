@@ -94,6 +94,7 @@ typedef struct fang_info {
 #define BONUS_ALL_HEALTH        100
 #define BONUS_FANG_CLEANED      1
 #define BONUS_FANG_HEALTH       3
+#define BONUS_TURN_COMPLETE		5
 
 #define FANG_COLOR_HIGH          "white"
 #define FANG_COLOR_MEDIUM        "dull"

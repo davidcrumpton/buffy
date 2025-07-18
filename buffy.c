@@ -70,9 +70,9 @@ fang_info_type	fang_names[] = {
 
 
 tool		tools[] = {
-	{"Buffy's Fingernail", "A sharp fingernail for cleaning teeth", 1, 1, 1, 1, 50, 0},
-	{"Small Rock", "A small but rough rock for scraping teeth", 3, 3, 15, 2, 30, 0},
-	{"Shark Tooth", "A sharp shark tooth precisely cleaning teeth", 6, 5, 8, 5, 40, 0},
+	{"Buffy's Fingernail", "A sharp fingernail for cleaning", 1, 1, 1, 1, 50, 0},
+	{"Small Rock", "A small but rough rock for scraping", 3, 3, 15, 2, 30, 0},
+	{"Shark Tooth", "A sharp shark tooth for precise cleaning", 6, 5, 8, 5, 40, 0},
 	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, 8, 5, 5, 100, 0},
 	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, 9, 5, 7, 150, 0},
 	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, 10, 5, 10, 200, 0}
@@ -550,7 +550,7 @@ apply_fluoride_to_fangs(void)
 
 		game_state.turns++;
 
-		game_state.score += 5;
+		game_state.score += BONUS_TURN_COMPLETE;
 
 		get_input("Apply fluoride to fangs? (y/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
@@ -572,11 +572,11 @@ apply_fluoride_to_fangs(void)
 
 success:
 	end_curses();
-	my_printf("%s has finished applying fluoride to %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
 	my_printf("All of %s's fangs are now healthy and shiny!\n", return_patient_name(game_state.patient_idx));
 	my_printf("%s has successfully cleaned %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
 
 	game_state.score += BONUS_ALL_HEALTH;
+	print_game_state(&game_state);
 	return EXIT_SUCCESS;
 
 save_game:
