@@ -620,24 +620,24 @@ success:
 
 	game_state.score += BONUS_ALL_HEALTH;
 	print_game_state(&game_state);
-	return EXIT_SUCCESS;
+	return 0;
 
 save_game:
 	end_curses();
 	default_game_save();
 	print_game_state(&game_state);
-	return EXIT_SUCCESS;
+	return 0;
 
 quit_game:
 	end_curses();
 	my_printf("%s chooses to quit!\n", game_state.character_name);
 	print_game_state(&game_state);
-	return EXIT_SUCCESS;
+	return 0;
 
 continuation_fail:
 	end_curses();
 	continuation_err();
-	return EXIT_SUCCESS;
+	return 0;
 }
 
 
