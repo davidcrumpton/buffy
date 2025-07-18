@@ -86,6 +86,14 @@ struct patient	patients[] = {
 							 * fangs */
 };
 
+enum species {
+	VAMPIRE,
+	ORC,
+	WEREWOLF,
+	SERPENT,
+	DRAGON
+};
+
 extern char    *__progname;
 
 static int	__dead
@@ -288,19 +296,22 @@ calculate_fluoride_used(int tool_dip, int tool_effort)
 	int		used = (dip * 2) + (effort * 3);
 
 	/* Adjust fluoride usage based on patient species */
-	if (strcmp(return_patient_species(game_state.patient_idx), "Vampire") == 0) {
+	
+
+	if (game_state.patient_idx == VAMPIRE ) {
 		used = (int)(used * 0.8);	/* Vampires need less
 						 * fluoride */
-	} else if (strcmp(return_patient_species(game_state.patient_idx), "Orc") == 0) {
+	} else if (game_state.patient_idx == ORC ) {
 		used = (int)(used * 1.2);	/* Orcs need more fluoride */
-	} else if (strcmp(return_patient_species(game_state.patient_idx), "Werewolf") == 0) {
+	} else if (game_state.patient_idx == WEREWOLF) {
 		used = (int)(used * 1.1);	/* Werewolves need a bit more */
-	} else if (strcmp(return_patient_species(game_state.patient_idx), "Serpent") == 0) {
+	} else if (game_state.patient_idx == SERPENT) {
 		used = (int)(used * 0.9);	/* Serpents need slightly
 						 * less */
-	} else if (strcmp(return_patient_species(game_state.patient_idx), "Dragon") == 0) {
+	} else if (game_state.patient_idx == DRAGON) {
 		used = (int)(used * 1.5);	/* Dragons need much more */
 	}
+	
 
 
 	game_state.fluoride_used = used;
@@ -329,17 +340,17 @@ calculate_fang_health(struct patient_fangs *fang, int tool_dip, int tool_effort)
 	int		health_gain = (tool_dip / 2) + (tool_effort / 3);
 
 	/* Adjust health gain based on patient species */
-	if (strcmp(return_patient_species(game_state.patient_idx), "Vampire") == 0) {
+	if (game_state.7patient_idx == VAMPIRE ) {
 		health_gain += 2;	/* Vampires respond better to
 					 * fluoride */
-	} else if (strcmp(return_patient_species(game_state.patient_idx), "Orc") == 0) {
+	} else if (game_state.patient_idx == ORC ) {
 		health_gain -= 1;	/* Orcs have tougher fangs */
-	} else if (strcmp(return_patient_species(game_state.patient_idx), "Werewolf") == 0) {
+	} else if (game_state.patient_idx == WEREWOLF ) {
 		health_gain += 1;	/* Werewolves heal a bit faster */
-	} else if (strcmp(return_patient_species(game_state.patient_idx), "Serpent") == 0) {
+	} else if (game_state.patient_idx == SERPENT ) {
 		health_gain = (int)(health_gain * 0.8);	/* Serpents are less
 							 * affected */
-	} else if (strcmp(return_patient_species(game_state.patient_idx), "Dragon") == 0) {
+	} else if (game_state.patient_idx == DRAGON ) {
 		health_gain = (int)(health_gain * 0.5);	/* Dragons are very
 							 * resistant */
 	}
