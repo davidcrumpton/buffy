@@ -570,8 +570,7 @@ apply_fluoride_to_fangs(void)
 
 success:
 	end_curses();
-	my_printf("All of %s's fangs are now healthy and shiny!\n", return_patient_name(game_state.patient_idx));
-	my_printf("%s has successfully cleaned %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
+	my_printf("%s has successfuly cleaned all of %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
 
 	game_state.score += BONUS_ALL_HEALTH;
 	print_game_state(&game_state);
