@@ -577,7 +577,7 @@ apply_fluoride_to_fangs(void)
 				game_state.score += BONUS_FANG_HEALTH;
 
 			if (calculate_fluoride_used(tool_dip, tool_effort) == -1)
-				goto continuation_fail;
+				goto no_fluoride_left;
 
 			if (game_state.using_curses)
 				print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
@@ -634,7 +634,7 @@ quit_game:
 	print_game_state(&game_state);
 	return 0;
 
-continuation_fail:
+no_fluoride_left:
 	end_curses();
 	continuation_err();
 	return 0;
