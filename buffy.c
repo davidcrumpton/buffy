@@ -307,9 +307,8 @@ calculate_fluoride_used(int tool_dip, int tool_effort)
 
 	game_state.fluoride_used = used;
 	if (game_state.fluoride_used > game_state.fluoride) {
-		my_printf("Fluoride used (%d) exceeds available fluoride (%d).\n",
-			  game_state.fluoride_used, game_state.fluoride);
-		my_print_err("Not enough fluoride available.\n");
+		my_print_err("Fluoride used (%d) exceeds available fluoride (%d).\n",
+		game_state.fluoride_used, game_state.fluoride);
 		exit_game();
 	}
 	game_state.fluoride -= game_state.fluoride_used;
