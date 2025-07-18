@@ -175,7 +175,7 @@ init_game_state(int bflag)
 	if (bflag) {
 		char		login_name[256];
 		if (getlogin_r(login_name, sizeof(login_name)) != 0)
-			err(1, "Unable to get login name");
+			errx(1, "Unable to get login name");
 		strlcpy(character_name, login_name, sizeof(game_state.character_name));
 	} else
 		strlcpy(character_name, DEFAULT_CHARACTER_NAME, sizeof(DEFAULT_CHARACTER_NAME));
@@ -675,7 +675,7 @@ main(int argc, char *argv[])
 #ifdef __OpenBSD__
 
 	if (pledge("stdio rpath wpath cpath unveil proc", NULL) == -1)
-		err(1, "pledge: 769");
+		errx(1, "pledge");
 #endif
 
 	while ((ch = getopt_long(argc, argv, "cbvf:", longopts, NULL)) != -1)
@@ -714,7 +714,7 @@ main(int argc, char *argv[])
 			 * login_name
 			 */
 			if (getlogin_r(login_name, sizeof(login_name)) != 0)
-				err(1, "Unable to get login name");
+				errx(1, "Unable to get login name");
 
 			strlcpy(character_name, login_name, sizeof(game_state.character_name));
 			game_state.character_name = character_name;
@@ -768,17 +768,17 @@ main(int argc, char *argv[])
 
 	if (!fflag)
 		if (unveil(save_path, "rwc") == -1) {
-			err(1, "unveil");
+			errx(1, "unveil");
 			return EXIT_FAILURE;
 
 			if (unveil(NULL, NULL) == -1) {
-				err(1, "unveil lock");
+				errx(1, "unveil lock");
 				return EXIT_FAILURE;
 			}
 		}
 
 	if (pledge("stdio rpath wpath cpath proc unveil", NULL) == -1)
-		err(1, "pledge");
+		errx(1, "pledge");
 #endif
 
 	exit(main_program(fflag));
