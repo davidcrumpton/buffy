@@ -557,11 +557,10 @@ apply_fluoride_to_fangs(void)
 				print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
 			my_refresh();
 		}
-		/*
-		 * the game should check all teeth to see if health is 10. if
-		 * health is 10, then we should print succss message and some
-		 * pleasing states for the user then exit
-		 */
+
+		game_state.turns++;
+		game_state.score += BONUS_TURN_COMPLETE;
+
 		int		all_fangs_healthy = 1;
 		for (int i = 0; i < 4; i++) {
 			if (patient.fangs[i].health < MAX_HEALTH) {
@@ -569,12 +568,15 @@ apply_fluoride_to_fangs(void)
 				break;
 			}
 		}
+
+
 		if (all_fangs_healthy)
 			goto success;
 
-		game_state.turns++;
 
-		game_state.score += BONUS_TURN_COMPLETE;
+
+
+			
 
 		get_input("Apply fluoride to fangs? (y/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
