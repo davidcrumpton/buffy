@@ -490,6 +490,19 @@ continuation_err(void)
 	my_printf("Sorry you couldn't finish Buffy the Fluoride Dispenser: Fang Edition!\n");
 }
 
+static int inline 
+all_fangs_healthy(const patient_type *patient)
+{
+		int four_fangs_healthy = 0;
+
+		for (int i = 0; i < 4; i++) {
+			if (patient->fangs[i].health < MAX_HEALTH) {
+				four_fangs_healthy = -1 ;
+				break;
+			}
+		}
+		return four_fangs_healthy;
+}
 
 static int
 apply_fluoride_to_fangs(void)
@@ -562,16 +575,9 @@ apply_fluoride_to_fangs(void)
 		game_state.turns++;
 		game_state.score += BONUS_TURN_COMPLETE;
 
-		int		all_fangs_healthy = 1;
-		for (int i = 0; i < 4; i++) {
-			if (patient.fangs[i].health < MAX_HEALTH) {
-				all_fangs_healthy = 0;
-				break;
-			}
-		}
 
 
-		if (all_fangs_healthy)
+		if (all_fangs_healthy(&patient) == 0)
 			goto success;
 
 
