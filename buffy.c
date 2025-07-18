@@ -576,7 +576,6 @@ apply_fluoride_to_fangs(void)
 
 
 
-			
 
 		get_input("Apply fluoride to fangs? (y/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
