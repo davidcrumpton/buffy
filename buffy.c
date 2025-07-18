@@ -133,8 +133,7 @@ choose_random_tool(int isdaggerset)
 {
 
 	if (isdaggerset) {
-		return arc4random_uniform(3) + 3;	/* daggers idx 3, 4, or
-							 * 5 */
+		return arc4random_uniform(3) + 3;	/* daggers idx 3, 4, or 5 */
 	} else {
 		return arc4random_uniform(3);
 	}
