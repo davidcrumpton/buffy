@@ -42,9 +42,6 @@
 #define __dead
 #endif
 
-static int	exit_game(void);
-
-
 #ifndef LOGIN_NAME_MAX
 #define LOGIN_NAME_MAX              64
 #endif				/* End Login Name Max */
@@ -308,7 +305,7 @@ calculate_fluoride_used(int tool_dip, int tool_effort)
 	if (game_state.fluoride_used > game_state.fluoride) {
 		my_print_err("Fluoride used (%d) exceeds available fluoride (%d).\n",
 		game_state.fluoride_used, game_state.fluoride);
-		exit_game();
+		return -1;
 	}
 	game_state.fluoride -= game_state.fluoride_used;
 	return game_state.fluoride_used;
@@ -464,6 +461,34 @@ patient_init(struct patient *patient_ptr)
 	randomize_fangs(patient_ptr, 4);
 }
 
+/*
+ * We want to do certain things on game end, like printing the game state and
+ * the patient information, so we define a function to do that
+ */
+
+static void
+continuation_err(void)
+{
+	char	       *fangs_formatted;
+
+	my_printf("Ending the game early.\n");
+	fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	my_printf("%s", fangs_formatted);
+	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
+	my_printf("%s", fangs_formatted);
+
+	sleep(4);
+	print_game_state(&game_state);
+	print_patient_info(&patient, 0);
+
+	print_fang_info(0, &patient.fangs[0], 1);
+	print_fang_info(1, &patient.fangs[1], 1);
+	print_fang_info(2, &patient.fangs[2], 1);
+	print_fang_info(3, &patient.fangs[3], 1);
+	print_tool_info();
+	my_printf("Sorry you couldn't finish Buffy the Fluoride Dispenser: Fang Edition!\n");
+}
+
 
 static int
 apply_fluoride_to_fangs(void)
@@ -525,7 +550,8 @@ apply_fluoride_to_fangs(void)
 			if (patient.fangs[i].health >= MAX_HEALTH)
 				game_state.score += BONUS_FANG_HEALTH;
 
-			calculate_fluoride_used(tool_dip, tool_effort);
+			if(calculate_fluoride_used(tool_dip, tool_effort) == -1)
+				goto continuation_fail;
 
 			if (game_state.using_curses)
 				print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
@@ -588,40 +614,12 @@ quit_game:
 	print_game_state(&game_state);
 	return EXIT_SUCCESS;
 
-}
-
-/*
- * We want to do certain things on game end, like printing the game state and
- * the patient information, so we define a function to do that
- */
-
-static int	__dead
-exit_game(void)
-{
-	char	       *fangs_formatted;
-
+continuation_fail:
 	end_curses();
-	my_printf("Exiting the game...\n");
-	fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
-	my_printf("%s", fangs_formatted);
-	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
-	my_printf("%s", fangs_formatted);
-
-	sleep(4);
-	print_game_state(&game_state);
-	print_patient_info(&patient, 0);
-
-	print_fang_info(0, &patient.fangs[0], 1);
-	print_fang_info(1, &patient.fangs[1], 1);
-	print_fang_info(2, &patient.fangs[2], 1);
-	print_fang_info(3, &patient.fangs[3], 1);
-	print_tool_info();
-	my_printf("Thank you for playing Buffy the Fluoride Dispenser: Fang Edition!\n");
-
-
-
-	exit(EXIT_SUCCESS);
+	continuation_err();
+	return EXIT_SUCCESS;
 }
+
 
 
 static int
