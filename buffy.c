@@ -630,7 +630,6 @@ save_game:
 
 quit_game:
 	end_curses();
-	my_printf("%s chooses to quit!\n", game_state.character_name);
 	print_game_state(&game_state);
 	return 0;
 
