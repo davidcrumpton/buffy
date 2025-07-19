@@ -16,13 +16,6 @@
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <stdio.h>
-#include <string.h>
-
-
-#include "buffy.h"
-#include "playerio.h"
 #include "fangs.h"
 
 
