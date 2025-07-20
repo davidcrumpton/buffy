@@ -153,18 +153,20 @@ choose_random_tool(int isdaggerset)
 
 
 static inline
-int check_file(const char *filename) {
-    /* is the file readable */
-    if (access(filename, R_OK) == 0) {
-        return FILE_READABLE;
-    } else {
-        /* Check if the file can be written and accessable */
-        if (access(filename, W_OK) == 0 || access(filename, F_OK) != 0) {
-            return FILE_WRITEABLE;
-        } else {
-            return -1;
-        }
-    }
+int
+check_file(const char *filename)
+{
+	/* is the file readable */
+	if (access(filename, R_OK) == 0) {
+		return FILE_READABLE;
+	} else {
+		/* Check if the file can be written and accessable */
+		if (access(filename, W_OK) == 0 || access(filename, F_OK) != 0) {
+			return FILE_WRITEABLE;
+		} else {
+			return -1;
+		}
+	}
 }
 
 /*
@@ -301,12 +303,12 @@ calculate_fluoride_used(int tool_dip, int tool_effort)
 	int		used = (dip * 2) + (effort * 3);
 
 	/* Adjust fluoride usage based on patient species */
-	
 
-	if (game_state.patient_idx == VAMPIRE ) {
+
+	if (game_state.patient_idx == VAMPIRE) {
 		used = (int)(used * 0.8);	/* Vampires need less
 						 * fluoride */
-	} else if (game_state.patient_idx == ORC ) {
+	} else if (game_state.patient_idx == ORC) {
 		used = (int)(used * 1.2);	/* Orcs need more fluoride */
 	} else if (game_state.patient_idx == WEREWOLF) {
 		used = (int)(used * 1.1);	/* Werewolves need a bit more */
@@ -316,7 +318,7 @@ calculate_fluoride_used(int tool_dip, int tool_effort)
 	} else if (game_state.patient_idx == DRAGON) {
 		used = (int)(used * 1.5);	/* Dragons need much more */
 	}
-	
+
 
 
 	game_state.fluoride_used = used;
@@ -345,17 +347,17 @@ calculate_fang_health(struct patient_fangs *fang, int tool_dip, int tool_effort)
 	int		health_gain = (tool_dip / 2) + (tool_effort / 3);
 
 	/* Adjust health gain based on patient species */
-	if (game_state.patient_idx == VAMPIRE ) {
+	if (game_state.patient_idx == VAMPIRE) {
 		health_gain += 2;	/* Vampires respond better to
 					 * fluoride */
-	} else if (game_state.patient_idx == ORC ) {
+	} else if (game_state.patient_idx == ORC) {
 		health_gain -= 1;	/* Orcs have tougher fangs */
-	} else if (game_state.patient_idx == WEREWOLF ) {
+	} else if (game_state.patient_idx == WEREWOLF) {
 		health_gain += 1;	/* Werewolves heal a bit faster */
-	} else if (game_state.patient_idx == SERPENT ) {
+	} else if (game_state.patient_idx == SERPENT) {
 		health_gain = (int)(health_gain * 0.8);	/* Serpents are less
 							 * affected */
-	} else if (game_state.patient_idx == DRAGON ) {
+	} else if (game_state.patient_idx == DRAGON) {
 		health_gain = (int)(health_gain * 0.5);	/* Dragons are very
 							 * resistant */
 	}
@@ -507,18 +509,18 @@ continuation_err(void)
 	my_printf("Sorry you couldn't finish Buffy the Fluoride Dispenser: Fang Edition!\n");
 }
 
-static int inline 
-all_fangs_healthy(const patient_type *patient)
+static int	inline
+all_fangs_healthy(const patient_type * patient)
 {
-		int four_healthy_fangs = 0;
+	int		four_healthy_fangs = 0;
 
-		for (int i = 0; i < 4; i++) {
-			if (patient->fangs[i].health < MAX_HEALTH) {
-				four_healthy_fangs = -1 ;
-				break;
-			}
+	for (int i = 0; i < 4; i++) {
+		if (patient->fangs[i].health < MAX_HEALTH) {
+			four_healthy_fangs = -1;
+			break;
 		}
-		return four_healthy_fangs;
+	}
+	return four_healthy_fangs;
 }
 
 static int
@@ -543,7 +545,7 @@ apply_fluoride_to_fangs(void)
 	int		cleaning = 1;
 	do {
 		char		answer[4];
-		char	    *fangs_formatted;
+		char	       *fangs_formatted;
 
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
@@ -749,23 +751,23 @@ main(int argc, char *argv[])
 		case 'f':
 			fflag = 0;
 			*save_path = '\0';
-			switch(check_file(optarg)) {
-				case FILE_READABLE:
-					if(validate_game_file(optarg) == 1) 
-						errx(1, "Game file %s is not a valid file", optarg);
-					fflag = 1;
-					my_printf("Loading game from: %s\n", optarg);
-					load_game_state(optarg, &game_state, sizeof(game_state), &patient, sizeof(patient), character_name);
-					game_state.character_name = character_name;
-					set_using_curses(game_state.using_curses);
-					set_color_mode(game_state.color_mode);
-					SET_SAVE_PATH(optarg);				
-					break;
-				case FILE_WRITEABLE:
-					SET_SAVE_PATH(optarg);
-					break;
-				default:
-					errx(1, "%s is neither readable or writeable",optarg);
+			switch (check_file(optarg)) {
+			case FILE_READABLE:
+				if (validate_game_file(optarg) == 1)
+					errx(1, "Game file %s is not a valid file", optarg);
+				fflag = 1;
+				my_printf("Loading game from: %s\n", optarg);
+				load_game_state(optarg, &game_state, sizeof(game_state), &patient, sizeof(patient), character_name);
+				game_state.character_name = character_name;
+				set_using_curses(game_state.using_curses);
+				set_color_mode(game_state.color_mode);
+				SET_SAVE_PATH(optarg);
+				break;
+			case FILE_WRITEABLE:
+				SET_SAVE_PATH(optarg);
+				break;
+			default:
+				errx(1, "%s is neither readable or writeable", optarg);
 
 			}
 			break;
@@ -793,7 +795,7 @@ main(int argc, char *argv[])
 	 * saved game
 	 */
 
-	if(!fflag) {
+	if (!fflag) {
 		char	       *default_saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
 
 		if (default_saved_pathname == NULL) {
