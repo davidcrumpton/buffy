@@ -1,0 +1,14 @@
+# Settings
+settings set target.process.follow-fork-mode child
+settings set target.process.disable-aslr true
+settings set stop-disassembly-display always
+
+# Aliases
+command alias bt  thread backtrace
+command alias bfn breakpoint set --name
+command alias regs register read
+command alias dis disassemble --frame
+command alias c   process continue
+command alias n   thread step-over
+command alias s   thread step-in
+
