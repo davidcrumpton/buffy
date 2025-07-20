@@ -46,7 +46,12 @@
 #define LOGIN_NAME_MAX              64
 #endif				/* End Login Name Max */
 
+#define SET_SAVE_PATH(src) strlcpy(save_path, (src), sizeof(save_path))
 #define IS_UPPER_FANG	(i < 2)
+
+#define FILE_READABLE 1
+#define FILE_WRITEABLE 2
+
 
 char		character_name[LOGIN_NAME_MAX + 1];
 char		save_path[FILENAME_MAX + 1];
@@ -146,19 +151,39 @@ choose_random_tool(int isdaggerset)
 	}
 }
 
+
+static inline
+int check_file(const char *filename) {
+    /* is the file readable */
+    if (access(filename, R_OK) == 0) {
+        return FILE_READABLE;
+    } else {
+        /* Check if the file can be written and accessable */
+        if (access(filename, W_OK) == 0 || access(filename, F_OK) != 0) {
+            return FILE_WRITEABLE;
+        } else {
+            return -1;
+        }
+    }
+}
+
 /*
- * The game when running only saves the game in the default path so we will
- * need a default_game_save wrapper to set the path returns 0 on success and
- * -1 on failure calls return_concat_homedir to build out path
+ * Save the game to save_path if defined or use default
  */
 static void
-default_game_save(void)
+save_game(void)
 {
+	if(save_path[0] != '\0') 
+		goto user_supplied_path;
+
 	char	       *saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
 	if (saved_pathname == NULL) {
 		errx(1, "Unable to determine save path.\n");
 	}
+
 	strlcpy(save_path, saved_pathname, sizeof(save_path));
+
+user_supplied_path:
 	my_printf("Saving game to: %s\n", save_path);
 	if (save_game_state(save_path, &game_state, sizeof(game_state), &patient, sizeof(patient)) != 0) {
 		errx(1, "Unable to save game state to %s", save_path);
@@ -189,16 +214,7 @@ init_game_state(int bflag)
 
 	game_state.character_name = character_name;
 	game_state.tool_in_use = choose_random_tool(game_state.daggerset);
-	/*
-	 * Initialize save path with return_concat_homedir with default save
-	 * game path and store it in save_path
-	 */
-	char	       *saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
-	if (saved_pathname == NULL) {
-		fprintf(stderr, "Unable to determine save path.\n");
-		exit(EXIT_FAILURE);
-	}
-	strlcpy(save_path, saved_pathname, sizeof(save_path));
+
 	game_state.last_tool_dip = DEFAULT_TOOL_DIP;
 	game_state.last_tool_effort = DEFAULT_TOOL_EFFORT;
 }
@@ -624,7 +640,7 @@ success:
 
 save_game:
 	end_curses();
-	default_game_save();
+	save_game();
 	print_game_state(&game_state);
 	return 0;
 
@@ -741,19 +757,27 @@ main(int argc, char *argv[])
 			bflag = 1;
 			break;
 		case 'f':
-			fflag = 1;
+			fflag = 0;
+			*save_path = '\0';
+			switch(check_file(optarg)) {
+				case FILE_READABLE:
+					if(validate_game_file(optarg) == 1) 
+						errx(1, "Game file %s is not a valid file", optarg);
+					fflag = 1;
+					my_printf("Loading game from: %s\n", optarg);
+					load_game_state(optarg, &game_state, sizeof(game_state), &patient, sizeof(patient), character_name);
+					game_state.character_name = character_name;
+					set_using_curses(game_state.using_curses);
+					set_color_mode(game_state.color_mode);
+					SET_SAVE_PATH(optarg);				
+					break;
+				case FILE_WRITEABLE:
+					SET_SAVE_PATH(optarg);
+					break;
+				default:
+					errx(1, "%s is neither readable or writeable",optarg);
 
-			if (validate_game_file(optarg) == 1)
-				errx(1, "Game file %s is not a valid file", optarg);
-			/*
-			 * If the file is valid, we will load all game data
-			 * from it
-			 */
-			load_game_state(optarg, &game_state, sizeof(game_state), &patient, sizeof(patient), character_name);
-			game_state.character_name = character_name;
-			set_using_curses(game_state.using_curses);
-			set_color_mode(game_state.color_mode);
-
+			}
 			break;
 		case 0:
 			if (game_state.daggerset)
