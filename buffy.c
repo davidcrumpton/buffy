@@ -724,11 +724,7 @@ main(int argc, char *argv[])
 			break;
 		case 'b':
 			/*
-			 * not named buffy we will use the user login name
-			 * and do not care if the user is root we will lookup
-			 * the user name in the password database we use
-			 * pledge and unveil so the game is safe for all
-			 * users
+			 * Not named buffy? We will use the user login name.
 			 */
 
 			if (getlogin() == NULL)
