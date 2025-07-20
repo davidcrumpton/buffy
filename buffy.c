@@ -323,8 +323,6 @@ calculate_fluoride_used(int tool_dip, int tool_effort)
 
 	game_state.fluoride_used = used;
 	if (game_state.fluoride_used > game_state.fluoride) {
-		my_print_err("Fluoride used (%d) exceeds available fluoride (%d).\n",
-			     game_state.fluoride_used, game_state.fluoride);
 		return -1;
 	}
 	game_state.fluoride -= game_state.fluoride_used;
@@ -610,13 +608,11 @@ apply_fluoride_to_fangs(void)
 			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
 			game_state.fluoride_used += calculate_fluoride_used(tool_dip, tool_effort);
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
-			my_printf("%s quits the game.\n", game_state.character_name);
 			cleaning = 0;
 			goto quit_game;
 		} else if (answer[0] == 's' || answer[0] == 'S') {
 			goto save_game;
 		} else {
-			my_print_err("Thanks for playing.\n");
 			goto success;
 		}
 	} while (cleaning);
@@ -624,7 +620,6 @@ apply_fluoride_to_fangs(void)
 success:
 	end_curses();
 	my_printf("%s has successfuly cleaned all of %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
-
 	game_state.score += BONUS_ALL_HEALTH;
 	print_game_state(&game_state);
 	return 0;
@@ -637,11 +632,14 @@ save_game:
 	return 0;
 
 quit_game:
+	my_printf("%s quits the game.\n", game_state.character_name);
 	end_curses();
 	print_game_state(&game_state);
 	return 0;
 
 no_fluoride_left:
+	my_print_err("Fluoride used (%d) exceeds available fluoride (%d).\n",
+				game_state.fluoride_used, game_state.fluoride);
 	end_curses();
 	continuation_err();
 	return 0;
