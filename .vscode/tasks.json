@@ -2,14 +2,17 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "make debug",
+      "type": "shell",
+      "command": "make",
+      "args": ["CFLAGS=-g"],
+      "group": "build"
+    },
+    {
       "label": "make",
       "type": "shell",
       "command": "make",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": []
+      "group": "build"
     }
   ]
 }

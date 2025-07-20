@@ -31,8 +31,8 @@ BINMODE=       555
 # Include all headers from local dir and /usr/local
 CPPFLAGS+=     -I${.CURDIR} -I/usr/local/include
 
-buffy: ${SRCS}
-	cc -g ${LDFLAGS} -o ${PROG} -Wall ${SRCS}
+buffy: ${SRCS} ${HDRS}
+	cc ${LDFLAGS} -o ${PROG} -Wall ${CFLAGS} ${SRCS}
 
 clean: 
 	rm -rf -- *.dSYM *.o buffy buffy-unittest *.BAK

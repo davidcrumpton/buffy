@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "2.0.0",
   "configurations": [
     {
       "name": "Debug Buffy",
@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/buffy",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "make",
+      "preLaunchTask": "make debug",
       "stopOnEntry": false,
       "internalConsoleOptions": "openOnSessionStart"
     },
@@ -18,7 +18,7 @@
       "program": "${workspaceFolder}/buffy",
       "args": ["--daggerset"],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "make",
+      "preLaunchTask": "make debug",
       "stopOnEntry": false,
       "internalConsoleOptions": "openOnSessionStart"
     },
@@ -29,7 +29,7 @@
       "program": "${workspaceFolder}/buffy",
       "args": ["-f", "fluoride.dat"],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "make",
+      "preLaunchTask": "make debug",
       "stopOnEntry": false,
       "internalConsoleOptions": "openOnSessionStart"
     },
@@ -39,7 +39,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/buffy-unittest",
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "make",
+      "preLaunchTask": "make debug",
       "stopOnEntry": false,
       "internalConsoleOptions": "openOnSessionStart"
     }
