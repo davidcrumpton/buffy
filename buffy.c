@@ -702,7 +702,7 @@ main(int argc, char *argv[])
 	if (pledge("stdio rpath wpath cpath unveil proc", NULL) == -1)
 		errx(1, "pledge");
 #endif
-
+	*save_path = '\0';
 	while ((ch = getopt_long(argc, argv, "cbvf:", longopts, NULL)) != -1)
 		switch (ch) {
 		case 'v':
@@ -750,7 +750,7 @@ main(int argc, char *argv[])
 			break;
 		case 'f':
 			fflag = 0;
-			*save_path = '\0';
+
 			switch (check_file(optarg)) {
 			case FILE_READABLE:
 				if (validate_game_file(optarg) == 1)
@@ -796,13 +796,14 @@ main(int argc, char *argv[])
 	 */
 
 	if (!fflag) {
-		char	       *default_saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
+		if(save_path[0] == '\0') {
+			char	       *default_saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
 
-		if (default_saved_pathname == NULL) {
-			errx(1, "Unable to determine save path.\n");
+			if (default_saved_pathname == NULL) {
+				errx(1, "Unable to determine save path.\n");
+			}
+			SET_SAVE_PATH(default_saved_pathname);
 		}
-		SET_SAVE_PATH(default_saved_pathname);
-
 		init_game_state(bflag);
 	}
 
