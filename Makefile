@@ -16,32 +16,33 @@
 # 
 # Default to release build
 PROG=          buffy
-LDFLAGS= 	-lncurses
-TEST_PROG= 	buffy-unittest
+LDFLAGS=        -lncurses
+TEST_PROG=      buffy-unittest
 TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
 TEST_LDFLAGS=      -L/usr/local/lib -lcunit -lncurses
 
-SRCS=          buffy.c gamestate.c fangs.c playerio.c
-HDRS=          buffy.h gamestate.h fangs.h playerio.h 
+SRCS=           buffy.c gamestate.c fangs.c playerio.c
+OBJS=           buffy.o gamestate.o fangs.o playerio.o
+HDRS=           buffy.h gamestate.h fangs.h playerio.h
 TEST_SRCS=      unittest/buffy_unittest.c
-MAN=           buffy.1 
+MAN=           buffy.1
 BINOWN=        root
 BINMODE=       555
 
 # Include all headers from local dir and /usr/local
 CPPFLAGS+=     -I${.CURDIR} -I/usr/local/include
 
-buffy: ${SRCS} ${HDRS}
-	cc ${LDFLAGS} -o ${PROG} -Wall ${CFLAGS} ${SRCS}
+$(PROG): $(OBJS)
+		cc $(LDFLAGS) -o $@ $(OBJS)
 
-clean: 
-	rm -rf -- *.dSYM *.o buffy buffy-unittest *.BAK
+%.o: %.c
+		cc -c -Wall ${CFLAGS} ${CPPFLAGS} $<
 
-strip: buffy
-	strip buffy
-	
+clean:
+		rm -rf -- *.dSYM *.o buffy buffy-unittest *.BAK
+
 .PHONY: all clean buffy unittest beautify
 all: buffy buffy-unittest
 
 buffy-unittest: ${TEST_PROG}
-	cc -g ${TEST_LDFLAGS} ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS}
+		cc -g ${TEST_LDFLAGS} ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS}
