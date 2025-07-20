@@ -796,7 +796,7 @@ main(int argc, char *argv[])
 	 */
 
 	if (!fflag) {
-		if(save_path[0] == '\0') {
+		if (save_path[0] == '\0') {
 			char	       *default_saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
 
 			if (default_saved_pathname == NULL) {
