@@ -632,8 +632,8 @@ save_game:
 	return 0;
 
 quit_game:
-	my_printf("%s quits the game.\n", game_state.character_name);
 	end_curses();
+	my_printf("%s quits the game.\n", game_state.character_name);
 	print_game_state(&game_state);
 	return 0;
 
