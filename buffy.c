@@ -173,18 +173,7 @@ int check_file(const char *filename) {
 static void
 save_game(void)
 {
-	if(save_path[0] != '\0') 
-		goto user_supplied_path;
 
-	char	       *saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
-	if (saved_pathname == NULL) {
-		errx(1, "Unable to determine save path.\n");
-	}
-
-	strlcpy(save_path, saved_pathname, sizeof(save_path));
-
-user_supplied_path:
-	my_printf("Saving game to: %s\n", save_path);
 	if (save_game_state(save_path, &game_state, sizeof(game_state), &patient, sizeof(patient)) != 0) {
 		errx(1, "Unable to save game state to %s", save_path);
 	}
@@ -640,6 +629,7 @@ success:
 
 save_game:
 	end_curses();
+	my_printf("Saving game to: %s\n", save_path);
 	save_game();
 	print_game_state(&game_state);
 	return 0;
@@ -803,8 +793,17 @@ main(int argc, char *argv[])
 	 * saved game
 	 */
 
-	if (!fflag)
+	if(!fflag) {
+		char	       *default_saved_pathname = return_concat_homedir(DEFAULT_SAVE_FILE);
+
+		if (default_saved_pathname == NULL) {
+			errx(1, "Unable to determine save path.\n");
+		}
+		SET_SAVE_PATH(default_saved_pathname);
+
 		init_game_state(bflag);
+	}
+
 #ifdef __OpenBSD__
 
 	if (!fflag)
