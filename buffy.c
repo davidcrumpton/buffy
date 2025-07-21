@@ -466,7 +466,7 @@ continuation_err(void)
 {
 	char	       *fangs_formatted;
 
-	my_printf("Ending the game early.\n");
+	my_printf("You used up all the fluoride.\n");
 	fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
 	my_printf("%s", fangs_formatted);
 	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
@@ -481,7 +481,7 @@ continuation_err(void)
 	print_fang_info(2, &patient.fangs[2], 1);
 	print_fang_info(3, &patient.fangs[3], 1);
 	print_tool_info();
-	my_printf("Sorry you couldn't finish Buffy the Fluoride Dispenser: Fang Edition!\n");
+	my_printf("Buffy the Fluoride Dispenser: Fang Edition is done!\n");
 }
 
 static int	inline
