@@ -35,7 +35,7 @@ CPPFLAGS+=     -I${.CURDIR} -I/usr/local/include
 $(PROG): $(OBJS)
 		cc $(LDFLAGS) -o $@ $(OBJS)
 
-%.o: %.c
+%.o: %.c %.h
 		cc -c -Wall ${CFLAGS} ${CPPFLAGS} $<
 
 clean:
