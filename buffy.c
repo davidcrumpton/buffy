@@ -46,6 +46,8 @@
 #define LOGIN_NAME_MAX              64
 #endif				/* End Login Name Max */
 
+#define PATIENT_NAME(idx)    (patients[(idx)].name)
+#define PATIENT_SPECIES(idx) (patients[(idx)].species)
 #define SET_SAVE_PATH(src) strlcpy(save_path, (src), sizeof(save_path))
 #define IS_UPPER_FANG	(i < 2)
 
@@ -108,19 +110,8 @@ usage(void)
 	exit(EXIT_FAILURE);
 }
 
-static char    *
-return_patient_name(const int idx)
-{
-	return (patients[idx]).name;
-}
 
-static char    *
-return_patient_species(const int idx)
-{
-	return (patients[idx].species);
-}
-
-static char    *
+static char inline	*
 return_concat_homedir(const char *append_str)
 {
 	const char     *home = getenv("HOME");
@@ -139,7 +130,7 @@ return_concat_homedir(const char *append_str)
 }
 
 
-static int
+static int inline
 choose_random_tool(int isdaggerset)
 {
 
@@ -172,7 +163,7 @@ check_file(const char *filename)
 /*
  * Save the game to save_path if defined or use default
  */
-static void
+static void inline
 save_game(void)
 {
 
@@ -409,13 +400,13 @@ static void
 print_patient_info(const struct patient *patient_ptr, const int compact_printing)
 {
 	if (compact_printing) {
-		my_printf("Patient: %s, Age: %d, Species: %s\n", return_patient_name(game_state.patient_idx), patient_ptr->age, return_patient_species(game_state.patient_idx));
+		my_printf("Patient: %s, Age: %d, Species: %s\n", PATIENT_NAME(game_state.patient_idx), patient_ptr->age, PATIENT_SPECIES(game_state.patient_idx));
 
 		return;
 	} else {
-		my_printf("Creature Name: %s\n", return_patient_name(game_state.patient_idx));
+		my_printf("Creature Name: %s\n", PATIENT_NAME(game_state.patient_idx));
 		my_printf("Creature Age: %d\n", patient_ptr->age);
-		my_printf("Creature Species: %s\n", return_patient_species(game_state.patient_idx));
+		my_printf("Creature Species: %s\n", PATIENT_SPECIES(game_state.patient_idx));
 	}
 }
 
@@ -544,7 +535,7 @@ apply_fluoride_to_fangs(void)
 			}
 
 			my_printf("%s", fangs_formatted);
-			print_working_info("Applying fluoride to %s's fang %s:\n", return_patient_name(game_state.patient_idx), fang_idx_to_name(i));
+			print_working_info("Applying fluoride to %s's fang %s:\n", PATIENT_NAME(game_state.patient_idx), fang_idx_to_name(i));
 
 			print_fang_info(i, &patient.fangs[i], 1);
 			print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
@@ -583,7 +574,7 @@ apply_fluoride_to_fangs(void)
 		get_input("Continue applying fluoride to fangs? (y/q/s):", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
 			/* All tools use some fluoride */
-			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, return_patient_name(game_state.patient_idx), tools[game_state.tool_in_use].name);
+			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, PATIENT_NAME(game_state.patient_idx), tools[game_state.tool_in_use].name);
 			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
 			cleaning = 0;
@@ -597,7 +588,7 @@ apply_fluoride_to_fangs(void)
 
 success:
 	end_curses();
-	my_printf("%s has successfuly cleaned all of %s's fangs.\n", game_state.character_name, return_patient_name(game_state.patient_idx));
+	my_printf("%s has successfuly cleaned all of %s's fangs.\n", game_state.character_name, PATIENT_NAME(game_state.patient_idx));
 	game_state.score += BONUS_ALL_HEALTH;
 	print_game_state(&game_state);
 	return 0;
