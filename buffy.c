@@ -75,12 +75,12 @@ fang_info_type	fang_names[] = {
 
 
 tool		tools[] = {
-	{"Buffy's Fingernail", "A sharp fingernail for cleaning", 1, 1, 2, 1, 50, 0},
-	{"Small Rock", "A small but rough rock for scraping", 3, 3, 6, 2, 30, 0},
-	{"Shark Tooth", "A sharp shark tooth for precise cleaning", 6, 2, 8, 5, 40, 0},
-	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, 8, 7, 5, 100, 0},
-	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, 9, 9, 7, 150, 0},
-	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, 10, 9, 10, 200, 0}
+	{"Buffy's Fingernail", "A sharp fingernail for cleaning", 1, 1, 2, 1, 50},
+	{"Small Rock", "A small but rough rock for scraping", 3, 3, 6, 2, 30},
+	{"Shark Tooth", "A sharp shark tooth for precise cleaning", 6, 2, 8, 5, 40},
+	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, 8, 7, 5, 100},
+	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, 9, 9, 7, 150},
+	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, 10, 9, 10, 200}
 };
 
 

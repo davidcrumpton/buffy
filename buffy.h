@@ -63,7 +63,6 @@ typedef struct tool {
 
 	int		effectiveness;
 	int		durability;
-	int		used;
 }		tool;
 
 
