@@ -75,11 +75,11 @@ fang_info_type	fang_names[] = {
 
 
 tool		tools[] = {
-	{"Buffy's Fingernail", "A sharp fingernail for cleaning",		   1, 1,  2,  1,  50, 0},
-	{"Small Rock", "A small but rough rock for scraping",			   3, 3,  6,  2,  30, 0},
-	{"Shark Tooth", "A sharp shark tooth for precise cleaning", 	   6, 2,  8,  5,  40, 0},
-	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, 8,  7,  5, 100, 0},
-	{"Bronze Dagger", "A bronze dagger for applying fluoride", 		  12, 9,  9,  7, 150, 0},
+	{"Buffy's Fingernail", "A sharp fingernail for cleaning", 1, 1, 2, 1, 50, 0},
+	{"Small Rock", "A small but rough rock for scraping", 3, 3, 6, 2, 30, 0},
+	{"Shark Tooth", "A sharp shark tooth for precise cleaning", 6, 2, 8, 5, 40, 0},
+	{"Wooden Dagger", "A wooden dagger for simply applying fluoride", 10, 8, 7, 5, 100, 0},
+	{"Bronze Dagger", "A bronze dagger for applying fluoride", 12, 9, 9, 7, 150, 0},
 	{"Steel Dagger", "A steel dagger for strongly applying fluoride", 14, 10, 9, 10, 200, 0}
 };
 
@@ -111,7 +111,7 @@ usage(void)
 }
 
 
-static char inline	*
+static char	inline *
 return_concat_homedir(const char *append_str)
 {
 	const char     *home = getenv("HOME");
@@ -130,7 +130,7 @@ return_concat_homedir(const char *append_str)
 }
 
 
-static int inline
+static int	inline
 choose_random_tool(int isdaggerset)
 {
 
@@ -163,7 +163,7 @@ check_file(const char *filename)
 /*
  * Save the game to save_path if defined or use default
  */
-static void inline
+static void	inline
 save_game(void)
 {
 
@@ -280,59 +280,59 @@ calculate_fluoride_used_from_dip(int tool_dip)
 {
 
 
-     /*
-     * Cap dip and effort to tool's maximum values
-     */
-    if (tool_dip > tools[game_state.tool_in_use].dip_amount)
-        tool_dip = tools[game_state.tool_in_use].dip_amount;
+	/*
+	 * Cap dip and effort to tool's maximum values
+	 */
+	if (tool_dip > tools[game_state.tool_in_use].dip_amount)
+		tool_dip = tools[game_state.tool_in_use].dip_amount;
 
- 	int length = tools[game_state.tool_in_use].length;
-    int dip = tool_dip * length;
+	int		length = tools[game_state.tool_in_use].length;
+	int		dip = tool_dip * length;
 
-    int used = dip; /* Only dip amount uses fluoride */
+	int		used = dip;	/* Only dip amount uses fluoride */
 
-    if (used > game_state.fluoride) {
-        return -1;
-    }
+	if (used > game_state.fluoride) {
+		return -1;
+	}
 
-    game_state.fluoride_used = used;
-    game_state.fluoride -= used;
-    return used;
+	game_state.fluoride_used = used;
+	game_state.fluoride -= used;
+	return used;
 }
 
 static void
 calculate_fang_health(struct patient_fangs *fang, int fluoride_on_tool, int tool_effort)
 {
-    /* Cap fluoride and effort to tool's max */
-    if (fluoride_on_tool > tools[game_state.tool_in_use].dip_amount)
-        fluoride_on_tool = tools[game_state.tool_in_use].dip_amount;
-    if (tool_effort > tools[game_state.tool_in_use].effort)
-        tool_effort = tools[game_state.tool_in_use].effort;
+	/* Cap fluoride and effort to tool's max */
+	if (fluoride_on_tool > tools[game_state.tool_in_use].dip_amount)
+		fluoride_on_tool = tools[game_state.tool_in_use].dip_amount;
+	if (tool_effort > tools[game_state.tool_in_use].effort)
+		tool_effort = tools[game_state.tool_in_use].effort;
 
-    int effectiveness = tools[game_state.tool_in_use].effectiveness;
-    int durability = tools[game_state.tool_in_use].durability;
+	int		effectiveness = tools[game_state.tool_in_use].effectiveness;
+	int		durability = tools[game_state.tool_in_use].durability;
 
-    /* Health gain formula includes effectiveness and durability */
-    int health_gain = ((fluoride_on_tool / 2) + (tool_effort / 3)) * effectiveness * durability / 100;
+	/* Health gain formula includes effectiveness and durability */
+	int		health_gain = ((fluoride_on_tool / 2) + (tool_effort / 3)) * effectiveness * durability / 100;
 
-    /* Adjust health gain based on patient species */
-    if (game_state.patient_idx == VAMPIRE) {
-        health_gain += 2;
-    } else if (game_state.patient_idx == ORC) {
-        health_gain -= 1;
-    } else if (game_state.patient_idx == WEREWOLF) {
-        health_gain += 1;
-    } else if (game_state.patient_idx == SERPENT) {
-        health_gain = (int)(health_gain * 0.8);
-    } else if (game_state.patient_idx == DRAGON) {
-        health_gain = (int)(health_gain * 0.5);
-    }
+	/* Adjust health gain based on patient species */
+	if (game_state.patient_idx == VAMPIRE) {
+		health_gain += 2;
+	} else if (game_state.patient_idx == ORC) {
+		health_gain -= 1;
+	} else if (game_state.patient_idx == WEREWOLF) {
+		health_gain += 1;
+	} else if (game_state.patient_idx == SERPENT) {
+		health_gain = (int)(health_gain * 0.8);
+	} else if (game_state.patient_idx == DRAGON) {
+		health_gain = (int)(health_gain * 0.5);
+	}
 
-    fang->health += health_gain;
-    if (fang->health > MAX_HEALTH)
-        fang->health = MAX_HEALTH;
-    else if (fang->health < 0)
-        fang->health = 0;
+	fang->health += health_gain;
+	if (fang->health > MAX_HEALTH)
+		fang->health = MAX_HEALTH;
+	else if (fang->health < 0)
+		fang->health = 0;
 }
 
 static char    *
@@ -511,7 +511,7 @@ apply_fluoride_to_fangs(void)
 	int		cleaning = 1;
 	do {
 		char		answer[4];
-		char	    *fangs_formatted;
+		char	       *fangs_formatted;
 
 
 		for (int i = 0; i < 4; i++) {
@@ -544,7 +544,7 @@ apply_fluoride_to_fangs(void)
 			game_state.last_tool_dip = tool_dip;
 			game_state.last_tool_effort = tool_effort;
 
-			if ( (game_state.fluoride_used = calculate_fluoride_used_from_dip(tool_dip) ) == -1)
+			if ((game_state.fluoride_used = calculate_fluoride_used_from_dip(tool_dip)) == -1)
 				goto no_fluoride_left;
 
 			calculate_fang_health(&patient.fangs[i], game_state.fluoride_used, tool_effort);
@@ -608,7 +608,7 @@ quit_game:
 
 no_fluoride_left:
 	my_print_err("Fluoride used (%d) exceeds available fluoride (%d).\n",
-				game_state.fluoride_used, game_state.fluoride);
+		     game_state.fluoride_used, game_state.fluoride);
 	end_curses();
 	continuation_err();
 	return 0;
