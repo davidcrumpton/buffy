@@ -131,7 +131,7 @@ return_concat_homedir(const char *append_str)
 
 
 static int	inline
-choose_random_tool(int isdaggerset)
+choose_random_tool(const int isdaggerset)
 {
 
 	if (isdaggerset) {
@@ -174,7 +174,7 @@ save_game(void)
 
 /* Initialize the game state with default values */
 static void
-init_game_state(int bflag)
+init_game_state(const int bflag)
 {
 
 	game_state.fluoride = DEFAULT_FLUORIDE;
@@ -203,7 +203,7 @@ init_game_state(int bflag)
 	}
 }
 static void
-randomize_fangs(struct patient *patient_ptr, int count)
+randomize_fangs(struct patient *patient_ptr, const int count)
 {
 	for (int i = 0; i < count; i++) {
 		patient_ptr->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
@@ -338,7 +338,7 @@ calculate_fang_health(struct patient_fangs *fang, int fluoride_on_tool, int tool
 }
 
 static char    *
-fang_health_to_color(int health)
+fang_health_to_color(const int health)
 {
 	/* Convert fang health to color string */
 	if (health >= FANG_HEALTH_HIGH)
@@ -350,7 +350,7 @@ fang_health_to_color(int health)
 }
 
 static char    *
-fang_idx_to_name(int fang_index)
+fang_idx_to_name(const int fang_index)
 {
 	switch (fang_index) {
 	case 0:
@@ -619,7 +619,7 @@ no_fluoride_left:
 
 
 static int
-main_program(int reloadflag)
+main_program(const int reloadflag)
 {
 	/*
 	 * If we are reloading the game state, we do not need to initialize
