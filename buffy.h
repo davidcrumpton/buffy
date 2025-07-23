@@ -35,8 +35,8 @@ typedef struct game_state {
 	int		turns;
 	int		using_curses;
 	int		color_mode;
-	int		last_tool_dip;
-	int		last_tool_effort;
+	int		last_tool_dip[4];
+	int		last_tool_effort[4];
 	int		tool_in_use;
 	int		patient_idx;
 	char	       *character_name;

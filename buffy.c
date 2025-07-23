@@ -197,8 +197,10 @@ init_game_state(int bflag)
 	game_state.character_name = character_name;
 	game_state.tool_in_use = choose_random_tool(game_state.daggerset);
 
-	game_state.last_tool_dip = DEFAULT_TOOL_DIP;
-	game_state.last_tool_effort = DEFAULT_TOOL_EFFORT;
+	for(int i=0; i<4; i++) {
+		game_state.last_tool_dip[i] = DEFAULT_TOOL_DIP;
+		game_state.last_tool_effort[i] = DEFAULT_TOOL_EFFORT;
+	}
 }
 static void
 randomize_fangs(struct patient *patient_ptr, int count)
@@ -540,9 +542,9 @@ apply_fluoride_to_fangs(void)
 			print_fang_info(i, &patient.fangs[i], 1);
 			print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
 			my_refresh();
-			get_provider_input(&tool_dip, &tool_effort, game_state.last_tool_dip, game_state.last_tool_effort);
-			game_state.last_tool_dip = tool_dip;
-			game_state.last_tool_effort = tool_effort;
+			get_provider_input(&tool_dip, &tool_effort, game_state.last_tool_dip[i], game_state.last_tool_effort[i]);
+			game_state.last_tool_dip[i] = tool_dip;
+			game_state.last_tool_effort[i] = tool_effort;
 
 			if ((game_state.fluoride_used = calculate_fluoride_used_from_dip(tool_dip)) == -1)
 				goto no_fluoride_left;
