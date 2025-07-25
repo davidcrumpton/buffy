@@ -337,7 +337,7 @@ calculate_fang_health(struct patient_fangs *fang, int fluoride_on_tool, int tool
 		fang->health = 0;
 }
 
-static char    *
+static inline char    *
 fang_health_to_color(const int health)
 {
 	/* Convert fang health to color string */
@@ -349,7 +349,7 @@ fang_health_to_color(const int health)
 		return FANG_COLOR_LOW;	/* Yellow */
 }
 
-static char    *
+static inline char    *	
 fang_idx_to_name(const int fang_index)
 {
 	switch (fang_index) {
