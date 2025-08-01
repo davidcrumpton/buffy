@@ -328,8 +328,11 @@ initalize_curses(void)
 		wattron(inp_win, COLOR_PAIR(PATTERN_PROMPT_COLOR));
 		wattron(info_win, COLOR_PAIR(PATTERN_INFO_COLOR));
 	}
+	wrefresh(info_win);
 	wrefresh(fang_win);
 	wrefresh(stats_win);
+	wrefresh(err_win);
+	wrefresh(inp_win);
 }
 
 int
