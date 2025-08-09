@@ -41,7 +41,7 @@ struct patient_reaction {
     char *comment;
 };
 struct patient_reaction reactions[] = {
-    {0, 0, "The %s bares fangs, eyes narrowed in ancient impatience."},
+    {0, 0, "%s bares fangs, eyes narrowed in ancient impatience."},
     {0, 1, "A low growl escapes—immortality has not made %s more patient."},
     {0, 2, "%s sighs theatrically, fangs glinting, clearly unimpressed."},
     {1, 0, "A sharp hiss—centuries of tolerance wearing thin for %s."},
@@ -54,64 +54,49 @@ struct patient_reaction reactions[] = {
 
 static char reactstr[160];
 
-/* Patient Responses:
-    * The patient will make comments about the care.  Some comments can be body 
-    * language comments as well.
-    * Comments will range from low (angry/impatient to pleased/happy)
-    * There will be a structure of comments with values to identify what to pick
-    * based on provider performance.
-    * Low fang_health will also affect the comments.
-    * Patient will decrement patience based on high effort and low patience.
-    * If fang_health is high, the patient will be more pleased.
-    * If fang_health is low, the patient will be more displeased.
-*/
 
-char *
-patient_reaction(int effort, int *patience, int fang_health, int turn, int tool_pain_factor, const char *patient_name) {
-    int eff = effort;
-    int pat = *patience;
-
-    // Adjust patience based on effort
-    if (effort == 2 && pat > 0) {
-        (*patience)--;
-        pat = *patience;
-    } else if (effort == 0 && pat < 2) {
-        (*patience)++;
-        pat = *patience;
+char *patient_reaction(int effort, int *patience, int *pain_tolerance, int fang_health, int turn, int tool_pain_factor, const char *patient_name) {
+    int patient_mood;
+    int pain_inflicted;
+    
+    /* Decrease patience over time if fangs aren't fully cleaned */
+    if (fang_health > 0) {
+        *patience = (*patience > 0) ? (*patience - 1) : 0;
+    }
+    
+    /* Calculate pain inflicted, with modifiers for pain tolerance and fang health */
+    pain_inflicted = (effort * tool_pain_factor) - *pain_tolerance;
+    pain_inflicted += (100 - fang_health) / 10; // Unhealthy fangs (lower health) cause more pain.
+    if (pain_inflicted < 0) {
+        pain_inflicted = 0;
     }
 
-    // Clamp patience to valid range
-    if (pat < 0) pat = 0;
-    if (pat > 2) pat = 2;
-
-    // Adjust reaction for fang_health
-    int mood = pat;
-    if (fang_health < 3) {
-        if (mood > 0) mood--;
-    } else if (fang_health > 7) {
-        if (mood < 2) mood++;
+    /* Determine mood based on inflicted pain (more pain = angrier mood) */
+    if (pain_inflicted > 8) {
+        patient_mood = 2; // Angry
+    } else if (pain_inflicted > 4) {
+        patient_mood = 1; // Unhappy
+    } else {
+        patient_mood = 0; // Happy
     }
-
-    // Adjust mood based on tool pain factor (from buffy.c definitions)
-    // Assume: TOOL_PAIN_NONE = 0, TOOL_PAIN_LOW = 1, TOOL_PAIN_MED = 2, TOOL_PAIN_HIGH = 3
-    // Higher pain factor decreases mood, lower pain increases mood
-    if (tool_pain_factor >= 2 && mood > 0) {
-        mood--;
-    } else if (tool_pain_factor == 0 && mood < 2) {
-        mood++;
+    
+    /* Normalize patience to match reaction structure */
+    int patience_level;
+    if (*patience > 7) {
+        patience_level = 2; /* High patience */
+    } else if (*patience > 3) {
+        patience_level = 1; /* Medium patience */
+    } else {
+        patience_level = 0; /* Low patience */
     }
-
-    // Only print comment if mood changed or it's the first turn
-    if (mood != last_mood || turn == 0) {
-        int index = (eff * 3) + mood;
-        if (index >= 0 && index < (int)(sizeof(reactions) / sizeof(reactions[0]))) {
-            char *r;
-            snprintf(reactstr, sizeof(reactstr), reactions[index].comment, patient_name);
-            r = reactstr;
-            return r;
-        }
-        last_mood = mood;
-        last_turn = turn;
+    
+    int index = (patient_mood * 3) + patience_level; /* Changed from effort to patient_mood */
+    
+    if (index >= 0 && index < (int)(sizeof(reactions) / sizeof(reactions[0]))) {
+        snprintf(reactstr, sizeof(reactstr), reactions[index].comment, patient_name ? patient_name : "the patient");
+        return reactstr;
     }
+    
     return NULL;
 }
+

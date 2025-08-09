@@ -27,7 +27,7 @@
 #include "sys/types.h"
 #include "playerio.h"
 
-char *patient_reaction(int effort, int *patience, int fang_health, int turn, int tool_pain_factor, const char *patient_name);
+char *patient_reaction(int effort, int *patience, int *pain_tolereance, int fang_health, int turn, int tool_pain_factor, const char *patient_name);
 
 // Track last mood per patient (or globally)
 static int last_mood = -1;

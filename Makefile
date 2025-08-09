@@ -21,9 +21,9 @@ TEST_PROG=      buffy-unittest
 TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
 TEST_LDFLAGS=      -L/usr/local/lib -lcunit -lncurses
 
-SRCS=           buffy.c gamestate.c fangs.c playerio.c patient.c
-OBJS=           buffy.o gamestate.o fangs.o playerio.o patient.o
-HDRS=           buffy.h gamestate.h fangs.h playerio.h patient.h
+SRCS=           buffy.c gamestate.c fangs.c playerio.c patient.c diagnostic.c
+OBJS=           buffy.o gamestate.o fangs.o playerio.o patient.o diagnostic.o
+HDRS=           buffy.h gamestate.h fangs.h playerio.h patient.h diagnostic.h
 TEST_SRCS=      unittest/buffy_unittest.c
 MAN=           buffy.1
 BINOWN=        root

@@ -38,6 +38,7 @@
 #include "playerio.h"
 #include "gamestate.h"
 #include "patient.h"
+#include "diagnostic.h"
 
 #ifdef __FreeBSD__
 #define __dead
@@ -86,11 +87,11 @@ tool		tools[] = {
 
 
 struct patient	patients[] = {
-	{90, 10, "Dracula", "Vampire", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{110,15, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{130,20,"Fenrir", "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{150,25, "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
-	{200,30, "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
+	{90, 10, 6, "Dracula", "Vampire", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{110,15, 5, "Gorath", "Orc", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{130,20, 3, "Fenrir", "Werewolf", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{150,25, 2, "Nagini", "Serpent", {{0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}, {0, 0, NULL, 0}}},
+	{200,30, 7, "Smaug", "Dragon", {{0, 0, NULL, 100}}}	/* Dragon has max health
 							 * fangs */
 };
 
@@ -517,7 +518,7 @@ apply_fluoride_to_fangs(void)
 	do {
 		char		answer[4];
 		char	       *fangs_formatted;
-		char		*reactstr;
+		char		*reaction;
 
 
 		for (int i = 0; i < 4; i++) {
@@ -548,9 +549,11 @@ apply_fluoride_to_fangs(void)
 
 			my_refresh();
 			get_provider_input(&tool_dip, &tool_effort, game_state.last_tool_dip[i], game_state.last_tool_effort[i]);
-			reactstr = patient_reaction(tool_effort, &patient.patience, patient.fangs[i].health, game_state.turns, tools[game_state.tool_in_use].pain_factor,  PATIENT_NAME(game_state.patient_idx));
-			if(reactstr != NULL)
-				my_printf(reactstr);
+			reaction = patient_reaction(tool_effort, &patient.patience, &patient.pain_tolerance, patient.fangs[i].health, game_state.turns, tools[game_state.tool_in_use].pain_factor,  PATIENT_NAME(game_state.patient_idx));
+			if(reaction != NULL)
+				my_printf(reaction);
+			game_state.tool_dip = tool_dip;
+			game_state.tool_effort = tool_effort;
 			game_state.last_tool_dip[i] = tool_dip;
 			game_state.last_tool_effort[i] = tool_effort;
 
@@ -568,6 +571,9 @@ apply_fluoride_to_fangs(void)
 				print_stats_info(game_state.fluoride, game_state.score, game_state.turns);
 
 			my_refresh();
+			/* 
+			log_game_turn(game_state.turns, &game_state, &patient, reaction ? reaction : "---");
+			*/
 		}
 
 		game_state.turns++;

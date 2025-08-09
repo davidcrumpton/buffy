@@ -45,6 +45,7 @@ typedef struct game_state {
 typedef struct patient {
 	int		age;
 	int		patience;
+	int		pain_tolerance;
 	char	       *name;
 	char	       *species;
 	struct patient_fangs {
