@@ -17,5 +17,3 @@ parse.c
 *.dSYM
 edoas-unittest
 *.btfd
-*.csv
-console_output.txt
