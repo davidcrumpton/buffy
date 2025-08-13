@@ -31,6 +31,7 @@
 
 #include "playerio.h"
 #include "buffy.h"
+#include "patient.h"
 
 static int	using_curses = 0;
 static int	color_mode = 0;
@@ -40,6 +41,7 @@ static WINDOW * fang_win = NULL;
 static WINDOW * stats_win = NULL;
 static WINDOW * err_win = NULL;
 static WINDOW * inp_win = NULL;
+static WINDOW * comment_win = NULL;
 
 void
 my_werase()
@@ -48,6 +50,9 @@ my_werase()
 		werase(fang_win);
 		werase(info_win);
 		werase(stats_win);
+		werase(err_win);
+		werase(inp_win);
+		werase(comment_win);
 	} else
 		putchar('\n');
 }
@@ -58,6 +63,9 @@ my_clear()
 		wclear(fang_win);
 		wclear(info_win);
 		wclear(stats_win);
+		wclear(err_win);
+		wclear(inp_win);
+		wclear(comment_win);
 	} else
 		putchar('\n');
 }
@@ -68,6 +76,9 @@ my_refresh()
 		wrefresh(fang_win);
 		wrefresh(info_win);
 		wrefresh(stats_win);
+		wrefresh(err_win);
+		wrefresh(inp_win);
+		wrefresh(comment_win);
 	} else
 		putchar('\n');
 }
@@ -116,6 +127,11 @@ redraw_game_screen()
 	wclear(stats_win);
 	mvwin(stats_win, max_y - 1, 0);
 	wrefresh(stats_win);
+
+	mvwin(comment_win, max_y - 11, 0);
+	wclear(comment_win);
+	mvwin(comment_win, max_y - 11, 0);
+	wrefresh(comment_win);
 
 	wclear(err_win);
 	mvwin(err_win, max_y - 5, 0);
@@ -192,6 +208,19 @@ my_printf(const char *format,...)
 }
 
 void
+comment_printf(const char *format,...)
+{
+	va_list		args;
+	va_start(args, format);
+	if (using_curses) {
+		vw_printw(comment_win, format, args);
+	} else {
+		vprintf(format, args);
+	}
+	va_end(args);
+}
+
+void
 mv_printw(int row, int col, const char *format,...)
 {
 	va_list		args;
@@ -239,16 +268,40 @@ print_highlighted(WINDOW * win, const char *line, const char *word, const int *c
 
 
 void
-print_stats_info(int fluoride_level, int score, int turns)
+print_stats_info(const int *fluoride_level, const int *score, const int *turns, const int *mood, const int *patience_level)
 {
+	char mood_str[16];
+	char pat_str[16];
+
+	switch(*mood) {
+		case MOOD_ANGRY:
+			strlcpy(mood_str, "angry", sizeof mood_str);
+			break;
+		case MOOD_HAPPY:
+			strlcpy(mood_str, "ok", sizeof mood_str);
+			break;
+		default:
+			strlcpy(mood_str, "mad", sizeof mood_str);
+	}
+	switch(*patience_level) {
+		case PATIENCE_BLISS:
+			strlcpy(pat_str, "bliss", sizeof pat_str);
+			break;
+		case PATIENCE_CALM:
+			strlcpy(pat_str, "calm", sizeof pat_str);	
+			break;
+		default:
+			strlcpy(pat_str, "hurry!", sizeof pat_str);
+	}
 	if (!using_curses) {
-		my_printf("Fluoride: %d, Score: %d, Turn: %d\n", fluoride_level, score, turns);
+		my_printf("Fluoride: %d, Score: %d, Turn: %d, %s:%s\n", *fluoride_level, *score, *turns, mood_str, pat_str);
 		return;
 	}
 
-	mvwprintw(stats_win, 0, 1, "Fluoride: %d", fluoride_level);
-	mvwprintw(stats_win, 0, COLS / 3, "Score: %d", score);
-	mvwprintw(stats_win, 0, (COLS * 2) / 3, "Turn: %d", turns);
+	mvwprintw(stats_win, 0, 1, "Fluoride: %d", *fluoride_level);
+	mvwprintw(stats_win, 0, COLS / 4, "Score: %d", *score);
+	mvwprintw(stats_win, 0, (COLS * 2) / 4, "Turn: %d", *turns);
+	mvwprintw(stats_win, 0, (COLS * 3) / 4, "%s:%s", mood_str, pat_str);
 }
 
 void
@@ -310,6 +363,7 @@ initalize_curses(void)
 		init_pair(PATTERN_ERROR_COLOR, COLOR_YELLOW, COLOR_BLACK);	/* error */
 		init_pair(PATTERN_PROMPT_COLOR, COLOR_WHITE, COLOR_BLACK);	/* prompt_color */
 		init_pair(PATTERN_INFO_COLOR, COLOR_CYAN, COLOR_BLACK);
+		init_pair(PATTERN_COMMENT_COLOR, COLOR_GREEN, COLOR_BLACK);
 	}
 
 	int		fang_win_height = LINES - 1;
@@ -320,6 +374,7 @@ initalize_curses(void)
 	stats_win = newwin(1, COLS, LINES - 1, 0);
 	err_win = newwin(5, COLS, LINES - 5, 0);
 	inp_win = newwin(1, COLS, LINES - 2, 0);
+	comment_win = newwin(2, COLS, LINES - 11, 0);
 
 	if (color_mode) {
 		wattron(fang_win, COLOR_PAIR(PATTERN_GAME_COLOR));
@@ -327,12 +382,14 @@ initalize_curses(void)
 		wattron(err_win, COLOR_PAIR(PATTERN_ERROR_COLOR));
 		wattron(inp_win, COLOR_PAIR(PATTERN_PROMPT_COLOR));
 		wattron(info_win, COLOR_PAIR(PATTERN_INFO_COLOR));
+		wattron(comment_win, COLOR_PAIR(PATTERN_COMMENT_COLOR));
 	}
 	wrefresh(info_win);
 	wrefresh(fang_win);
 	wrefresh(stats_win);
 	wrefresh(err_win);
 	wrefresh(inp_win);
+	wrefresh(comment_win);
 }
 
 int
@@ -363,7 +420,10 @@ end_curses(void)
 		delwin(inp_win);
 		inp_win = NULL;
 	}
-
+	if (comment_win) {
+		delwin(comment_win);
+		comment_win = NULL;
+	}
 	sleep(2);
 	refresh();
 	endwin();

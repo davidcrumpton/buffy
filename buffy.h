@@ -45,7 +45,9 @@ typedef struct game_state {
 typedef struct patient {
 	int		age;
 	int		patience;
+	int		mood;
 	int		pain_tolerance;
+	int		patience_level;
 	char	       *name;
 	char	       *species;
 	struct patient_fangs {
@@ -110,6 +112,10 @@ typedef struct fang_info {
 #define CREATURE_NAME_MAX_LENGTH    25
 
 
+
+#define MOOD_ANGRY			2
+#define MOOD_HAPPY			1
+#define MOOD_
 
 #define DEFAULT_SAVE_FILE ".buffy_save.btfd"
 
