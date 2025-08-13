@@ -113,10 +113,6 @@ typedef struct fang_info {
 
 
 
-#define MOOD_ANGRY			2
-#define MOOD_HAPPY			1
-#define MOOD_
-
 #define DEFAULT_SAVE_FILE ".buffy_save.btfd"
 
 #define VERSION "1.0.0"
