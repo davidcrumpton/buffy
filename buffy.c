@@ -167,7 +167,7 @@ check_file(const char *filename)
  * Save the game to save_path if defined or use default
  */
 static void	inline
-save_game(const game_state_type *state, size_t gs_size, const patient_type *pat, size_t pt_size)
+save_game(const game_state_type * state, size_t gs_size, const patient_type * pat, size_t pt_size)
 {
 
 	if (save_game_state(save_path, state, gs_size, pat, pt_size) != 0) {
@@ -177,7 +177,7 @@ save_game(const game_state_type *state, size_t gs_size, const patient_type *pat,
 
 /* Initialize the game state with default values */
 static void
-init_game_state(const int bflag, game_state_type *state)
+init_game_state(const int bflag, game_state_type * state)
 {
 
 	state->fluoride = DEFAULT_FLUORIDE;
@@ -206,7 +206,7 @@ init_game_state(const int bflag, game_state_type *state)
 	}
 }
 static void
-randomize_fangs(patient_type *pat)
+randomize_fangs(patient_type * pat)
 {
 	for (int i = 0; i < 4; i++) {
 		pat->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
@@ -226,7 +226,7 @@ randomize_fangs(patient_type *pat)
 
 
 static void
-get_provider_input(const int *current_tool, int *tool_dip, int *tool_effort, const game_state_type *state)
+get_provider_input(const int *current_tool, int *tool_dip, int *tool_effort, const game_state_type * state)
 {
 	int		valid = 0;
 	char		input[32];
@@ -281,7 +281,7 @@ get_provider_input(const int *current_tool, int *tool_dip, int *tool_effort, con
 
 
 static int
-calculate_fluoride_used_from_dip(int tool_dip, game_state_type *state)
+calculate_fluoride_used_from_dip(int tool_dip, game_state_type * state)
 {
 
 
@@ -306,7 +306,7 @@ calculate_fluoride_used_from_dip(int tool_dip, game_state_type *state)
 }
 
 static void
-calculate_fang_health(const game_state_type *state, struct patient_fangs *fang, int fluoride_on_tool, int tool_effort)
+calculate_fang_health(const game_state_type * state, struct patient_fangs *fang, int fluoride_on_tool, int tool_effort)
 {
 	/* Cap fluoride and effort to tool's max */
 	if (fluoride_on_tool > tools[state->tool_in_use].dip_amount)
@@ -402,11 +402,11 @@ print_fang_info(const int index, const struct patient_fangs *fang, const int com
 	}
 }
 static void
-print_patient_info(const game_state_type *state, const patient_type *pat, const int compact_printing)
+print_patient_info(const game_state_type * state, const patient_type * pat, const int compact_printing)
 {
 	char		mood_str[16];
 	char		pat_str[16];
-	get_patient_state_strings(pat, mood_str,  pat_str);
+	get_patient_state_strings(pat, mood_str, pat_str);
 	if (compact_printing) {
 		my_printf("Patient: %s, Age: %d, Species: %s, %s/%s\n", PATIENT_NAME(state->patient_idx), pat->age, PATIENT_SPECIES(state->patient_idx), mood_str, pat_str);
 
@@ -422,7 +422,7 @@ print_patient_info(const game_state_type *state, const patient_type *pat, const 
 }
 
 static void
-print_tool_info(const game_state_type *state)
+print_tool_info(const game_state_type * state)
 {
 	my_printf("Using tool: %s\n", tools[state->tool_in_use].name);
 	my_printf("Tool Description: %s\n", tools[state->tool_in_use].description);
@@ -433,7 +433,7 @@ print_tool_info(const game_state_type *state)
 
 
 static void
-print_game_state(const game_state_type *state)
+print_game_state(const game_state_type * state)
 {
 	my_printf("Game State:\n");
 	my_printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
@@ -445,7 +445,7 @@ print_game_state(const game_state_type *state)
 
 
 static void
-patient_init(game_state_type *state, patient_type *pat)
+patient_init(game_state_type * state, patient_type * pat)
 {
 	/* Choose a random patient from the patients array */
 	int		idx = arc4random_uniform(sizeof(patients) / sizeof(patients[0]));
@@ -466,7 +466,7 @@ patient_init(game_state_type *state, patient_type *pat)
  */
 
 static void
-continuation_err(const game_state_type *state, const patient_type *pat)
+continuation_err(const game_state_type * state, const patient_type * pat)
 {
 	char	       *fangs_formatted;
 
@@ -503,7 +503,7 @@ all_fangs_healthy(const patient_type * pat)
 }
 
 static int
-apply_fluoride_to_fangs(game_state_type *state, patient_type *pat)
+apply_fluoride_to_fangs(game_state_type * state, patient_type * pat)
 {
 	int		tool_dip = DEFAULT_TOOL_DIP;
 	int		tool_effort = DEFAULT_TOOL_EFFORT;
@@ -557,7 +557,7 @@ apply_fluoride_to_fangs(game_state_type *state, patient_type *pat)
 
 			my_refresh();
 			get_provider_input(&i, &tool_dip, &tool_effort, state);
-	
+
 			patient_reaction(reaction, sizeof(reaction), &tool_effort, pat, &tools[state->tool_in_use].pain_factor, PATIENT_NAME(state->patient_idx), i);
 
 
@@ -584,8 +584,8 @@ apply_fluoride_to_fangs(game_state_type *state, patient_type *pat)
 				comment_printf(reaction);
 			my_refresh();
 			/*
-			 * log_game_turn(state->turns, state,
-			 * pat, reaction ? reaction : "---");
+			 * log_game_turn(state->turns, state, pat, reaction ?
+			 * reaction : "---");
 			 */
 		}
 
@@ -648,7 +648,7 @@ no_fluoride_left:
 
 
 static int
-main_program(const int reloadflag,  game_state_type *state)
+main_program(const int reloadflag, game_state_type * state)
 {
 	/*
 	 * If we are reloading the game state, we do not need to initialize
