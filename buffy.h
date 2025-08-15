@@ -42,6 +42,14 @@ typedef struct game_state {
 	char	       *character_name;
 }		game_state_type;
 
+
+typedef 	struct  {
+		int		length;
+		int		sharpness;
+		char	       *color;
+		int		health;
+	}	patient_fangs_type;
+
 typedef struct patient {
 	int		age;
 	int		patience;
@@ -50,12 +58,7 @@ typedef struct patient {
 	int		patience_level;
 	char	       *name;
 	char	       *species;
-	struct patient_fangs {
-		int		length;
-		int		sharpness;
-		char	       *color;
-		int		health;
-	}		fangs[4];
+	patient_fangs_type fangs[4];
 }		patient_type;
 
 typedef struct tool {

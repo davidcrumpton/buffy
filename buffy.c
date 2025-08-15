@@ -306,7 +306,7 @@ calculate_fluoride_used_from_dip(int tool_dip, game_state_type * state)
 }
 
 static void
-calculate_fang_health(const game_state_type * state, struct patient_fangs *fang, int fluoride_on_tool, int tool_effort)
+calculate_fang_health(const game_state_type * state, patient_fangs_type *fang, int fluoride_on_tool, int tool_effort)
 {
 	/* Cap fluoride and effort to tool's max */
 	if (fluoride_on_tool > tools[state->tool_in_use].dip_amount)
@@ -382,7 +382,7 @@ print_fang_logo(void)
 
 
 static void
-print_fang_info(const int index, const struct patient_fangs *fang, const int compact_printing)
+print_fang_info(const int index, const patient_fangs_type *fang, const int compact_printing)
 {
 	if (fang == NULL) {
 		my_print_err("Fang is NULL.\n");
