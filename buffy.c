@@ -206,9 +206,9 @@ init_game_state(const int bflag)
 	}
 }
 static void
-randomize_fangs(struct patient *patient_ptr, const int count)
+randomize_fangs(struct patient *patient_ptr)
 {
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < 4; i++) {
 		patient_ptr->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
 		patient_ptr->fangs[i].sharpness = 5 + arc4random_uniform(4);	/* 5–8 */
 
@@ -406,9 +406,9 @@ print_patient_info(const struct patient *patient_ptr, const int compact_printing
 {
 	char		mood_str[16];
 	char		pat_str[16];
-	get_patient_state_strings(&patient_ptr->mood, mood_str, &patient_ptr->patience_level, pat_str);
+	get_patient_state_strings(patient_ptr, mood_str,  pat_str);
 	if (compact_printing) {
-		my_printf("Patient: %s, Age: %d, Species: %s, %s:%s\n", PATIENT_NAME(game_state.patient_idx), patient_ptr->age, PATIENT_SPECIES(game_state.patient_idx), mood_str, pat_str);
+		my_printf("Patient: %s, Age: %d, Species: %s, %s/%s\n", PATIENT_NAME(game_state.patient_idx), patient_ptr->age, PATIENT_SPECIES(game_state.patient_idx), mood_str, pat_str);
 
 		return;
 	} else {
@@ -455,7 +455,7 @@ patient_init(struct patient *patient_ptr)
 	patient_ptr->age = chosen->age;
 	game_state.patient_idx = idx;
 	/* Randomize fangs for this patient */
-	randomize_fangs(patient_ptr, 4);
+	randomize_fangs(patient_ptr);
 
 	patient_ptr->patience = chosen->patience;
 }
@@ -528,7 +528,7 @@ apply_fluoride_to_fangs(void)
 		char		reaction[160];
 
 
-		
+
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
 			if (patient.fangs[i].health >= MAX_HEALTH) {
@@ -553,12 +553,14 @@ apply_fluoride_to_fangs(void)
 			print_working_info("Applying fluoride to %s's fang %s:\n", PATIENT_NAME(game_state.patient_idx), fang_idx_to_name(i));
 
 			print_fang_info(i, &patient.fangs[i], 1);
-			print_stats_info(&game_state.fluoride, &game_state.score, &game_state.turns, &patient.mood, &patient.patience_level);
+			print_stats_info(&game_state, &patient);
 
 			my_refresh();
 			get_provider_input(&tool_dip, &tool_effort, game_state.last_tool_dip[i], game_state.last_tool_effort[i]);
-			patient_reaction(reaction, sizeof(reaction), &tool_effort, &patient.patience, &patient.pain_tolerance, &patient.fangs[i].health, &tools[game_state.tool_in_use].pain_factor,
-					 PATIENT_NAME(game_state.patient_idx), &patient.mood, &patient.patience_level);
+	
+			patient_reaction(reaction, sizeof(reaction), &tool_effort, &patient, &tools[game_state.tool_in_use].pain_factor, PATIENT_NAME(game_state.patient_idx), i);
+
+
 			if (reaction[0] != '\0' && !game_state.using_curses)
 				comment_printf(reaction);
 			game_state.tool_dip = tool_dip;
@@ -577,7 +579,7 @@ apply_fluoride_to_fangs(void)
 				game_state.score += BONUS_FANG_HEALTH;
 
 			if (game_state.using_curses)
-				print_stats_info(&game_state.fluoride, &game_state.score, &game_state.turns, &patient.mood, &patient.patience_level);
+				print_stats_info(&game_state, &patient);
 			if (reaction[0] && game_state.using_curses)
 				comment_printf(reaction);
 			my_refresh();

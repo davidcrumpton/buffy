@@ -21,6 +21,7 @@
  *
  */
 #include "stdio.h"
+#include "buffy.h"
 #include "patient.h"
 
 /*
@@ -55,22 +56,24 @@ int		patient_mood;
 int		patience_level;
 
 void
-patient_reaction(char *reaction, size_t reaction_len, int *effort, int *patience, int *pain_tolerance, const int *fang_health, const int *tool_pain_factor, const char *patient_name, int *mood, int *pat_level)
-{
+patient_reaction(char *reaction, size_t reaction_len,  int *effort, patient_type *patient, const int *tool_pain_factor, const char *patient_name, const int fang_idx) {
 
 	int		pain_inflicted;
 
 	/* Decrease patience over time if fangs aren't fully cleaned */
-	if (fang_health > 0) {
-		*patience = (*patience > 0) ? (*patience - 1) : 0;
+	if (patient->fangs[fang_idx].health > 0) {
+		patient->patience = (patient->patience > 0) ? (patient->patience - 1) : 0;
 	}
 
 	/*
 	 * Calculate pain inflicted, with modifiers for pain tolerance and
 	 * fang health
 	 */
-	pain_inflicted = (*effort * *tool_pain_factor) - *pain_tolerance;
-	pain_inflicted += (100 - *fang_health) / 10;
+    // 	patient_reaction(reaction, sizeof(reaction), &tool_effort, &patient.patience, &patient.pain_tolerance, &patient.fangs[i].health, &tools[game_state.tool_in_use].pain_factor,
+				//	 PATIENT_NAME(game_state.patient_idx), &patient.mood, &patient.patience_level);
+
+	pain_inflicted = (*effort * *tool_pain_factor) - patient->pain_tolerance;
+	pain_inflicted += (100 - patient->fangs[fang_idx].health) / 10;
 	//Unhealthy fangs(lower health) cause more pain.
 		if (pain_inflicted < 0) {
 		pain_inflicted = 0;
@@ -88,9 +91,9 @@ patient_reaction(char *reaction, size_t reaction_len, int *effort, int *patience
 
 	/* Normalize patience to match reaction structure */
 
-	if (*patience > 7) {
+	if (patient->patience > 7) {
 		patience_level = PATIENCE_BLISS;	/* High patience */
-	} else if (*patience > 3) {
+	} else if (patient->patience > 3) {
 		patience_level = PATIENCE_CALM;	/* Medium patience */
 	} else {
 		patience_level = PATIENCE_IMPATIENT;	/* Low patience */
@@ -99,8 +102,8 @@ patient_reaction(char *reaction, size_t reaction_len, int *effort, int *patience
 	int		index = (patient_mood * 3) + patience_level;	/* Changed from effort
 									 * to patient_mood */
 
-	*pat_level = patience_level;
-	*mood = patient_mood;
+	patient->patience_level = patience_level;
+	patient->mood = patient_mood;
 
 	if (index >= 0 && index < (int)(sizeof(reactions) / sizeof(reactions[0]))) {
 		snprintf(reaction, reaction_len, reactions[index].comment, patient_name ? patient_name : "the patient");
@@ -108,5 +111,4 @@ patient_reaction(char *reaction, size_t reaction_len, int *effort, int *patience
 	}
 
 	*reaction = '\0';
-	return;
 }

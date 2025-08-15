@@ -29,8 +29,8 @@
 #include <signal.h>
 #include <stdlib.h>
 
-#include "playerio.h"
 #include "buffy.h"
+#include "playerio.h"
 #include "patient.h"
 
 static int	using_curses = 0;
@@ -262,27 +262,27 @@ print_highlighted(WINDOW * win, const char *line, const char *word, const int *c
 
 
 void
-print_stats_info(const int *fluoride_level, const int *score, const int *turns, const int *mood, const int *patience_level)
+print_stats_info(const game_state_type *state, const patient_type *patient)
 {
 	char		mood_str[16];
 	char		pat_str[16];
 
-	get_patient_state_strings(mood, mood_str, patience_level, pat_str);
+	get_patient_state_strings(patient, mood_str, pat_str);
 	if (!using_curses) {
-		my_printf("Fluoride: %d, Score: %d, Turn: %d, %s/%s\n", *fluoride_level, *score, *turns, mood_str, pat_str);
+		my_printf("Fluoride: %d, Score: %d, Turn: %d, %s/%s\n", state->fluoride_used, state->score, state->turns, mood_str, pat_str);
 		return;
 	}
 
-	mvwprintw(stats_win, 0, 1, "Fluoride: %d", *fluoride_level);
-	mvwprintw(stats_win, 0, COLS / 4, "Score: %d", *score);
-	mvwprintw(stats_win, 0, (COLS * 2) / 4, "Turn: %d", *turns);
+	mvwprintw(stats_win, 0, 1, "Fluoride: %d", state->fluoride_used);
+	mvwprintw(stats_win, 0, COLS / 4, "Score: %d", state->score);
+	mvwprintw(stats_win, 0, (COLS * 2) / 4, "Turn: %d", state->turns);
 	mvwprintw(stats_win, 0, (COLS * 3) / 4, "%s/%s", mood_str, pat_str);
 }
 
 void
-get_patient_state_strings(const int *mood, char *mood_str, const int *patience_level, char *pat_str)
+get_patient_state_strings(const patient_type *patient, char *mood_str, char *pat_str)
 {
-	switch (*mood) {
+	switch (patient->mood) {
 	case MOOD_ANGRY:
 		strlcpy(mood_str, "angry", sizeof "angry");
 		break;
@@ -292,7 +292,7 @@ get_patient_state_strings(const int *mood, char *mood_str, const int *patience_l
 	default:
 		strlcpy(mood_str, "mad", sizeof "mad");
 	}
-	switch (*patience_level) {
+	switch (patient->patience_level) {
 	case PATIENCE_BLISS:
 		strlcpy(pat_str, "bliss", sizeof "bliss");
 		break;

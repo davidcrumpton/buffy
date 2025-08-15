@@ -31,8 +31,9 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "playerio.h"
+
 #include "buffy.h"
+#include "playerio.h"
 #include "gamestate.h"
 
 
