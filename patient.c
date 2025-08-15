@@ -44,20 +44,19 @@ struct patient_reaction reactions[] = {
     {0, 0, "%s bares fangs, eyes narrowed in ancient impatience."},
     {0, 1, "A low growl escapes—immortality has not made %s more patient."},
     {0, 2, "%s sighs theatrically, fangs glinting, clearly unimpressed."},
-    {1, 0, "A sharp hiss—centuries of tolerance wearing thin for %s."},
+    {1, 0, "A sharp hiss-centuries of tolerance wearing thin for %s."},
     {1, 1, "%s arches a brow, lips curled in a wry, undead smirk."},
     {1, 2, "A nod of approval from %s, as regal as a creature of the night can muster."},
-    {2, 0, "A guttural snarl—'Careful, mortal. %s does bite back.'"},
+    {2, 0, "A guttural snarl-'Careful, mortal. %s does bite back.'"},
     {2, 1, "%s winces, but the sarcasm is sharper than the canines."},
     {2, 2, "A rare, genuine smile—'Efficient. You may live another night,' %s intones."}
 };
 
-static char reactstr[160];
 int patient_mood;
 int patience_level;
 
-char *patient_reaction(const int *effort, int *patience, int *pain_tolerance, const int *fang_health, 
-    const int *tool_pain_factor, const char *patient_name, int *mood, int *pat_level) {
+void
+patient_reaction(char *reaction, size_t reaction_len, int *effort, int *patience, int *pain_tolerance, const int *fang_health, const int *tool_pain_factor, const char *patient_name, int *mood, int *pat_level) {
 
     int pain_inflicted;
     
@@ -99,10 +98,11 @@ char *patient_reaction(const int *effort, int *patience, int *pain_tolerance, co
     *mood      = patient_mood;
     
     if (index >= 0 && index < (int)(sizeof(reactions) / sizeof(reactions[0]))) {
-        snprintf(reactstr, sizeof(reactstr), reactions[index].comment, patient_name ? patient_name : "the patient");
-        return reactstr;
+        snprintf(reaction, reaction_len, reactions[index].comment, patient_name ? patient_name : "the patient");
+        return;
     }
     
-    return NULL;
+    *reaction = '\0';
+    return;
 }
 

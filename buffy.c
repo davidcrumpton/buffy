@@ -525,9 +525,10 @@ apply_fluoride_to_fangs(void)
 	do {
 		char		answer[4];
 		char	    *fangs_formatted;
-		char		*reaction;
+		char		reaction[160];
+		char		*r;
 
-
+		r=reaction;
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
 			if (patient.fangs[i].health >= MAX_HEALTH) {
@@ -556,9 +557,9 @@ apply_fluoride_to_fangs(void)
 
 			my_refresh();
 			get_provider_input(&tool_dip, &tool_effort, game_state.last_tool_dip[i], game_state.last_tool_effort[i]);
-			reaction = patient_reaction(&tool_effort, &patient.patience, &patient.pain_tolerance, &patient.fangs[i].health, &tools[game_state.tool_in_use].pain_factor,  
+			patient_reaction(reaction, sizeof(reaction), &tool_effort, &patient.patience, &patient.pain_tolerance, &patient.fangs[i].health, &tools[game_state.tool_in_use].pain_factor,  
 				PATIENT_NAME(game_state.patient_idx), &patient.mood, &patient.patience_level);
-			if(reaction != NULL && !game_state.using_curses)
+			if(*r != '\0'&& !game_state.using_curses)
 				comment_printf(reaction);
 			game_state.tool_dip = tool_dip;
 			game_state.tool_effort = tool_effort;
@@ -577,7 +578,7 @@ apply_fluoride_to_fangs(void)
 
 			if (game_state.using_curses)
 				print_stats_info(&game_state.fluoride, &game_state.score, &game_state.turns, &patient.mood, &patient.patience_level);
-			if(reaction != NULL  && game_state.using_curses)
+			if(*r != '\0' && game_state.using_curses)
 				comment_printf(reaction);
 			my_refresh();
 			/* 
