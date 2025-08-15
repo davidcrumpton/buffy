@@ -36,8 +36,8 @@
 
 
 struct patient_reaction {
-    int effort_level;  // 0 = low, 1 = medium, 2 = high
-    int patience_level; // 0 = low, 1 = medium, 2 = high
+    int effort_level;  /* 0 = low, 1 = medium, 2 = high */
+    int patience_level; /* 0 = low, 1 = medium, 2 = high */
     char *comment;
 };
 struct patient_reaction reactions[] = {

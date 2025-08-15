@@ -49,9 +49,7 @@ my_werase()
 	if (using_curses) {
 		werase(fang_win);
 		werase(info_win);
-		// werase(stats_win);
-		// werase(err_win);
-		// werase(inp_win);
+		werase(stats_win);
 		werase(comment_win);
 	} else
 		putchar('\n');
@@ -62,9 +60,7 @@ my_clear()
 	if (using_curses) {
 		wclear(fang_win);
 		wclear(info_win);
-		// wclear(stats_win);
-		// wclear(err_win);
-		// wclear(inp_win);
+		wclear(stats_win);
 		wclear(comment_win);
 	} else
 		putchar('\n');
@@ -76,8 +72,6 @@ my_refresh()
 		wrefresh(fang_win);
 		wrefresh(info_win);
 		wrefresh(stats_win);
-		wrefresh(err_win);
-		wrefresh(inp_win);
 		wrefresh(comment_win);
 	} else
 		putchar('\n');
@@ -290,24 +284,24 @@ void get_patient_state_strings(const int *mood, char  *mood_str, const int *pati
     switch (*mood)
     {
     case MOOD_ANGRY:
-        strlcpy(mood_str, "angry", sizeof mood_str);
+        strlcpy(mood_str, "angry", sizeof "angry");
         break;
     case MOOD_HAPPY:
-        strlcpy(mood_str, "ok", sizeof mood_str);
+        strlcpy(mood_str, "ok", sizeof "ok");
         break;
     default:
-        strlcpy(mood_str, "mad", sizeof mood_str);
+        strlcpy(mood_str, "mad", sizeof "mad");
     }
     switch (*patience_level)
     {
     case PATIENCE_BLISS:
-        strlcpy(pat_str, "bliss", sizeof pat_str);
+        strlcpy(pat_str, "bliss", sizeof "bliss");
         break;
     case PATIENCE_CALM:
-        strlcpy(pat_str, "calm", sizeof pat_str);
+        strlcpy(pat_str, "calm", sizeof "calm");
         break;
     default:
-        strlcpy(pat_str, "hurry!", sizeof pat_str);
+        strlcpy(pat_str, "impatient", sizeof "impatient");
     }
 }
 
