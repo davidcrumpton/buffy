@@ -134,7 +134,7 @@ testLOAD_GAME_STATE(void)
 	/* Create our own storage for the game state and patient */
 	game_state_type	game_state;
 	patient_type	patient;
-	patient_init(&patient);
+	patient_init(&game_state, &patient);
 	randomize_fangs(&patient);
 	/* Assuming the game state is loaded from a file */
 	const char     *load_path = "test_game_state.dat";
@@ -153,7 +153,7 @@ testLOAD_GAME_STATE(void)
 void
 testPRINT_CREATURE_INFO(void)
 {
-	patient_init(&patient);
+	patient_init(&game_state, &patient);
 	randomize_fangs(&patient);
 	print_patient_info(&game_state, &patient, 0);
 	/*
