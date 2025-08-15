@@ -60,7 +60,7 @@ clean_suite1(void)
 void
 testINIT_GAME_STATE(void)
 {
-	init_game_state(1);
+	init_game_state(1, &game_state);
 	CU_ASSERT(game_state.daggerset == 0);
 	CU_ASSERT(game_state.fluoride == 3000);
 	CU_ASSERT(game_state.tool_dip > 1);
@@ -90,7 +90,7 @@ testCHOOSE_RANDOM_TOOL_NON_DAGGER(void)
 void
 testRANDOMIZE_FANGS(void)
 {
-	patient_init(&patient);
+	patient_init(&game_state, &patient);
 	randomize_fangs(&patient, 4);
 	for (int i = 0; i < 4; i++) {
 		CU_ASSERT(patient.fangs[i].length >= 4 && patient.fangs[i].length <= 6);
@@ -102,7 +102,7 @@ testRANDOMIZE_FANGS(void)
 void
 testPRINT_FANG_INFO(void)
 {
-	patient_init(&patient);
+	patient_init(&game_state, &patient);
 	randomize_fangs(&patient, 4);
 	for (int i = 0; i < 4; i++) {
 		print_fang_info(i, &patient.fangs[i], 0);
@@ -116,8 +116,8 @@ void
 testSAVE_GAME_STATE(void)
 {
 	/* Initialize game state and patient */
-	init_game_state(1);
-	patient_init(&patient);
+	init_game_state(1, &game_state);
+	patient_init(&game_state, &patient);
 	randomize_fangs(&patient, 4);
 	/* Assuming the game state is saved to a file */
 	const char     *save_path = "test_game_state.dat";
@@ -155,7 +155,7 @@ testPRINT_CREATURE_INFO(void)
 {
 	patient_init(&patient);
 	randomize_fangs(&patient, 4);
-	print_patient_info(&patient, 0);
+	print_patient_info(&game_state, &patient, 0);
 	/*
 	 * The patient is randomly chosen so DEFAULTs can not be tested with
 	 * assertions here.
@@ -173,7 +173,7 @@ void
 testPRINT_TOOL_INFO(void)
 {
 	game_state.tool_in_use = 0;	/* Assuming tool index 0 is valid */
-	print_tool_info();
+	print_tool_info(&game_state);
 	/*
 	 * The dagger is randomly chosen in the latest version of the code so
 	 * we will just check if the tool in use is a dagger and has valid
