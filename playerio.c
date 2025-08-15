@@ -269,14 +269,14 @@ print_stats_info(const int *fluoride_level, const int *score, const int *turns, 
 
 	get_patient_state_strings(mood, mood_str, patience_level, pat_str);
 	if (!using_curses) {
-		my_printf("Fluoride: %d, Score: %d, Turn: %d, %s:%s\n", *fluoride_level, *score, *turns, mood_str, pat_str);
+		my_printf("Fluoride: %d, Score: %d, Turn: %d, %s/%s\n", *fluoride_level, *score, *turns, mood_str, pat_str);
 		return;
 	}
 
 	mvwprintw(stats_win, 0, 1, "Fluoride: %d", *fluoride_level);
 	mvwprintw(stats_win, 0, COLS / 4, "Score: %d", *score);
 	mvwprintw(stats_win, 0, (COLS * 2) / 4, "Turn: %d", *turns);
-	mvwprintw(stats_win, 0, (COLS * 3) / 4, "%s:%s", mood_str, pat_str);
+	mvwprintw(stats_win, 0, (COLS * 3) / 4, "%s/%s", mood_str, pat_str);
 }
 
 void
