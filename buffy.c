@@ -404,14 +404,20 @@ print_fang_info(const int index, const struct patient_fangs *fang, const int com
 static void
 print_patient_info(const struct patient *patient_ptr, const int compact_printing)
 {
+	char mood_str[16];
+	char pat_str[16];
+    get_patient_state_strings(&patient_ptr->mood, mood_str, &patient_ptr->patience_level, pat_str);
 	if (compact_printing) {
-		my_printf("Patient: %s, Age: %d, Species: %s\n", PATIENT_NAME(game_state.patient_idx), patient_ptr->age, PATIENT_SPECIES(game_state.patient_idx));
+		my_printf("Patient: %s, Age: %d, Species: %s, %s:%s\n", PATIENT_NAME(game_state.patient_idx), patient_ptr->age, PATIENT_SPECIES(game_state.patient_idx), mood_str, pat_str);
 
 		return;
 	} else {
-		my_printf("Creature Name: %s\n", PATIENT_NAME(game_state.patient_idx));
-		my_printf("Creature Age: %d\n", patient_ptr->age);
-		my_printf("Creature Species: %s\n", PATIENT_SPECIES(game_state.patient_idx));
+		my_printf("Patient Name: %s\n", PATIENT_NAME(game_state.patient_idx));
+		my_printf("Patient Age: %d\n", patient_ptr->age);
+		my_printf("Patient Species: %s\n", PATIENT_SPECIES(game_state.patient_idx));
+		my_printf("Patient mood/patience: %s/%s\n", mood_str, pat_str);
+
+
 	}
 }
 

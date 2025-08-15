@@ -22,8 +22,9 @@
 
 void		my_werase();
 void		my_clear();
-void		print_stats_info(const int *fluoride_level, const int *score, const int *turns, 
-    const int *mood, const int *patience_level);
+void        print_stats_info(const int *fluoride_level, const int *score, const int *turns,
+                      const int *mood, const int *patience_level);
+void        set_patient_mood(const int *mood, char mood_str[16], const int *patience_level, char pat_str[16]);
 void		my_refresh();
 void		get_input(const char *prompt, char *buffer, size_t size);
 void		my_printf(const char *format,...);
@@ -36,6 +37,7 @@ void		my_print_err(const char *format,...);
 void		set_using_curses(int flag);
 void		set_color_mode(int flag);
 void        comment_printf(const char *format,...);
+void        get_patient_state_strings(const int *mood, char  *mood_str, const int *patience_level, char * pat_str);
 
 
 #define PATTERN_GAME_COLOR		1

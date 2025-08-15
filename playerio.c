@@ -49,9 +49,9 @@ my_werase()
 	if (using_curses) {
 		werase(fang_win);
 		werase(info_win);
-		werase(stats_win);
-		werase(err_win);
-		werase(inp_win);
+		// werase(stats_win);
+		// werase(err_win);
+		// werase(inp_win);
 		werase(comment_win);
 	} else
 		putchar('\n');
@@ -62,9 +62,9 @@ my_clear()
 	if (using_curses) {
 		wclear(fang_win);
 		wclear(info_win);
-		wclear(stats_win);
-		wclear(err_win);
-		wclear(inp_win);
+		// wclear(stats_win);
+		// wclear(err_win);
+		// wclear(inp_win);
 		wclear(comment_win);
 	} else
 		putchar('\n');
@@ -273,27 +273,8 @@ print_stats_info(const int *fluoride_level, const int *score, const int *turns, 
 	char mood_str[16];
 	char pat_str[16];
 
-	switch(*mood) {
-		case MOOD_ANGRY:
-			strlcpy(mood_str, "angry", sizeof mood_str);
-			break;
-		case MOOD_HAPPY:
-			strlcpy(mood_str, "ok", sizeof mood_str);
-			break;
-		default:
-			strlcpy(mood_str, "mad", sizeof mood_str);
-	}
-	switch(*patience_level) {
-		case PATIENCE_BLISS:
-			strlcpy(pat_str, "bliss", sizeof pat_str);
-			break;
-		case PATIENCE_CALM:
-			strlcpy(pat_str, "calm", sizeof pat_str);	
-			break;
-		default:
-			strlcpy(pat_str, "hurry!", sizeof pat_str);
-	}
-	if (!using_curses) {
+    get_patient_state_strings(mood, mood_str, patience_level, pat_str);
+    if (!using_curses) {
 		my_printf("Fluoride: %d, Score: %d, Turn: %d, %s:%s\n", *fluoride_level, *score, *turns, mood_str, pat_str);
 		return;
 	}
@@ -302,6 +283,32 @@ print_stats_info(const int *fluoride_level, const int *score, const int *turns, 
 	mvwprintw(stats_win, 0, COLS / 4, "Score: %d", *score);
 	mvwprintw(stats_win, 0, (COLS * 2) / 4, "Turn: %d", *turns);
 	mvwprintw(stats_win, 0, (COLS * 3) / 4, "%s:%s", mood_str, pat_str);
+}
+
+void get_patient_state_strings(const int *mood, char  *mood_str, const int *patience_level, char * pat_str)
+{
+    switch (*mood)
+    {
+    case MOOD_ANGRY:
+        strlcpy(mood_str, "angry", sizeof mood_str);
+        break;
+    case MOOD_HAPPY:
+        strlcpy(mood_str, "ok", sizeof mood_str);
+        break;
+    default:
+        strlcpy(mood_str, "mad", sizeof mood_str);
+    }
+    switch (*patience_level)
+    {
+    case PATIENCE_BLISS:
+        strlcpy(pat_str, "bliss", sizeof pat_str);
+        break;
+    case PATIENCE_CALM:
+        strlcpy(pat_str, "calm", sizeof pat_str);
+        break;
+    default:
+        strlcpy(pat_str, "hurry!", sizeof pat_str);
+    }
 }
 
 void
