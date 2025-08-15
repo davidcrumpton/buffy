@@ -167,66 +167,66 @@ check_file(const char *filename)
  * Save the game to save_path if defined or use default
  */
 static void	inline
-save_game(void)
+save_game(const game_state_type *state, size_t gs_size, const patient_type *pat, size_t pt_size)
 {
 
-	if (save_game_state(save_path, &game_state, sizeof(game_state), &patient, sizeof(patient)) != 0) {
+	if (save_game_state(save_path, state, gs_size, pat, pt_size) != 0) {
 		errx(1, "Unable to save game state to %s", save_path);
 	}
 }
 
 /* Initialize the game state with default values */
 static void
-init_game_state(const int bflag)
+init_game_state(const int bflag, game_state_type *state)
 {
 
-	game_state.fluoride = DEFAULT_FLUORIDE;
-	game_state.tool_dip = DEFAULT_TOOL_DIP;
-	game_state.tool_effort = DEFAULT_TOOL_EFFORT;
-	game_state.fluoride_used = DEFAULT_FLUORIDE_USED;
-	game_state.bflag = bflag;
-	game_state.score = DEFAULT_SCORE;
-	game_state.turns = DEFAULT_TURNS;
+	state->fluoride = DEFAULT_FLUORIDE;
+	state->tool_dip = DEFAULT_TOOL_DIP;
+	state->tool_effort = DEFAULT_TOOL_EFFORT;
+	state->fluoride_used = DEFAULT_FLUORIDE_USED;
+	state->bflag = bflag;
+	state->score = DEFAULT_SCORE;
+	state->turns = DEFAULT_TURNS;
 
 	/* If bflag is set, we will use the user login name */
 	if (bflag) {
 		char		login_name[256];
 		if (getlogin_r(login_name, sizeof(login_name)) != 0)
 			errx(1, "Unable to get login name");
-		strlcpy(character_name, login_name, sizeof(game_state.character_name));
+		strlcpy(character_name, login_name, sizeof(state->character_name));
 	} else
 		strlcpy(character_name, DEFAULT_CHARACTER_NAME, sizeof(DEFAULT_CHARACTER_NAME));
 
-	game_state.character_name = character_name;
-	game_state.tool_in_use = choose_random_tool(game_state.daggerset);
+	state->character_name = character_name;
+	state->tool_in_use = choose_random_tool(state->daggerset);
 
 	for (int i = 0; i < 4; i++) {
-		game_state.last_tool_dip[i] = DEFAULT_TOOL_DIP;
-		game_state.last_tool_effort[i] = DEFAULT_TOOL_EFFORT;
+		state->last_tool_dip[i] = DEFAULT_TOOL_DIP;
+		state->last_tool_effort[i] = DEFAULT_TOOL_EFFORT;
 	}
 }
 static void
-randomize_fangs(struct patient *patient_ptr)
+randomize_fangs(patient_type *pat)
 {
 	for (int i = 0; i < 4; i++) {
-		patient_ptr->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
-		patient_ptr->fangs[i].sharpness = 5 + arc4random_uniform(4);	/* 5–8 */
+		pat->fangs[i].length = 4 + arc4random_uniform(3);	/* 4–6 */
+		pat->fangs[i].sharpness = 5 + arc4random_uniform(4);	/* 5–8 */
 
 		/* Bias health toward lower values (dirty teeth) */
 		int		r = arc4random_uniform(MAX_HEALTH);
 		if (r < 60)
-			patient_ptr->fangs[i].health = 60 + arc4random_uniform(11);	/* 60–70 */
+			pat->fangs[i].health = 60 + arc4random_uniform(11);	/* 60–70 */
 		else if (r < 90)
-			patient_ptr->fangs[i].health = 71 + arc4random_uniform(10);	/* 71–80 */
+			pat->fangs[i].health = 71 + arc4random_uniform(10);	/* 71–80 */
 		else
-			patient_ptr->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */
+			pat->fangs[i].health = 90 + arc4random_uniform(11);	/* 90–100 */
 	}
 }
 
 
 
 static void
-get_provider_input(int *tool_dip, int *tool_effort, int last_tool_dip, int last_tool_effort)
+get_provider_input(const int *current_tool, int *tool_dip, int *tool_effort, const game_state_type *state)
 {
 	int		valid = 0;
 	char		input[32];
@@ -236,21 +236,21 @@ get_provider_input(int *tool_dip, int *tool_effort, int last_tool_dip, int last_
 	/* Prompt for tool dip */
 	while (!valid) {
 		prompt[0] = 0;
-		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tools[game_state.tool_in_use].name, last_tool_dip);
+		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tools[state->tool_in_use].name, state->last_tool_dip[*current_tool]);
 		get_input(prompt, input, sizeof(input));
-		if (strlen(input) == 0 && game_state.using_curses < 1) {
+		if (strlen(input) == 0 && state->using_curses < 1) {
 			my_print_err("Input error. Please try again.\n");
 			continue;
 		}
 		/* If user just presses enter, use last value */
 		if (input[0] == '\n' || strlen(input) == 0) {
-			*tool_dip = last_tool_dip;
+			*tool_dip = state->last_tool_dip[*current_tool];
 			valid = 1;
 			continue;
 		}
 		*tool_dip = (int)strtol(input, &endptr, 10);
 		if (endptr == input || *tool_dip < 0) {
-			my_print_err("Invalid input for %s dip. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			my_print_err("Invalid input for %s dip. Please enter a non-negative integer.\n", tools[state->tool_in_use].name);
 			continue;
 		}
 		valid = 1;
@@ -259,20 +259,20 @@ get_provider_input(int *tool_dip, int *tool_effort, int last_tool_dip, int last_
 	valid = 0;
 	/* Prompt for tool effort */
 	while (!valid) {
-		snprintf(prompt, sizeof(prompt), "How much effort to apply to the fang [%d]? ", last_tool_effort);
+		snprintf(prompt, sizeof(prompt), "How much effort to apply to the fang [%d]? ", state->last_tool_effort[*current_tool]);
 		get_input(prompt, input, sizeof(input));
-		if (strlen(input) == 0 && game_state.using_curses < 1) {
+		if (strlen(input) == 0 && state->using_curses < 1) {
 			my_print_err("Input error. Please try again.\n");
 			continue;
 		}
 		if (input[0] == '\n' || strlen(input) == 0) {
-			*tool_effort = last_tool_effort;
+			*tool_effort = state->last_tool_effort[*current_tool];
 			valid = 1;
 			continue;
 		}
 		*tool_effort = (int)strtol(input, &endptr, 10);
 		if (endptr == input || *tool_effort < 0) {
-			my_print_err("Invalid input for %s effort. Please enter a non-negative integer.\n", tools[game_state.tool_in_use].name);
+			my_print_err("Invalid input for %s effort. Please enter a non-negative integer.\n", tools[state->tool_in_use].name);
 			continue;
 		}
 		valid = 1;
@@ -281,55 +281,55 @@ get_provider_input(int *tool_dip, int *tool_effort, int last_tool_dip, int last_
 
 
 static int
-calculate_fluoride_used_from_dip(int tool_dip)
+calculate_fluoride_used_from_dip(int tool_dip, game_state_type *state)
 {
 
 
 	/*
 	 * Cap dip and effort to tool's maximum values
 	 */
-	if (tool_dip > tools[game_state.tool_in_use].dip_amount)
-		tool_dip = tools[game_state.tool_in_use].dip_amount;
+	if (tool_dip > tools[state->tool_in_use].dip_amount)
+		tool_dip = tools[state->tool_in_use].dip_amount;
 
-	int		length = tools[game_state.tool_in_use].length;
+	int		length = tools[state->tool_in_use].length;
 	int		dip = tool_dip * length;
 
 	int		used = dip;	/* Only dip amount uses fluoride */
 
-	if (used > game_state.fluoride) {
+	if (used > state->fluoride) {
 		return -1;
 	}
 
-	game_state.fluoride_used = used;
-	game_state.fluoride -= used;
+	state->fluoride_used = used;
+	state->fluoride -= used;
 	return used;
 }
 
 static void
-calculate_fang_health(struct patient_fangs *fang, int fluoride_on_tool, int tool_effort)
+calculate_fang_health(const game_state_type *state, struct patient_fangs *fang, int fluoride_on_tool, int tool_effort)
 {
 	/* Cap fluoride and effort to tool's max */
-	if (fluoride_on_tool > tools[game_state.tool_in_use].dip_amount)
-		fluoride_on_tool = tools[game_state.tool_in_use].dip_amount;
-	if (tool_effort > tools[game_state.tool_in_use].effort)
-		tool_effort = tools[game_state.tool_in_use].effort;
+	if (fluoride_on_tool > tools[state->tool_in_use].dip_amount)
+		fluoride_on_tool = tools[state->tool_in_use].dip_amount;
+	if (tool_effort > tools[state->tool_in_use].effort)
+		tool_effort = tools[state->tool_in_use].effort;
 
-	int		effectiveness = tools[game_state.tool_in_use].effectiveness;
-	int		durability = tools[game_state.tool_in_use].durability;
+	int		effectiveness = tools[state->tool_in_use].effectiveness;
+	int		durability = tools[state->tool_in_use].durability;
 
 	/* Health gain formula includes effectiveness and durability */
 	int		health_gain = ((fluoride_on_tool / 2) + (tool_effort / 3)) * effectiveness * durability / 100;
 
 	/* Adjust health gain based on patient species */
-	if (game_state.patient_idx == VAMPIRE) {
+	if (state->patient_idx == VAMPIRE) {
 		health_gain += 2;
-	} else if (game_state.patient_idx == ORC) {
+	} else if (state->patient_idx == ORC) {
 		health_gain -= 1;
-	} else if (game_state.patient_idx == WEREWOLF) {
+	} else if (state->patient_idx == WEREWOLF) {
 		health_gain += 1;
-	} else if (game_state.patient_idx == SERPENT) {
+	} else if (state->patient_idx == SERPENT) {
 		health_gain = (int)(health_gain * 0.8);
-	} else if (game_state.patient_idx == DRAGON) {
+	} else if (state->patient_idx == DRAGON) {
 		health_gain = (int)(health_gain * 0.5);
 	}
 
@@ -402,19 +402,19 @@ print_fang_info(const int index, const struct patient_fangs *fang, const int com
 	}
 }
 static void
-print_patient_info(const struct patient *patient_ptr, const int compact_printing)
+print_patient_info(const game_state_type *state, const patient_type *pat, const int compact_printing)
 {
 	char		mood_str[16];
 	char		pat_str[16];
-	get_patient_state_strings(patient_ptr, mood_str,  pat_str);
+	get_patient_state_strings(pat, mood_str,  pat_str);
 	if (compact_printing) {
-		my_printf("Patient: %s, Age: %d, Species: %s, %s/%s\n", PATIENT_NAME(game_state.patient_idx), patient_ptr->age, PATIENT_SPECIES(game_state.patient_idx), mood_str, pat_str);
+		my_printf("Patient: %s, Age: %d, Species: %s, %s/%s\n", PATIENT_NAME(state->patient_idx), pat->age, PATIENT_SPECIES(state->patient_idx), mood_str, pat_str);
 
 		return;
 	} else {
-		my_printf("Patient Name: %s\n", PATIENT_NAME(game_state.patient_idx));
-		my_printf("Patient Age: %d\n", patient_ptr->age);
-		my_printf("Patient Species: %s\n", PATIENT_SPECIES(game_state.patient_idx));
+		my_printf("Patient Name: %s\n", PATIENT_NAME(state->patient_idx));
+		my_printf("Patient Age: %d\n", pat->age);
+		my_printf("Patient Species: %s\n", PATIENT_SPECIES(state->patient_idx));
 		my_printf("Patient mood/patience: %s/%s\n", mood_str, pat_str);
 
 
@@ -422,18 +422,18 @@ print_patient_info(const struct patient *patient_ptr, const int compact_printing
 }
 
 static void
-print_tool_info(void)
+print_tool_info(const game_state_type *state)
 {
-	my_printf("Using tool: %s\n", tools[game_state.tool_in_use].name);
-	my_printf("Tool Description: %s\n", tools[game_state.tool_in_use].description);
-	my_printf("Tool Dip Amount: %d\n", tools[game_state.tool_in_use].dip_amount);
-	my_printf("Tool Effort: %d\n", tools[game_state.tool_in_use].effort);
-	my_printf("Tool Durability: %d\n", tools[game_state.tool_in_use].durability);
+	my_printf("Using tool: %s\n", tools[state->tool_in_use].name);
+	my_printf("Tool Description: %s\n", tools[state->tool_in_use].description);
+	my_printf("Tool Dip Amount: %d\n", tools[state->tool_in_use].dip_amount);
+	my_printf("Tool Effort: %d\n", tools[state->tool_in_use].effort);
+	my_printf("Tool Durability: %d\n", tools[state->tool_in_use].durability);
 }
 
 
 static void
-print_game_state(const struct game_state *state)
+print_game_state(const game_state_type *state)
 {
 	my_printf("Game State:\n");
 	my_printf("  Did you use your dagger: %s\n", state->daggerset ? "Yes" : "No");
@@ -445,19 +445,19 @@ print_game_state(const struct game_state *state)
 
 
 static void
-patient_init(struct patient *patient_ptr)
+patient_init(game_state_type *state, patient_type *pat)
 {
 	/* Choose a random patient from the patients array */
 	int		idx = arc4random_uniform(sizeof(patients) / sizeof(patients[0]));
 	struct patient *chosen = &patients[idx];
 
 	/* Copy chosen patient's data */
-	patient_ptr->age = chosen->age;
-	game_state.patient_idx = idx;
+	pat->age = chosen->age;
+	state->patient_idx = idx;
 	/* Randomize fangs for this patient */
-	randomize_fangs(patient_ptr);
+	randomize_fangs(pat);
 
-	patient_ptr->patience = chosen->patience;
+	pat->patience = chosen->patience;
 }
 
 /*
@@ -466,35 +466,35 @@ patient_init(struct patient *patient_ptr)
  */
 
 static void
-continuation_err(void)
+continuation_err(const game_state_type *state, const patient_type *pat)
 {
 	char	       *fangs_formatted;
 
 	my_printf("You used up all the fluoride.\n");
-	fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, pat->fangs[MAXILLARY_LEFT_CANINE].health, pat->fangs[MAXILLARY_RIGHT_CANINE].health, 0);
 	my_printf("%s", fangs_formatted);
-	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
+	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, pat->fangs[MANDIBULAR_LEFT_CANINE].health, pat->fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
 	my_printf("%s", fangs_formatted);
 
 	sleep(4);
-	print_game_state(&game_state);
-	print_patient_info(&patient, 0);
+	print_game_state(state);
+	print_patient_info(state, pat, 0);
 
-	print_fang_info(0, &patient.fangs[0], 1);
-	print_fang_info(1, &patient.fangs[1], 1);
-	print_fang_info(2, &patient.fangs[2], 1);
-	print_fang_info(3, &patient.fangs[3], 1);
-	print_tool_info();
+	print_fang_info(0, &pat->fangs[0], 1);
+	print_fang_info(1, &pat->fangs[1], 1);
+	print_fang_info(2, &pat->fangs[2], 1);
+	print_fang_info(3, &pat->fangs[3], 1);
+	print_tool_info(state);
 	my_printf("Buffy the Fluoride Dispenser: Fang Edition is done!\n");
 }
 
 static int	inline
-all_fangs_healthy(const patient_type * patient)
+all_fangs_healthy(const patient_type * pat)
 {
 	int		four_healthy_fangs = 0;
 
 	for (int i = 0; i < 4; i++) {
-		if (patient->fangs[i].health < MAX_HEALTH) {
+		if (pat->fangs[i].health < MAX_HEALTH) {
 			four_healthy_fangs = -1;
 			break;
 		}
@@ -503,7 +503,7 @@ all_fangs_healthy(const patient_type * patient)
 }
 
 static int
-apply_fluoride_to_fangs(void)
+apply_fluoride_to_fangs(game_state_type *state, patient_type *pat)
 {
 	int		tool_dip = DEFAULT_TOOL_DIP;
 	int		tool_effort = DEFAULT_TOOL_EFFORT;
@@ -515,7 +515,7 @@ apply_fluoride_to_fangs(void)
 	 */
 	print_fang_logo();
 	my_printf("Welcome to Buffy the Fluoride Dispenser: Fang Edition!\n");
-	print_patient_info(&patient, 1);
+	print_patient_info(state, pat, 1);
 
 
 	my_refresh();
@@ -531,7 +531,7 @@ apply_fluoride_to_fangs(void)
 
 		for (int i = 0; i < 4; i++) {
 			/* skip fangs that are already healthy */
-			if (patient.fangs[i].health >= MAX_HEALTH) {
+			if (pat->fangs[i].health >= MAX_HEALTH) {
 				my_printf("Fang %s is already healthy and shiny!\n", fang_idx_to_name(i));
 				continue;
 			}
@@ -544,57 +544,57 @@ apply_fluoride_to_fangs(void)
 			my_werase();
 
 			if (IS_UPPER_FANG) {
-				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, patient.fangs[MAXILLARY_LEFT_CANINE].health, patient.fangs[MAXILLARY_RIGHT_CANINE].health, game_state.using_curses);
+				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, pat->fangs[MAXILLARY_LEFT_CANINE].health, pat->fangs[MAXILLARY_RIGHT_CANINE].health, state->using_curses);
 			} else {
-				fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, patient.fangs[MANDIBULAR_LEFT_CANINE].health, patient.fangs[MANDIBULAR_RIGHT_CANINE].health, game_state.using_curses);
+				fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, pat->fangs[MANDIBULAR_LEFT_CANINE].health, pat->fangs[MANDIBULAR_RIGHT_CANINE].health, state->using_curses);
 			}
 
 			my_printf("%s", fangs_formatted);
-			print_working_info("Applying fluoride to %s's fang %s:\n", PATIENT_NAME(game_state.patient_idx), fang_idx_to_name(i));
+			print_working_info("Applying fluoride to %s's fang %s:\n", PATIENT_NAME(state->patient_idx), fang_idx_to_name(i));
 
-			print_fang_info(i, &patient.fangs[i], 1);
-			print_stats_info(&game_state, &patient);
+			print_fang_info(i, &pat->fangs[i], 1);
+			print_stats_info(state, pat);
 
 			my_refresh();
-			get_provider_input(&tool_dip, &tool_effort, game_state.last_tool_dip[i], game_state.last_tool_effort[i]);
+			get_provider_input(&i, &tool_dip, &tool_effort, state);
 	
-			patient_reaction(reaction, sizeof(reaction), &tool_effort, &patient, &tools[game_state.tool_in_use].pain_factor, PATIENT_NAME(game_state.patient_idx), i);
+			patient_reaction(reaction, sizeof(reaction), &tool_effort, pat, &tools[state->tool_in_use].pain_factor, PATIENT_NAME(state->patient_idx), i);
 
 
-			if (reaction[0] != '\0' && !game_state.using_curses)
+			if (reaction[0] != '\0' && !state->using_curses)
 				comment_printf(reaction);
-			game_state.tool_dip = tool_dip;
-			game_state.tool_effort = tool_effort;
-			game_state.last_tool_dip[i] = tool_dip;
-			game_state.last_tool_effort[i] = tool_effort;
+			state->tool_dip = tool_dip;
+			state->tool_effort = tool_effort;
+			state->last_tool_dip[i] = tool_dip;
+			state->last_tool_effort[i] = tool_effort;
 
-			if ((game_state.fluoride_used = calculate_fluoride_used_from_dip(tool_dip)) == -1)
+			if ((state->fluoride_used = calculate_fluoride_used_from_dip(tool_dip, state)) == -1)
 				goto no_fluoride_left;
 
-			calculate_fang_health(&patient.fangs[i], game_state.fluoride_used, tool_effort);
+			calculate_fang_health(state, &pat->fangs[i], state->fluoride_used, tool_effort);
 
-			game_state.score += BONUS_FANG_CLEANED;
+			state->score += BONUS_FANG_CLEANED;
 
-			if (patient.fangs[i].health >= MAX_HEALTH)
-				game_state.score += BONUS_FANG_HEALTH;
+			if (pat->fangs[i].health >= MAX_HEALTH)
+				state->score += BONUS_FANG_HEALTH;
 
-			if (game_state.using_curses)
-				print_stats_info(&game_state, &patient);
-			if (reaction[0] && game_state.using_curses)
+			if (state->using_curses)
+				print_stats_info(state, pat);
+			if (reaction[0] && state->using_curses)
 				comment_printf(reaction);
 			my_refresh();
 			/*
-			 * log_game_turn(game_state.turns, &game_state,
-			 * &patient, reaction ? reaction : "---");
+			 * log_game_turn(state->turns, state,
+			 * pat, reaction ? reaction : "---");
 			 */
 		}
 
-		game_state.turns++;
-		game_state.score += BONUS_TURN_COMPLETE;
+		state->turns++;
+		state->score += BONUS_TURN_COMPLETE;
 
 
 
-		if (all_fangs_healthy(&patient) == 0)
+		if (all_fangs_healthy(pat) == 0)
 			goto success;
 
 
@@ -604,8 +604,8 @@ apply_fluoride_to_fangs(void)
 		get_input("Continue applying fluoride to fangs? (y/q/s): ", answer, sizeof(answer));
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
 			/* All tools use some fluoride */
-			my_printf("%s applies fluoride to %s's fangs with the %s.\n", game_state.character_name, PATIENT_NAME(game_state.patient_idx), tools[game_state.tool_in_use].name);
-			my_printf("%s dip effort: %d\n", tools[game_state.tool_in_use].name, tool_effort);
+			my_printf("%s applies fluoride to %s's fangs with the %s.\n", state->character_name, PATIENT_NAME(state->patient_idx), tools[state->tool_in_use].name);
+			my_printf("%s dip effort: %d\n", tools[state->tool_in_use].name, tool_effort);
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
 			cleaning = 0;
 			goto quit_game;
@@ -619,58 +619,58 @@ apply_fluoride_to_fangs(void)
 
 success:
 	end_curses();
-	my_printf("%s has successfuly cleaned all of %s's fangs.\n", game_state.character_name, PATIENT_NAME(game_state.patient_idx));
-	game_state.score += BONUS_ALL_HEALTH;
-	print_game_state(&game_state);
+	my_printf("%s has successfuly cleaned all of %s's fangs.\n", state->character_name, PATIENT_NAME(state->patient_idx));
+	state->score += BONUS_ALL_HEALTH;
+	print_game_state(state);
 	return 0;
 
 save_game:
 	end_curses();
 	my_printf("Saving game to: %s\n", save_path);
-	save_game();
-	print_game_state(&game_state);
+	save_game(state, sizeof(game_state), pat, sizeof(patient));
+	print_game_state(state);
 	return 0;
 
 quit_game:
 	end_curses();
-	my_printf("%s quits the game.\n", game_state.character_name);
-	print_game_state(&game_state);
+	my_printf("%s quits the game.\n", state->character_name);
+	print_game_state(state);
 	return 0;
 
 no_fluoride_left:
 	my_print_err("Fluoride used (%d) exceeds available fluoride (%d).\n",
-		     game_state.fluoride_used, game_state.fluoride);
+		     state->fluoride_used, state->fluoride);
 	end_curses();
-	continuation_err();
+	continuation_err(state, pat);
 	return 0;
 }
 
 
 
 static int
-main_program(const int reloadflag)
+main_program(const int reloadflag,  game_state_type *state)
 {
 	/*
 	 * If we are reloading the game state, we do not need to initialize
 	 * it again
 	 */
 	if (!reloadflag) {
-		init_game_state(game_state.bflag);
-		patient_init(&patient);
+		init_game_state(state->bflag, &game_state);
+		patient_init(&game_state, &patient);
 	}
 
 	/* Use dagger only with --daggerset option */
-	if (!game_state.daggerset) {
-		game_state.tool_dip = DEFAULT_TOOL_DIP;
-		game_state.tool_effort = DEFAULT_TOOL_EFFORT;
+	if (!state->daggerset) {
+		state->tool_dip = DEFAULT_TOOL_DIP;
+		state->tool_effort = DEFAULT_TOOL_EFFORT;
 	} else {
-		game_state.tool_dip = DEFAULT_DAGGER_DIP;
-		game_state.tool_effort = DEFAULT_DAGGER_EFFORT;
+		state->tool_dip = DEFAULT_DAGGER_DIP;
+		state->tool_effort = DEFAULT_DAGGER_EFFORT;
 	}
 
 	initalize_curses();
 
-	return apply_fluoride_to_fangs();
+	return apply_fluoride_to_fangs(&game_state, &patient);
 }
 
 #ifndef __UNIT_TEST__
@@ -798,7 +798,7 @@ main(int argc, char *argv[])
 			}
 			SET_SAVE_PATH(default_saved_pathname);
 		}
-		init_game_state(bflag);
+		init_game_state(bflag, &game_state);
 	}
 
 #ifdef __OpenBSD__
@@ -818,7 +818,7 @@ main(int argc, char *argv[])
 		errx(1, "pledge");
 #endif
 
-	exit(main_program(fflag));
+	exit(main_program(fflag, &game_state));
 }
 #else
 #include "unittest/unittest.c"
