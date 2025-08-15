@@ -67,7 +67,7 @@ typedef struct tool {
 
 	int		effectiveness;
 	int		durability;
-	int		pain_factor; /* Pain level when using the tool */
+	int		pain_factor;	/* Pain level when using the tool */
 }		tool;
 
 

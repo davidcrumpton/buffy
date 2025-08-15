@@ -133,4 +133,3 @@ fang_art(const int upper_fangs, int rows, int health_level_left, int health_leve
 	buffer[idx] = '\0';
 	return buffer;
 }
-
