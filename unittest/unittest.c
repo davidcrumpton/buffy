@@ -91,7 +91,7 @@ void
 testRANDOMIZE_FANGS(void)
 {
 	patient_init(&game_state, &patient);
-	randomize_fangs(&patient, 4);
+	randomize_fangs(&patient);
 	for (int i = 0; i < 4; i++) {
 		CU_ASSERT(patient.fangs[i].length >= 4 && patient.fangs[i].length <= 6);
 		CU_ASSERT(patient.fangs[i].sharpness >= 5 && patient.fangs[i].sharpness <= 8);
@@ -103,7 +103,7 @@ void
 testPRINT_FANG_INFO(void)
 {
 	patient_init(&game_state, &patient);
-	randomize_fangs(&patient, 4);
+	randomize_fangs(&patient);
 	for (int i = 0; i < 4; i++) {
 		print_fang_info(i, &patient.fangs[i], 0);
 		CU_ASSERT(patient.fangs[i].length >= 4 && patient.fangs[i].length <= 6);
@@ -118,7 +118,7 @@ testSAVE_GAME_STATE(void)
 	/* Initialize game state and patient */
 	init_game_state(1, &game_state);
 	patient_init(&game_state, &patient);
-	randomize_fangs(&patient, 4);
+	randomize_fangs(&patient);
 	/* Assuming the game state is saved to a file */
 	const char     *save_path = "test_game_state.dat";
 	save_game_state(save_path, &game_state, sizeof(game_state), &patient, sizeof(patient));
@@ -135,7 +135,7 @@ testLOAD_GAME_STATE(void)
 	game_state_type	game_state;
 	patient_type	patient;
 	patient_init(&patient);
-	randomize_fangs(&patient, 4);
+	randomize_fangs(&patient);
 	/* Assuming the game state is loaded from a file */
 	const char     *load_path = "test_game_state.dat";
 	load_game_state(load_path, &game_state, sizeof(game_state), &patient, sizeof(patient),
@@ -154,7 +154,7 @@ void
 testPRINT_CREATURE_INFO(void)
 {
 	patient_init(&patient);
-	randomize_fangs(&patient, 4);
+	randomize_fangs(&patient);
 	print_patient_info(&game_state, &patient, 0);
 	/*
 	 * The patient is randomly chosen so DEFAULTs can not be tested with
