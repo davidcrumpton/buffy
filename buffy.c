@@ -134,10 +134,10 @@ return_concat_homedir(const char *append_str)
 
 
 static int	inline
-choose_random_tool(const int isdaggerset)
+choose_random_tool(const int *isdaggerset)
 {
 
-	if (isdaggerset) {
+	if (*isdaggerset) {
 		return arc4random_uniform(3) + 3;	/* daggers idx 3, 4, or
 							 * 5 */
 	} else {
@@ -198,7 +198,7 @@ init_game_state(const int bflag, game_state_type * state)
 		strlcpy(character_name, DEFAULT_CHARACTER_NAME, sizeof(DEFAULT_CHARACTER_NAME));
 
 	state->character_name = character_name;
-	state->tool_in_use = choose_random_tool(state->daggerset);
+	state->tool_in_use = choose_random_tool(&state->daggerset);
 
 	for (int i = 0; i < 4; i++) {
 		state->last_tool_dip[i] = DEFAULT_TOOL_DIP;
