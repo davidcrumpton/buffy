@@ -368,7 +368,7 @@ fang_idx_to_name(const int fang_index)
 	return "Unknown Fang";
 }
 
-static void
+static inline void
 print_fang_logo(void)
 {
 	my_printf("  /\\     /\\\n");
