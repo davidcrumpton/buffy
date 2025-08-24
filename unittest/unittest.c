@@ -74,7 +74,8 @@ testINIT_GAME_STATE(void)
 void
 testCHOOSE_RANDOM_TOOL(void)
 {
-	int		tool_index = choose_random_tool(1);
+	int tool = 1;
+	int		tool_index = choose_random_tool(&tool);
 	CU_ASSERT(tool_index >= 0 && tool_index < 6);	/* Assuming there are 6
 							 * tools */
 }
@@ -82,7 +83,8 @@ testCHOOSE_RANDOM_TOOL(void)
 void
 testCHOOSE_RANDOM_TOOL_NON_DAGGER(void)
 {
-	int		tool_index = choose_random_tool(0);
+	int tool = 0;
+	int		tool_index = choose_random_tool(&tool);
 	CU_ASSERT(tool_index >= 0 && tool_index < 3);	/* Assuming there are 3
 							 * non-dagger tools */
 }
