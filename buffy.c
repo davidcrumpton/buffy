@@ -670,7 +670,22 @@ main_program(const int reloadflag, game_state_type * state)
 	}
 
 	initalize_curses();
+#ifdef __OpenBSD__
 
+	if(debugging) {
+			char		debug_file[64];
+			snprintf(debug_file, sizeof(debug_file), "game_log_%d.csv", getpid());
+			unveil(debug_file, "rwc");
+	}
+	if (!reloadflag)
+		if (unveil(save_path, "rwc") == -1) {
+			errx(1, "unveil");
+			return EXIT_FAILURE;
+		}
+
+	if (pledge("stdio rpath wpath cpath proc unveil tty", NULL) == -1)
+		errx(1, "pledge");
+#endif
 	return apply_fluoride_to_fangs(&game_state, &patient);
 }
 
@@ -698,7 +713,7 @@ main(int argc, char *argv[])
 
 #ifdef __OpenBSD__
 
-	if (pledge("stdio rpath wpath cpath unveil proc", NULL) == -1)
+	if (pledge("stdio rpath wpath cpath unveil proc tty", NULL) == -1)
 		errx(1, "pledge");
 #endif
 	*save_path = '\0';
@@ -802,25 +817,7 @@ main(int argc, char *argv[])
 		init_game_state(bflag, &game_state);
 	}
 
-#ifdef __OpenBSD__
 
-	if(debugging) {
-			char		debug_file[64];
-			snprintf(debug_file, sizeof(debug_file), "game_log_%d.csv", getpid());
-			unveil(debug_file, "rwc");
-	}
-	if (!fflag)
-		if (unveil(save_path, "rwc") == -1) {
-			errx(1, "unveil");
-			return EXIT_FAILURE;
-		}
-	if (unveil(NULL, NULL) == -1) {
-			errx(1, "unveil lock");
-			return EXIT_FAILURE;
-		}
-	if (pledge("stdio rpath wpath cpath proc unveil", NULL) == -1)
-		errx(1, "pledge");
-#endif
 
 	exit(main_program(fflag, &game_state));
 }
