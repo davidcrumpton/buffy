@@ -64,9 +64,7 @@ char		save_path[FILENAME_MAX + 1];
 game_state_type	game_state;
 patient_type	patient;
 
-#if defined(__OpenBSD__)
-int debugging = 0;
-#elif defined(__DEBUG__)
+#if defined(__DEBUG__)
 int debugging = 1;
 #else
 int debugging = 0;
@@ -806,17 +804,20 @@ main(int argc, char *argv[])
 
 #ifdef __OpenBSD__
 
+	if(debugging) {
+			char		debug_file[64];
+			snprintf(debug_file, sizeof(debug_file), "game_log_%d.csv", getpid());
+			unveil(debug_file, "rwc");
+	}
 	if (!fflag)
 		if (unveil(save_path, "rwc") == -1) {
 			errx(1, "unveil");
 			return EXIT_FAILURE;
-
-			if (unveil(NULL, NULL) == -1) {
-				errx(1, "unveil lock");
-				return EXIT_FAILURE;
-			}
 		}
-
+	if (unveil(NULL, NULL) == -1) {
+			errx(1, "unveil lock");
+			return EXIT_FAILURE;
+		}
 	if (pledge("stdio rpath wpath cpath proc unveil", NULL) == -1)
 		errx(1, "pledge");
 #endif
