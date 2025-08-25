@@ -144,7 +144,7 @@ get_input(const char *prompt, char *buffer, size_t size)
 
 
 		do {
-			vw_printw(inp_win, prompt, NULL);
+            wprintw(inp_win, "%s", prompt);
 			wrefresh(inp_win);
 
 			wmove(inp_win, prompt_row, strlen(prompt));

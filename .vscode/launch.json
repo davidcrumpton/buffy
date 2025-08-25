@@ -34,11 +34,15 @@
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
-      "name": "Debug Buffy Unittest",
+      "name": "Debug Buffy Curses",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/buffy-unittest",
+      "program": "${workspaceFolder}/buffy",
+      "args": ["--curses"],
       "cwd": "${workspaceFolder}",
+      "env": {
+        "TERM": "xterm-256color"
+      },
       "preLaunchTask": "make debug",
       "stopOnEntry": false,
       "internalConsoleOptions": "openOnSessionStart"
