@@ -17,6 +17,8 @@
 # Default to release build
 PROG=          buffy
 LDFLAGS=        -lncurses
+INSTALLPATH=    /usr/local/bin
+MANPATH=       /usr/local/man/man6
 TEST_PROG=      buffy-unittest
 TEST_CFLAGS=        -g -D__UNIT_TEST__ -Wall
 TEST_LDFLAGS=      -L/usr/local/lib -lcunit -lncurses
@@ -46,3 +48,7 @@ all: buffy buffy-unittest
 
 buffy-unittest: ${TEST_PROG}
 		cc -g ${TEST_LDFLAGS} ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS}
+
+install:
+	install -m 555 buffy $(INSTALLPATH)/buffy
+	install -m 444 buffy.1 $(MANPATH)/buffy.1

@@ -220,7 +220,8 @@ testVALIDATE_GAME_FILE(void)
 
 void testPATIENTREACTION(void)
 {
-	CU_ASSERT(patient_reaction(&game_state, &patient) == 0);
+	// void patient_reaction(char *reaction, size_t reaction_len, int *effort, patient_type *patient, const int *tool_pain_factor, const char *patient_name, const int fang_idx);
+	CU_ASSERT(patient_reaction("test_reaction", sizeof("test_reaction"), &game_state.tool_effort, &patient, &tools[0].pain_factor, patient.name, 0) == 0);
 }
 	
 int
