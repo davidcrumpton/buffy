@@ -5,7 +5,7 @@
       "label": "make debug",
       "type": "shell",
       "command": "make",
-      "args": ["CFLAGS=-g"],
+      "args": ["CFLAGS=-g -D__DEBUG__"],
       "group": "build"
     },
     {

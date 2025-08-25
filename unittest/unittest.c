@@ -217,6 +217,12 @@ testVALIDATE_GAME_FILE(void)
 	/* check for failure value */
 	CU_ASSERT(validate_game_file("/dev/null") == 1);
 }
+
+void testPATIENTREACTION(void)
+{
+	CU_ASSERT(patient_reaction(&game_state, &patient) == 0);
+}
+	
 int
 main()
 {
@@ -242,7 +248,8 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of print_tool_info()", testPRINT_TOOL_INFO)) ||
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
 	    (NULL == CU_add_test(pSuite, "test validate game_file()", testVALIDATE_GAME_FILE)) ||
-	    (NULL == CU_add_test(pSuite, "test of return_concat_homedir()", testCONCAT_PATH))) {
+	    (NULL == CU_add_test(pSuite, "test of return_concat_homedir()", testCONCAT_PATH)) ||
+	    (NULL == CU_add_test(pSuite, "test of patient_reaction()", testPATIENTREACTION))) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}

@@ -64,8 +64,13 @@ char		save_path[FILENAME_MAX + 1];
 game_state_type	game_state;
 patient_type	patient;
 
-
-
+#if defined(__OpenBSD__)
+int debugging = 0;
+#elif defined(__DEBUG__)
+int debugging = 1;
+#else
+int debugging = 0;
+#endif
 
 fang_info_type	fang_names[] = {
 	{"Maxillary Right Canine", 6},
@@ -583,10 +588,8 @@ apply_fluoride_to_fangs(game_state_type * state, patient_type * pat)
 			if (reaction[0] && state->using_curses)
 				comment_printf(reaction);
 			my_refresh();
-			/*
-			 * log_game_turn(state->turns, state, pat, reaction ?
-			 * reaction : "---");
-			 */
+		if(debugging)
+			log_game_turn(state->turns, state, pat, reaction);
 		}
 
 		state->turns++;
