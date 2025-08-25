@@ -494,15 +494,12 @@ continuation_err(const game_state_type * state, const patient_type * pat)
 static int	inline
 all_fangs_healthy(const patient_type * pat)
 {
-	int		four_healthy_fangs = 0;
-
 	for (int i = 0; i < 4; i++) {
 		if (pat->fangs[i].health < MAX_HEALTH) {
-			four_healthy_fangs = -1;
-			break;
+			return -1;
 		}
 	}
-	return four_healthy_fangs;
+	return 0;
 }
 
 static int
