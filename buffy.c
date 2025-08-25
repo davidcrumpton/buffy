@@ -239,7 +239,8 @@ get_provider_input(const int *current_tool, int *tool_dip, int *tool_effort, con
 	/* Prompt for tool dip */
 	while (!valid) {
 		prompt[0] = 0;
-		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tools[state->tool_in_use].name, state->last_tool_dip[*current_tool]);
+		const char *tool_name = tools[state->tool_in_use].name ? tools[state->tool_in_use].name : "(unknown tool)";
+		snprintf(prompt, sizeof(prompt), "How much to dip the %s in the fluoride [%d]? ", tool_name, state->last_tool_dip[*current_tool]);
 		get_input(prompt, input, sizeof(input));
 		if (strlen(input) == 0 && state->using_curses < 1) {
 			my_print_err("Input error. Please try again.\n");
