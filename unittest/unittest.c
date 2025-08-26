@@ -62,7 +62,7 @@ testINIT_GAME_STATE(void)
 {
 	init_game_state(1, &game_state);
 	CU_ASSERT(game_state.daggerset == 0);
-	CU_ASSERT(game_state.fluoride == MAX_FLUORIDE);
+	CU_ASSERT(game_state.fluoride == 300);
 	CU_ASSERT(game_state.tool_dip > 1);
 	CU_ASSERT(game_state.tool_effort > 1);
 	CU_ASSERT(game_state.fluoride_used == 0);
