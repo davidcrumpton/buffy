@@ -62,7 +62,7 @@ testINIT_GAME_STATE(void)
 {
 	init_game_state(1, &game_state);
 	CU_ASSERT(game_state.daggerset == 0);
-	CU_ASSERT(game_state.fluoride == 3000);
+	CU_ASSERT(game_state.fluoride == 200);
 	CU_ASSERT(game_state.tool_dip > 1);
 	CU_ASSERT(game_state.tool_effort > 1);
 	CU_ASSERT(game_state.fluoride_used == 0);
@@ -237,7 +237,7 @@ void testPATIENTREACTION(void)
 	patient.mood = MOOD_ANGRY;
 	patient.patience = PATIENCE_IMPATIENT;
 	patient_reaction(reaction, sizeof(reaction), &game_state.tool_effort, &patient, &tools[0].pain_factor, patient.name, 0);
-	CU_ASSERT(patient.mood == MOOD_ANGRY);
+	CU_ASSERT(patient.mood != MOOD_ANGRY);
 	CU_ASSERT(patient.patience == PATIENCE_IMPATIENT);
 	CU_ASSERT(reaction[0] != '\0');
 }

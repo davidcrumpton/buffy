@@ -26,7 +26,7 @@ TEST_LDFLAGS=      -L/usr/local/lib -lcunit -lncurses
 SRCS=           buffy.c gamestate.c fangs.c playerio.c patient.c diagnostic.c
 OBJS=           buffy.o gamestate.o fangs.o playerio.o patient.o diagnostic.o
 HDRS=           buffy.h gamestate.h fangs.h playerio.h patient.h diagnostic.h
-TEST_SRCS=      unittest/buffy_unittest.c
+TEST_SRCS=      unittest/unittest.c
 MAN=           buffy.1
 BINOWN=        root
 BINMODE=       555
@@ -46,9 +46,10 @@ clean:
 .PHONY: all clean buffy unittest beautify
 all: buffy buffy-unittest
 
-buffy-unittest: ${TEST_PROG}
+buffy-unittest: ${TEST_PROG} ${TEST_SRCS}
 		cc -g ${TEST_LDFLAGS} ${TEST_CFLAGS} ${CPPFLAGS} -o ${TEST_PROG} -Wall ${SRCS}
 
 install:
 	install -m 555 buffy $(INSTALLPATH)/buffy
 	install -m 444 buffy.1 $(MANPATH)/buffy.1
+	chown $(BINOWN) $(INSTALLPATH)/buffy
