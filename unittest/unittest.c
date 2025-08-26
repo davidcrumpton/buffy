@@ -114,6 +114,18 @@ testPRINT_FANG_INFO(void)
 	}
 }
 
+void testALLFANGSHEALTHY(void)
+{
+	patient.fangs[0].health = 60;
+	CU_ASSERT(all_fangs_healthy(&patient) == -1);
+
+	patient.fangs[0].health = 100;
+	patient.fangs[1].health = 100;	
+	patient.fangs[2].health = 100;
+	patient.fangs[3].health = 100;
+	CU_ASSERT(all_fangs_healthy(&patient) == 0);
+}
+
 void
 testSAVE_GAME_STATE(void)
 {
@@ -256,6 +268,7 @@ main()
 	    (NULL == CU_add_test(pSuite, "test of fang_idx_to_name()", testFANG_IDX_TO_NAME)) ||
 	    (NULL == CU_add_test(pSuite, "test validate game_file()", testVALIDATE_GAME_FILE)) ||
 	    (NULL == CU_add_test(pSuite, "test of return_concat_homedir()", testCONCAT_PATH)) ||
+	    (NULL == CU_add_test(pSuite, "test of all_fangs_healthy()", testALLFANGSHEALTHY)) ||
 	    (NULL == CU_add_test(pSuite, "test of patient_reaction()", testPATIENTREACTION))) {
 		CU_cleanup_registry();
 		return CU_get_error();
