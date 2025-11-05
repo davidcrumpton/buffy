@@ -1,12 +1,43 @@
-# Buffy the fluoride dispensor
+# 🦷 Buffy the Fluoride Dispenser
 
-Is a game where you try to reach the highest score possible before running out of fluoride.
+Buffy is a terminal-based game where you play as a dental hygienist tasked with cleaning a patient's fangs using one of six randomly chosen tools. Your goal is to clean all teeth before your fluoride supply runs out.
 
-## License
 
-See the [LICENSE](LICENSE) file in this repository for details.
+## 🎮 Gameplay Overview
 
-## Inspiration
+- Each turn, Buffy selects a random tool to clean a tooth.
+- You must choose which tooth to clean based on its condition and the tool's effectiveness.
+- The game ends when:
+  - All teeth are cleaned successfully.
+  - You run out of fluoride.
+
+## 🧪 Command-Line Options
+
+Buffy supports several long options via `getopt_long(3)`:
+
+```c
+static struct option longopts[] = {
+  { "buffy",     no_argument,       NULL, 'b' },
+  { "fluoride",  required_argument, NULL, 'f' },
+  { "daggerset", no_argument,       &daggerset, 1 },
+  { NULL,        0,                 NULL, 0 }
+};
+```
+
+### Available Flags
+
+| Option        | Description                                                                 |
+|---------------|-----------------------------------------------------------------------------|
+| `-b`, `--buffy`     | Activates non-Buffy mode where you are addressed by your login name.     |
+| `-f <file>`, `--fluoride <file>` | Loads fluoride configuration or game data from the specified file. |
+| `--daggerset` | The gamne will randomly choose one of three daggers made from different materials. |
+
+
+## 📜 License
+
+This project is licensed under the BSD Zero Clause License. See the [LICENSE](LICENSE) file for details.
+
+# Inspiration
 
 I decided to use `getopt_long(3)`, or long options, in my next creation. I decided to read the manual and laughed when I noticed the Buffy the Vampire Slayer references in the [`getopt_long` EXAMPLES section](https://man.openbsd.org/getopt_long#EXAMPLES) of OpenBSD and macOS.
 The game will always have at a minimum the options specified in the description below.
