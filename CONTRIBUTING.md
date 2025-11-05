@@ -13,6 +13,11 @@ Thanks for your interest in improving Buffy! Whether you're fixing bugs, adding 
 3. **Test your changes** thoroughly. Buffy hates regressions.
 4. **Submit a merge request** with a clear description of what you changed and why.
 
+## Patients are not to be harmed
+
+- Buffy helps her patients and does not hurt them.
+- an action mode is okay to help calm or even restrain patients
+
 ## 🧪 What You Can Work On
 
 - Add new cleaning tools (e.g., garlic floss, holy water rinse).
