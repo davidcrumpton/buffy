@@ -1,0 +1,29 @@
+# 🧛‍♀️ Buffy the Fluoride Dispenser Changelog
+
+All notable fang-cleaning events will be documented in this file.
+
+## [Unreleased]
+
+### ✨ Features
+- _Add new tool:_ Garlic floss for extra vampire resistance.
+- _Introduce dagger mode:_ Activated via `--daggerset`.
+
+### 🐛 Fixes
+- _Resolve null pointer bug on OpenBSD._
+- _Correct spelling of "fluoride" across all modules._
+
+### 🧼 Refactors
+- _Reduce function inputs in `gamestate.c` and `patient.c`._
+- _Indent all `.c` and `.h` files for readability._
+
+### 📚 Documentation
+- _Update README with gameplay and options._
+- _Add CONTRIBUTING.md with Buffy-themed guidelines._
+
+---
+
+## [v1.0.0] - 2025-10-31
+
+### 🎉 Initial Release
+- Buffy is born! Clean fangs, manage fluoride, and battle dental decay in the terminal.
+- Includes 6 randomized tools and Dracula-themed gameplay.
