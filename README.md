@@ -5,7 +5,7 @@ Buffy is a terminal-based game where you play as a dental hygienist tasked with 
 
 ## 🎮 Gameplay Overview
 
-- Each turn, Buffy selects a random tool to clean a fang.
+- Each turn, Buffy cleans one fang with her randomly chosen tool.
 - The game rotates through each fang and you choose which tooth to clean based on its condition and the tool's effectiveness.
 - The game ends when:
   - All teeth are cleaned successfully.
