@@ -11,6 +11,8 @@ Buffy is a terminal-based game where you play as a dental hygienist tasked with 
   - All teeth are cleaned successfully.
   - You run out of fluoride.
 
+![Gameplay Color Using Curses](images/curses-color-80x25.jpg)
+
 ## 🧪 Command-Line Options
 
 Buffy supports several long options via `getopt_long(3)`:
