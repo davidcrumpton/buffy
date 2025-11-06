@@ -27,7 +27,7 @@ SRCS=           buffy.c gamestate.c fangs.c playerio.c patient.c diagnostic.c
 OBJS=           buffy.o gamestate.o fangs.o playerio.o patient.o diagnostic.o
 HDRS=           buffy.h gamestate.h fangs.h playerio.h patient.h diagnostic.h
 TEST_SRCS=      unittest/unittest.c
-MAN=           buffy.1
+MAN=           buffy.6
 BINOWN=        root
 BINMODE=       555
 
@@ -51,5 +51,5 @@ buffy-unittest: ${TEST_PROG} ${TEST_SRCS}
 
 install:
 	install -m 555 buffy $(INSTALLPATH)/buffy
-	install -m 444 buffy.1 $(MANPATH)/buffy.1
+	install -m 444 buffy.6 $(MANPATH)/buffy.6
 	chown $(BINOWN) $(INSTALLPATH)/buffy
