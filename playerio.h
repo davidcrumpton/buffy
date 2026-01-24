@@ -28,7 +28,7 @@ void		get_input(const char *prompt, char *buffer, size_t size);
 void		my_printf(const char *format,...);
 void		mv_printw(int row, int col, const char *format,...);
 void		my_putchar(char c);
-void		initalize_curses(void);
+void		initialize_curses(void);
 void		print_working_info(const char *format,...);
 int		    end_curses(void);
 void		my_print_err(const char *format,...);

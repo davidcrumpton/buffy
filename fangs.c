@@ -71,37 +71,22 @@ char
 substitute_marker(char c, int health_level_left, int health_level_right)
 {
 	/* Upper fangs: R/L, Lower fangs: r/l */
-	int		index = 0;	/* Index for health_markers array */
 	if (c == 'R' || c == 'L' || c == 'r' || c == 'l') {
-		/* Ensure health_level is within bounds */
-		if (c == 'L' || c == 'l') {
-			/* For upper fangs, use health_level_left */
-			if (health_level_left < 60 || health_level_left > 100) {
-				health_level_left = 60;	/* Default to dirtiest
-							 * if out of bounds */
-			}
-			index = (health_level_left - 60) / 5;	/* Maps 60-64 to 0, ...,
-								 * 96-100 to 6 */
-		}
-		if (c == 'R' || c == 'r') {
-			/* For right fang, use health_level_right */
-			if (health_level_right < 60 || health_level_right > 100) {
-				health_level_right = 60;	/* Default to dirtiest
-								 * if out of bounds */
-			}
-			index = (health_level_right - 60) / 5;	/* Maps 60-64 to 0, ...,
-								 * 96-100 to 6 */
-		}
+		int		health_level = (c == 'R' || c == 'r') ? health_level_right : health_level_left;
 
-		/* Ensure index is within bounds */
-		if (index < 0) {
-			index = 0;	/* Default to dirtiest if out of
-					 * bounds */
-		} else if (index > 6) {
-			index = 6;	/* Default to cleanest if out of
-					 * bounds */
-		}
+		if (health_level < 60)
+			health_level = 60;
+		if (health_level > 100)
+			health_level = 100;
+
+		int		index = (health_level - 60) / 5;
+		if (index < 0)
+			index = 0;
+		if (index > 6)
+			index = 6;
+
 		return health_markers[index];
+
 	}
 
 	return c;

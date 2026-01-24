@@ -132,7 +132,7 @@ load_game_state(const char *load_path, game_state_type * gamestate_g, size_t gs_
 		}
 
 
-
+		free(gamestate.character_name);
 		close(pipefd[1]);
 		_exit(EXIT_SUCCESS);
 	} else {		/* Parent process */

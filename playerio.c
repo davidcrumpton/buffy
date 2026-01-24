@@ -112,23 +112,20 @@ redraw_game_screen()
 	mvwin(inp_win, max_y - 2, 0);
 	wclear(inp_win);
 
-	mvwin(info_win, max_y - 9, 0);
 	wclear(info_win);
 	mvwin(info_win, max_y - 9, 0);
 	wrefresh(info_win);
 
 	mvwin(stats_win, max_y - 1, 0);
 	wclear(stats_win);
-	mvwin(stats_win, max_y - 1, 0);
 	wrefresh(stats_win);
 
 	mvwin(comment_win, max_y - 11, 0);
 	wclear(comment_win);
-	mvwin(comment_win, max_y - 11, 0);
 	wrefresh(comment_win);
 
-	wclear(err_win);
 	mvwin(err_win, max_y - 5, 0);
+	wclear(err_win);
 	wrefresh(err_win);
 
 	refresh();
@@ -144,7 +141,7 @@ get_input(const char *prompt, char *buffer, size_t size)
 
 
 		do {
-            wprintw(inp_win, "%s", prompt);
+			wprintw(inp_win, "%s", prompt);
 			wrefresh(inp_win);
 
 			wmove(inp_win, prompt_row, strlen(prompt));
@@ -262,7 +259,7 @@ print_highlighted(WINDOW * win, const char *line, const char *word, const int *c
 
 
 void
-print_stats_info(const game_state_type *state, const patient_type *patient)
+print_stats_info(const game_state_type * state, const patient_type * patient)
 {
 	char		mood_str[16];
 	char		pat_str[16];
@@ -280,7 +277,7 @@ print_stats_info(const game_state_type *state, const patient_type *patient)
 }
 
 void
-get_patient_state_strings(const patient_type *patient, char *mood_str, char *pat_str)
+get_patient_state_strings(const patient_type * patient, char *mood_str, char *pat_str)
 {
 	switch (patient->mood) {
 	case MOOD_ANGRY:
@@ -342,12 +339,14 @@ setup_signal_handlers(void)
 
 
 void
-initalize_curses(void)
+initialize_curses(void)
 {
 	if (!using_curses)
 		return;
 	if (using_curses) {
-		initscr();
+		if (initscr() == NULL)
+			errx(1, "Failed to initalize curses.");
+
 		if (LINES < 24 || COLS < 80) {
 			end_curses();
 			errx(1, "please resize your window from %d/%d to 80x24", COLS, LINES);

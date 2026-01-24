@@ -42,7 +42,7 @@ build-job:       # This job runs in the build stage, which runs first.
   script:
     - echo "Compiling the code..."
     - make clean
-    - make
+    - make buffy
     - echo "✅ Build  complete. Now go touch grass. 🌱"
 
   artifacts:

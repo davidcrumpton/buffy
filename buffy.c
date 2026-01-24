@@ -666,7 +666,7 @@ main_program(const int reloadflag, game_state_type * state)
 		state->tool_effort = DEFAULT_DAGGER_EFFORT;
 	}
 
-	initalize_curses();
+	initialize_curses();
 #ifdef __OpenBSD__
 
 	if(debugging) {
