@@ -34,7 +34,6 @@ TEST_LDFLAGS    = -L/usr/local/lib -lcunit -lncurses
 SRCS            = buffy.c gamestate.c fangs.c playerio.c patient.c diagnostic.c
 OBJS            = $(SRCS:.c=.o)
 HDRS            = buffy.h gamestate.h fangs.h playerio.h patient.h diagnostic.h
-TEST_SRCS       = unittest/unittest.c
 
 # Targets
 all: $(PROG) $(TEST_PROG)
@@ -42,8 +41,8 @@ all: $(PROG) $(TEST_PROG)
 $(PROG): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS)
 
-$(TEST_PROG): $(TEST_SRCS) $(OBJS)
-	$(CC) $(TEST_CFLAGS) $(CPPFLAGS) $(TEST_LDFLAGS) -o $@ $(SRCS) $(TEST_SRCS)
+$(TEST_PROG): $(OBJS)
+	$(CC) $(TEST_CFLAGS) $(CPPFLAGS) $(TEST_LDFLAGS) -o $@ $(SRCS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
