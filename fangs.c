@@ -74,12 +74,12 @@ substitute_marker(char c, int health_level_left, int health_level_right)
 	if (c == 'R' || c == 'L' || c == 'r' || c == 'l') {
 		int		health_level = (c == 'R' || c == 'r') ? health_level_right : health_level_left;
 
-		if (health_level < 60)
-			health_level = 60;
-		if (health_level > 100)
-			health_level = 100;
+		if (health_level < FANG_HEALTH_MIN)
+			health_level = FANG_HEALTH_MIN;
+		if (health_level > FANG_HEALTH_MAX)
+			health_level = FANG_HEALTH_MAX;
 
-		int		index = (health_level - 60) / 5;
+		int		index = (health_level - FANG_HEALTH_MIN) / 5;
 		if (index < 0)
 			index = 0;
 		if (index > 6)
@@ -97,7 +97,7 @@ substitute_marker(char c, int health_level_left, int health_level_right)
 
 
 char	       *
-fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses)
+fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right)
 {
 	const char    **fangs;
 

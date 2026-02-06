@@ -32,6 +32,8 @@
 #define UPPER_FANGS     1
 #define LOWER_FANGS     0
 
+#define FANG_HEALTH_MIN      60
+#define FANG_HEALTH_MAX     100
 
-char	       *fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right, int using_curses);
+char	       *fang_art(const int upper_fangs, int rows, int health_level_left, int health_level_right);
 #endif				/* FANGS_H */

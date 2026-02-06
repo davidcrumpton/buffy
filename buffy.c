@@ -474,9 +474,9 @@ continuation_err(const game_state_type * state, const patient_type * pat)
 	char	       *fangs_formatted;
 
 	my_printf("You used up all the fluoride.\n");
-	fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, pat->fangs[MAXILLARY_LEFT_CANINE].health, pat->fangs[MAXILLARY_RIGHT_CANINE].health, 0);
+	fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, pat->fangs[MAXILLARY_LEFT_CANINE].health, pat->fangs[MAXILLARY_RIGHT_CANINE].health);
 	my_printf("%s", fangs_formatted);
-	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, pat->fangs[MANDIBULAR_LEFT_CANINE].health, pat->fangs[MANDIBULAR_RIGHT_CANINE].health, 0);
+	fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, pat->fangs[MANDIBULAR_LEFT_CANINE].health, pat->fangs[MANDIBULAR_RIGHT_CANINE].health);
 	my_printf("%s", fangs_formatted);
 
 	sleep(4);
@@ -544,9 +544,9 @@ apply_fluoride_to_fangs(game_state_type * state, patient_type * pat)
 			my_werase();
 
 			if (IS_UPPER_FANG) {
-				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, pat->fangs[MAXILLARY_LEFT_CANINE].health, pat->fangs[MAXILLARY_RIGHT_CANINE].health, state->using_curses);
+				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, pat->fangs[MAXILLARY_LEFT_CANINE].health, pat->fangs[MAXILLARY_RIGHT_CANINE].health);
 			} else {
-				fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, pat->fangs[MANDIBULAR_LEFT_CANINE].health, pat->fangs[MANDIBULAR_RIGHT_CANINE].health, state->using_curses);
+				fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, pat->fangs[MANDIBULAR_LEFT_CANINE].health, pat->fangs[MANDIBULAR_RIGHT_CANINE].health);
 			}
 
 			my_printf("%s", fangs_formatted);
