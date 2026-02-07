@@ -65,9 +65,9 @@ game_state_type	game_state;
 patient_type	patient;
 
 #if defined(__DEBUG__)
-int debugging = 1;
+int		debugging = 1;
 #else
-int debugging = 0;
+int		debugging = 0;
 #endif
 
 fang_info_type	fang_names[] = {
@@ -309,7 +309,7 @@ calculate_fluoride_used_from_dip(int tool_dip, game_state_type * state)
 }
 
 static void
-calculate_fang_health(const game_state_type * state, patient_fangs_type *fang, int fluoride_on_tool, int tool_effort)
+calculate_fang_health(const game_state_type * state, patient_fangs_type * fang, int fluoride_on_tool, int tool_effort)
 {
 	/* Cap fluoride and effort to tool's max */
 	if (fluoride_on_tool > tools[state->tool_in_use].dip_amount)
@@ -385,7 +385,7 @@ print_fang_logo(void)
 
 
 static void
-print_fang_info(const int index, const patient_fangs_type *fang, const int compact_printing)
+print_fang_info(const int index, const patient_fangs_type * fang, const int compact_printing)
 {
 	if (fang == NULL) {
 		my_print_err("Fang is NULL.\n");
@@ -502,55 +502,51 @@ all_fangs_healthy(const patient_type * pat)
 	return 0;
 }
 
+
 static int
 apply_fluoride_to_fangs(game_state_type * state, patient_type * pat)
 {
 	int		tool_dip = DEFAULT_TOOL_DIP;
 	int		tool_effort = DEFAULT_TOOL_EFFORT;
 
-	/*
-	 * Next we will loop through the fangs asking the user how much to
-	 * dip the tool in the fluoride and how much effort to apply to the
-	 * current fang
-	 */
+	/* Initialize game state */
 	print_fang_logo();
 	my_printf("Welcome to Buffy the Fluoride Dispenser: Fang Edition!\n");
 	print_patient_info(state, pat, 1);
-
-
 	my_refresh();
 	sleep(4);
 
+	/* Main cleaning loop */
 	int		cleaning = 1;
 	do {
 		char		answer[4];
 		char	       *fangs_formatted;
 		char		reaction[160];
+		const int	MAX_FANGS = 4;
 
-
-
-		for (int i = 0; i < 4; i++) {
-			/* skip fangs that are already healthy */
+		/* Process each fang */
+		for (int i = 0; i < MAX_FANGS; i++) {	
+			/* Skip fangs that are already healthy */
 			if (pat->fangs[i].health >= MAX_HEALTH) {
 				my_printf("Fang %s is already healthy and shiny!\n", fang_idx_to_name(i));
 				continue;
 			}
-			/*
-			 * determine if upper or lower fang and call
-			 * fang_art() passing in values for left and right
-			 * fang
-			 */
 
+			/* Display fang art based on position */
 			my_werase();
-
 			if (IS_UPPER_FANG) {
-				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER, pat->fangs[MAXILLARY_LEFT_CANINE].health, pat->fangs[MAXILLARY_RIGHT_CANINE].health);
+				fangs_formatted = fang_art(UPPER_FANGS, FANG_ROWS_UPPER,
+				   pat->fangs[MAXILLARY_LEFT_CANINE].health,
+				 pat->fangs[MAXILLARY_RIGHT_CANINE].health);
 			} else {
-				fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER, pat->fangs[MANDIBULAR_LEFT_CANINE].health, pat->fangs[MANDIBULAR_RIGHT_CANINE].health);
+				fangs_formatted = fang_art(LOWER_FANGS, FANG_ROWS_LOWER,
+				  pat->fangs[MANDIBULAR_LEFT_CANINE].health,
+				pat->fangs[MANDIBULAR_RIGHT_CANINE].health);
 			}
 
 			my_printf("%s", fangs_formatted);
-			print_working_info("Applying fluoride to %s's fang %s:\n", PATIENT_NAME(state->patient_idx), fang_idx_to_name(i));
+			print_working_info("Applying fluoride to %s's fang %s:\n",
+					   PATIENT_NAME(state->patient_idx), fang_idx_to_name(i));
 
 			print_fang_info(i, &pat->fangs[i], 1);
 			print_stats_info(state, pat);
@@ -558,51 +554,61 @@ apply_fluoride_to_fangs(game_state_type * state, patient_type * pat)
 			my_refresh();
 			get_provider_input(&i, &tool_dip, &tool_effort, state);
 
-			patient_reaction(reaction, sizeof(reaction), &tool_effort, pat, &tools[state->tool_in_use].pain_factor, PATIENT_NAME(state->patient_idx), i);
+			patient_reaction(reaction, sizeof(reaction), &tool_effort, pat,
+				     &tools[state->tool_in_use].pain_factor,
+				       PATIENT_NAME(state->patient_idx), i);
 
-
+			/* Handle reaction display */
 			if (reaction[0] != '\0' && !state->using_curses)
 				comment_printf(reaction);
+
+			/* Update state variables */
 			state->tool_dip = tool_dip;
 			state->tool_effort = tool_effort;
 			state->last_tool_dip[i] = tool_dip;
 			state->last_tool_effort[i] = tool_effort;
 
+			/* Check fluoride availability */
 			if ((state->fluoride_used = calculate_fluoride_used_from_dip(tool_dip, state)) == -1)
 				goto no_fluoride_left;
 
+			/* Calculate fang health */
 			calculate_fang_health(state, &pat->fangs[i], state->fluoride_used, tool_effort);
 
+			/* Update score */
 			state->score += BONUS_FANG_CLEANED;
-
 			if (pat->fangs[i].health >= MAX_HEALTH)
 				state->score += BONUS_FANG_HEALTH;
 
+			/* Display updated stats if curses */
 			if (state->using_curses)
 				print_stats_info(state, pat);
+
 			if (reaction[0] && state->using_curses)
 				comment_printf(reaction);
+
 			my_refresh();
-		if(debugging)
-			log_game_turn(state->turns, state, pat, reaction);
+
+			/* Debug logging */
+			if (debugging)
+				log_game_turn(state->turns, state, pat, reaction);
 		}
 
-		state->turns++;
+		/* Increment turn and check for completion */
+			state->turns++;
 		state->score += BONUS_TURN_COMPLETE;
-
-
 
 		if (all_fangs_healthy(pat) == 0)
 			goto success;
 
-
-
-
-
+		/* Ask user for continuation */
 		get_input("Continue applying fluoride to fangs? (y/q/s): ", answer, sizeof(answer));
+
 		if (answer[0] == 'y' || answer[0] == 'Y' || answer[0] == '\n' || strlen(answer) == 0) {
 			/* All tools use some fluoride */
-			my_printf("%s applies fluoride to %s's fangs with the %s.\n", state->character_name, PATIENT_NAME(state->patient_idx), tools[state->tool_in_use].name);
+			my_printf("%s applies fluoride to %s's fangs with the %s.\n",
+					  state->character_name, PATIENT_NAME(state->patient_idx),
+					  tools[state->tool_in_use].name);
 			my_printf("%s dip effort: %d\n", tools[state->tool_in_use].name, tool_effort);
 		} else if (answer[0] == 'q' || answer[0] == 'Q') {
 			cleaning = 0;
@@ -617,7 +623,8 @@ apply_fluoride_to_fangs(game_state_type * state, patient_type * pat)
 
 success:
 	end_curses();
-	my_printf("%s has successfuly cleaned all of %s's fangs.\n", state->character_name, PATIENT_NAME(state->patient_idx));
+	my_printf("%s has successfully cleaned all of %s's fangs.\n",
+		  state->character_name, PATIENT_NAME(state->patient_idx));
 	state->score += BONUS_ALL_HEALTH;
 	print_game_state(state);
 	return 0;
@@ -669,10 +676,10 @@ main_program(const int reloadflag, game_state_type * state)
 	initialize_curses();
 #ifdef __OpenBSD__
 
-	if(debugging) {
-			char		debug_file[64];
-			snprintf(debug_file, sizeof(debug_file), "game_log_%d.csv", getpid());
-			unveil(debug_file, "rwc");
+	if (debugging) {
+		char		debug_file[64];
+		snprintf(debug_file, sizeof(debug_file), "game_log_%d.csv", getpid());
+		unveil(debug_file, "rwc");
 	}
 	if (!reloadflag)
 		if (unveil(save_path, "rwc") == -1) {
